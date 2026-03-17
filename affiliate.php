@@ -10,19 +10,20 @@
 if (!defined('ABSPATH'))
     exit;
 
-function afiliate_enqueue_assets() {
+function afiliate_enqueue_assets()
+{
     //Load CSS
     wp_enqueue_style(
-        'style', 
-        plugins_url( '/css/style.css', __FILE__ ), 
-        array(), 
+        'style',
+        plugins_url('/css/style.css', __FILE__),
+        array(),
         time()
     );
-    
+
     //Load JS
     wp_enqueue_script(
         'sds',
-        plugins_url( '/js/affiliate-client.js', __FILE__ ),
+        plugins_url('/js/affiliate-client.js', __FILE__),
         array(),
         time(),
         true
@@ -30,7 +31,7 @@ function afiliate_enqueue_assets() {
 }
 
 //Load Afiliate Assets
-add_action( 'wp_enqueue_scripts', 'afiliate_enqueue_assets' );
+add_action('wp_enqueue_scripts', 'afiliate_enqueue_assets');
 
 // Function to add the menu page
 function affiliate_admin_menu()
@@ -46,7 +47,8 @@ function affiliate_admin_menu()
     );
 }
 
-function affiliate_admin_menu_users() {
+function affiliate_admin_menu_users()
+{
     add_submenu_page(
         'affiliate_admin_management',                        // Parent menu slug (from add_menu_page)
         'จัดการผู้ใช้ Affiliate Program | World Chemical',       // Submenu page title
@@ -72,7 +74,7 @@ function affiliate_admin_management()
 function affiliate_admin_management_users()
 {
     $id = isset($_GET['id']) ? absint($_GET['id']) : 0;
-    
+
     echo '<div class="wrap">';
     echo '<h1>จัดการผู้ใช้ World Chemical Affiliate Program</h1> <br>';
     echo get_user_editor($id);
@@ -131,7 +133,7 @@ function get_all_users_table()
             $output .= '<td>' . esc_html($row->refCode) . '</td>';
             $output .= '<td>' . esc_html($row->total_views) . '</td>';
             $output .= '<td>' . esc_html($row->total_sales) . '</td>';
-            $output .= '<td>'. esc_html(floor($row->total_earns)) . ' บาท </td>';
+            $output .= '<td>' . esc_html(floor($row->total_earns)) . ' บาท </td>';
             $output .= "<td><button type='button' class='button button-primary' onclick=\"window.location.href='" . admin_url('admin.php?page=affiliate_users&id=' . absint($row->id)) . "'\">จัดการผู้ใช้</button> ";
             $output .= "<button type='button' class='button' onclick=\"window.location.href='" . admin_url('admin.php?page=affiliate_report&id=' . absint($row->id)) . "'\">ออกรายงาน</button></td>";
             $output .= '</tr>';
@@ -150,7 +152,8 @@ function get_all_users_table()
     return $output;
 }
 
-function get_user_editor($id) {
+function get_user_editor($id)
+{
     global $wpdb;
 
     $table_name = $wpdb->prefix . 'affiliate_users';
@@ -167,14 +170,14 @@ function get_user_editor($id) {
     if (!empty($results)) {
         foreach ($results as $row) {
             $output .= '<b>Username:</b><br>';
-            $output .= '<input type="text" value="'.esc_attr($row->username).'" name="username"><br>';
-            
+            $output .= '<input type="text" value="' . esc_attr($row->username) . '" name="username" class="regular-text"><br>';
+
             $output .= '<b>Full Name:</b><br>';
-            $output .= '<input type="text" value="'.esc_attr($row->full_name).'" name="full_name"><br>';
-            
+            $output .= '<input type="text" value="' . esc_attr($row->full_name) . '" name="full_name" class="regular-text"><br>';
+
             $output .= '<b>Ref Code:</b><br>';
-            $output .= '<input type="text" value="'.esc_attr($row->refCode).'" name="refCode"><br>';
-            $output .= '<input type="submit" value="แก้ไขข้อมูลผู้ใช้งาน">';
+            $output .= '<input type="text" value="' . esc_attr($row->refCode) . '" name="refCode" class="regular-text"><br>';
+            $output .= '<br><input type="submit" value="แก้ไขข้อมูลผู้ใช้งาน" class="button-primary">';
         }
     } else {
         $output .= '<div>ไม่พบข้อมูลผู้ใช้งาน</div>';
@@ -208,6 +211,61 @@ function add_view_ref($ref, $product_id)
             '%d',
             '%s'
         ]
+    );
+}
+
+function updateUser($full_name, $username, $refCode)
+{
+    global $wpdb;
+
+    $affiliate_users = $wpdb->prefix . 'affiliate_users';
+
+    $wpdb->update(
+        $affiliate_users,
+        [
+            'full_name' => $full_name,
+            'username' => $username,
+            'refCode' => $refCode
+        ],
+        [
+            '%s',
+            '%s',
+            '%s'
+        ]
+    );
+}
+
+function addUser($full_name, $username, $refCode)
+{
+    global $wpdb;
+
+    $affiliate_users = $wpdb->prefix . 'affiliate_users';
+
+    $wpdb->insert(
+        $affiliate_users,
+        [
+            'full_name' => $full_name,
+            'username' => $username,
+            'refCode' => $refCode
+        ],
+        [
+            '%s',
+            '%s',
+            '%s'
+        ]
+    );
+}
+
+function deleteUser($id)
+{
+    global $wpdb;
+
+    $affiliate_users = $wpdb->prefix . 'affiliate_users';
+
+    $wpdb->delete(
+        $affiliate_users,
+        array('ID' => $id),
+        array('%d') // Format the value as an integer
     );
 }
 
