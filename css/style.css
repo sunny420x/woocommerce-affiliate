@@ -1,0 +1,13 @@
+.admin-wrapper {
+    font-family: 'Kanit';
+    
+    .card {
+        background: #fff;
+        padding: 20px 15px;
+        border-radius: 10px;
+
+        h1 {
+            margin: 10px 0;
+        }
+    }
+}

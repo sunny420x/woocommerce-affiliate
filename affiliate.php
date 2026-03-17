@@ -33,6 +33,17 @@ function afiliate_enqueue_assets()
 //Load Afiliate Assets
 add_action('wp_enqueue_scripts', 'afiliate_enqueue_assets');
 
+function dashboard_styling() {
+    wp_enqueue_style(
+        'affiliate-admin-style',
+        plugins_url('/css/admin.css', __FILE__),
+        array(),
+        '1.0.0'
+    );
+}
+// Change 'admin_head' to 'admin_enqueue_scripts'
+add_action('admin_enqueue_scripts', 'dashboard_styling');
+
 // Function to add the menu page
 function affiliate_admin_menu()
 {
@@ -65,8 +76,7 @@ add_action('admin_menu', 'affiliate_admin_menu_users');
 // Function to display the content of the custom page
 function affiliate_admin_management()
 {
-    echo '<div class="wrap">';
-    echo '<h1>ยินดีต้อนรับสู่ World Chemical Affiliate Program</h1> <br>';
+    echo '<div class="wrapper">';
     echo get_all_users_table();
     echo '</div>';
 }
@@ -75,8 +85,7 @@ function affiliate_admin_management_users()
 {
     $id = isset($_GET['id']) ? absint($_GET['id']) : 0;
 
-    echo '<div class="wrap">';
-    echo '<h1>จัดการผู้ใช้ World Chemical Affiliate Program</h1> <br>';
+    echo '<div class="wrapper">';
     echo get_user_editor($id);
     echo '</div>';
 }
@@ -113,7 +122,9 @@ function get_all_users_table()
         "
     );
 
-    $output = '<table class="widefat fixed striped">';
+    $output = "<div class='card-admin'>";
+    $output .= '<table class="widefat fixed striped">';
+    $output .= '<h1>ยินดีต้อนรับสู่ World Chemical Affiliate Program</h1> <br>';
     $output .= '<thead>';
     $output .= '<tr>';
     $output .= '<th>ชื่อ-นามสกุล</th>';
@@ -148,6 +159,7 @@ function get_all_users_table()
 
     $output .= '</tbody>';
     $output .= '</table>';
+    $output .= '</div>';
 
     return $output;
 }
@@ -165,23 +177,26 @@ function get_user_editor($id)
 
     $results = $wpdb->get_results($query);
 
-    $output = "";
+    $output = "<div class='card-admin'>";
+    $output .= '<h2>จัดการผู้ใช้ World Chemical Affiliate Program</h2>';
 
     if (!empty($results)) {
         foreach ($results as $row) {
             $output .= '<b>Username:</b><br>';
             $output .= '<input type="text" value="' . esc_attr($row->username) . '" name="username" class="regular-text"><br>';
-
             $output .= '<b>Full Name:</b><br>';
             $output .= '<input type="text" value="' . esc_attr($row->full_name) . '" name="full_name" class="regular-text"><br>';
-
             $output .= '<b>Ref Code:</b><br>';
             $output .= '<input type="text" value="' . esc_attr($row->refCode) . '" name="refCode" class="regular-text"><br>';
-            $output .= '<br><input type="submit" value="แก้ไขข้อมูลผู้ใช้งาน" class="button-primary">';
+            $output .= '<br><input type="submit" value="แก้ไขข้อมูลผู้ใช้งาน" class="button button-primary"><br>';
+            $output .= '<br><hr><br>';
+            $output .= '<input type="submit" value="ลบผู้ใช้งาน" class="button button-secondary">';
         }
     } else {
         $output .= '<div>ไม่พบข้อมูลผู้ใช้งาน</div>';
     }
+
+    $output .= "</div>";
 
     // Error handling (useful for debugging, but hide in production!)
     if (!empty($wpdb->last_error) && current_user_can('manage_options')) {
