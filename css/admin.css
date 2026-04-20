@@ -1,5 +1,10 @@
-.wrapper .card-admin {
-    width: 100%;
-    background: #fff;
-    border-radius: 10px;
+.wrapper {
+    padding: 20px;
+    .card-admin {
+        width: 100%;
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-sizing: border-box;
+    }
 }
