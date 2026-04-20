@@ -99,34 +99,32 @@ function affiliate_admin_management_users()
     echo '</div>';
 }
 
-// วางไว้ตอนเริ่มต้นฟังก์ชันแสดงหน้า Admin
-if ( isset($_GET['action']) && $_GET['action'] == 'mark_paid' && isset($_GET['refCode']) ) {
-    
-    // เช็คความปลอดภัย (สำคัญมาก)
-    if ( !isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'wcc_mark_paid_nonce') ) {
-        wp_die('Security check failed!');
+add_action('admin_init', 'wcc_handle_mark_as_paid');
+
+function wcc_handle_mark_as_paid() {
+    if ( isset($_GET['action']) && $_GET['action'] == 'mark_paid' ) {
+        global $wpdb;
+
+        // เช็คความปลอดภัย (ถ้าไม่ผ่านมันจะแค่เด้งออก ไม่ Critical Error)
+        if ( !isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'wcc_mark_paid_nonce') ) {
+            return; 
+        }
+
+        $ref_to_pay = sanitize_text_field($_GET['refCode'] ?? '');
+        $table_name = $wpdb->prefix . 'affiliate_transactions';
+
+        $wpdb->update(
+            $table_name,
+            array('paid' => 1, 'paid_at' => current_time('mysql')),
+            array('refCode' => $ref_to_pay, 'paid' => 0),
+            array('%d', '%s'),
+            array('%s', '%d')
+        );
+
+        // หลังจาก Update เสร็จ ให้ Redirect กลับหน้าเดิมแบบคลีนๆ
+        wp_redirect(admin_url('admin.php?page=affiliate&status=paid_success'));
+        exit;
     }
-
-    $ref_to_pay = sanitize_text_field($_GET['refCode']);
-    
-    // อัปเดตทุก Transaction ของคนนี้ที่ยังไม่เคยจ่าย (is_paid = 0) ให้เป็นจ่ายแล้ว (is_paid = 1)
-    $wpdb->update(
-        "{$wpdb->prefix}affiliate_transactions",
-        array(
-            'paid' => 1, 
-            'paid_at' => current_time('mysql')
-        ),
-        array(
-            'refCode' => $ref_to_pay,
-            'paid' => 0 // อัปเดตเฉพาะอันที่ยังไม่เคยจ่าย
-        ),
-        array('%d', '%s'),
-        array('%s', '%d')
-    );
-
-    echo '<div class="updated"><p>จ่ายเงินให้รหัส ' . esc_html($ref_to_pay) . ' เรียบร้อยแล้ว!</p></div>';
-    
-    wp_redirect(admin_url('admin.php?page=affiliate')); 
 }
 
 function get_all_users_table()
@@ -144,6 +142,7 @@ function get_all_users_table()
             u.display_name,
             u.user_email,
             u.refCode,
+            t.paid, 
             COUNT(CASE WHEN t.type = 'view' THEN 1 END) AS total_views,
             COUNT(CASE WHEN t.type = 'sale' THEN 1 END) AS total_sales_count,
             SUM(CASE 
@@ -169,6 +168,11 @@ function get_all_users_table()
 
     // WHERE MONTH(t.created_at) = MONTH(CURDATE())
     // AND YEAR(t.created_at) = YEAR(CURDATE())
+
+    // --- ส่วนการโชว์ข้อความ (วางไว้ก่อนเริ่มวาดตาราง) ---
+    if ( isset($_GET['status']) && $_GET['status'] == 'paid_success' ) {
+        echo '<div class="updated"><p>จ่ายเงินเรียบร้อยแล้ว!</p></div>';
+    }
     ?>
 
 <div class='card-admin'>
@@ -193,6 +197,7 @@ function get_all_users_table()
                 <th>ขายได้ (รายการ)</th>
                 <th>ยอดขาย</th>
                 <th>ยอด Commission ทั้งหมด</th>
+                <th>สถานะ</th>
                 <th>จัดการ</th>
             </tr>
         </thead>
@@ -215,6 +220,15 @@ function get_all_users_table()
                 <td><?=esc_html($row->total_sales_count)?></td>
                 <td><?=esc_html($row->total_revenue)?> บาท </td>
                 <td><?=esc_html(floor($row->total_earns))?> บาท </td>
+                <td>
+                    <?php
+                    if($row->paid == 1) {
+                        echo '<span style="color: green;">จ่ายแล้ว</span>';
+                    } else {
+                        echo '<span style="color: red;">รอจ่าย</span>';
+                    }
+                    ?>
+                </td>
                 <td>
                     <button type='button' class='button' onclick="window.location.href='<?=admin_url('admin.php?page=affiliate_report&id=' . absint($row->id));?>'">ออกรายงาน</button>
                     <button type='button' class='button' onclick="window.location.href='<?=$mark_as_paid_action_url?>'">ทำสถานะว่าจ่ายแล้ว</button>
