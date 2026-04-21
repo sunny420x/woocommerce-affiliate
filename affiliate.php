@@ -99,6 +99,38 @@ function affiliate_admin_management_users()
     echo '</div>';
 }
 
+register_activation_hook( __FILE__, 'my_plugin_install' );
+
+function my_plugin_install() {
+    global $wpdb;
+    $charset_collate = $wpdb->get_charset_collate();
+    
+    $new_table = $wpdb->prefix . 'users_affiliate_info';
+    $user_table = $wpdb->prefix . 'users';
+
+    $create_table_query = "CREATE TABLE IF NOT EXISTS $new_table (
+        id int(11) NOT NULL AUTO_INCREMENT,
+        user_id int(11) NOT NULL,
+        bank_account_number varchar(20) NOT NULL,
+        bank_name varchar(50) NOT NULL,
+        updated_at datetime NOT NULL,
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+
+    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+    dbDelta( $create_table_query );
+
+    // เช็คว่ามีคอลัมน์ refCode หรือยัง เพื่อป้องกัน Error ตอนรันซ้ำ
+    $row = $wpdb->get_results("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_SCHEMA = '".DB_NAME."' 
+        AND TABLE_NAME = '$user_table' 
+        AND COLUMN_NAME = 'refCode'");
+
+    if (empty($row)) {
+        $wpdb->query("ALTER TABLE $user_table ADD `refCode` VARCHAR(50) DEFAULT NULL, ADD `score` INT(12) DEFAULT 0;");
+    }
+}
+
 add_action('admin_init', 'wcc_handle_mark_as_paid');
 
 function wcc_handle_mark_as_paid()
