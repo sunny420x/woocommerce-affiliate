@@ -132,7 +132,7 @@ function my_plugin_install() {
         AND COLUMN_NAME = 'refCode'");
 
     if (empty($row)) {
-        $wpdb->query("ALTER TABLE $user_table ADD `refCode` VARCHAR(50) DEFAULT NULL, ADD `score` INT(12) DEFAULT 0;");
+        $wpdb->query("ALTER TABLE $user_table ADD `refCode` VARCHAR(50) DEFAULT NULL");
     }
 }
 
