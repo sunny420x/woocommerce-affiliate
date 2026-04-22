@@ -5,6 +5,7 @@
  * Version: 1.0
  * Author: Jirakit Pawnsakunrungrot
  * Author URI: https://www.linkedin.com/in/sunny-jirakit
+ * Plugin URI: https://github.com/sunny420x/woocommerce-affiliate
  */
 
 //Deny access from URL.
@@ -67,20 +68,8 @@ function affiliate_admin_menu()
     );
 }
 
-function affiliate_admin_menu_users()
-{
-    add_submenu_page(
-        'affiliate_admin_management',                        // Parent menu slug (from add_menu_page)
-        'จัดการผู้ใช้ Affiliate Program | World Chemical',       // Submenu page title
-        'จัดการผู้ใช้',                                          // Submenu menu title
-        'manage_options',                                    // Capability required
-        'affiliate_users',                                   // Submenu slug
-        'affiliate_admin_management_users'                   // Function to render the submenu content
-    );
-}
 //Add Menu to Wordpress Admin
 add_action('admin_menu', 'affiliate_admin_menu');
-add_action('admin_menu', 'affiliate_admin_menu_users');
 
 // Function to display the content of the custom page
 function affiliate_admin_management()
@@ -103,9 +92,11 @@ register_activation_hook( __FILE__, 'my_plugin_install' );
 
 function my_plugin_install() {
     global $wpdb;
-    $charset_collate = $wpdb->get_charset_collate();
+    // $charset_collate = $wpdb->get_charset_collate();
+    $charset_collate = "DEFAULT CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci";
     
     $new_table = $wpdb->prefix . 'users_affiliate_info';
+    $new_table_transaction = $wpdb->prefix . 'affiliate_transactions';
     $user_table = $wpdb->prefix . 'users';
 
     $create_table_query = "CREATE TABLE IF NOT EXISTS $new_table (
@@ -117,8 +108,22 @@ function my_plugin_install() {
         PRIMARY KEY  (id)
     ) $charset_collate;";
 
+    $create__transaction_table_query = "CREATE TABLE IF NOT EXISTS $new_table_transaction (
+        id int(12) NOT NULL AUTO_INCREMENT,
+        refCode varchar(50) NOT NULL,
+        product_id int(12) NOT NULL,
+        type varchar(10) NOT NULL,
+        order_id int(11) NOT NULL,
+        commission_percentage int(2) NOT NULL DEFAULT 10,
+        created_at datetime NOT NULL,
+        paid int(1) NOT NULL DEFAULT 0,
+        paid_at datetime DEFAULT NULL,
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
     dbDelta( $create_table_query );
+    dbDelta( $create__transaction_table_query );
 
     // เช็คว่ามีคอลัมน์ refCode หรือยัง เพื่อป้องกัน Error ตอนรันซ้ำ
     $row = $wpdb->get_results("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
@@ -168,7 +173,7 @@ function get_all_users_table()
     $affiliate_transactions = $wpdb->prefix . 'affiliate_transactions';
     $order_stats_table = $wpdb->prefix . 'wc_order_stats';
 
-$affiliate_query = "
+    $affiliate_query = "
     SELECT 
         u.ID,
         u.display_name,
@@ -220,6 +225,12 @@ $affiliate_query = "
             <?php
             settings_fields('affiliate_settings_group');
             ?>
+            <label for="affiliate_enable">เปิดใช้งานระบบพันธมิตร: </label>
+            <select name="affiliate_enable">
+                <option value="yes" <?php if(esc_attr(get_option('affiliate_enable', 'yes')) == 'yes') { echo "selected"; } ?>>เปิดใช้งาน</option>
+                <option value="no" <?php if(esc_attr(get_option('affiliate_enable', 'yes')) == 'no') { echo "selected"; } ?>>ปิดใช้งาน</option>
+            </select>
+            <br><br>
             <label for="affiliate_commission">% Commission: </label><input type="number" name="affiliate_commission"
                 value="<?= esc_attr(get_option('affiliate_commission', 10)); ?>" />
             <p>* การอัพเดท % Commission จะไม่มีผลย้อนหลังกับข้อมูลการขายเดิมในระบบ แต่จะมีผลกับข้อมูลการขายใหม่ที่จะถูกเพิ่มเข้ามาหลังจากอัพเดท</p>
@@ -355,6 +366,7 @@ add_action('admin_init', 'affiliate_settings_init');
 function affiliate_settings_init()
 {
     register_setting('affiliate_settings_group', 'affiliate_commission');
+    register_setting('affiliate_settings_group', 'affiliate_enable');
 }
 
 function addTransaction($ref, $type, $product_id, $order_id = null)
@@ -477,8 +489,12 @@ add_filter('woocommerce_account_menu_items', 'wcc_affiliate_menu_item');
 function wcc_affiliate_menu_item($items)
 {
     // แทรกเมนูใหม่เข้าไป
-    $new_items = array('affiliate-program' => 'โปรแกรมพันธมิตร (Affiliate)');
-    return array_slice($items, 0, 1, true) + $new_items + array_slice($items, 1, count($items), true);
+    if(esc_attr(get_option('affiliate_enable', 'yes')) == 'yes') {        
+        $new_items = array('affiliate-program' => 'โปรแกรมพันธมิตร (Affiliate)');
+        return array_slice($items, 0, 1, true) + $new_items + array_slice($items, 1, count($items), true);
+    } else {
+        return $items;
+    }
 }
 
 // เนื้อหาภายในหน้า Affiliate
@@ -517,139 +533,145 @@ function wcc_affiliate_content()
     // --- ส่วนแสดงผล UI ---
     echo '<h1 style="font-size: 24px;">🤝🏻 ระบบพันธมิตร | Affliate Program</h1>';
 
-    if ($ref_code) {
-        ?>
-        <p>รหัสแนะนำของคุณคือ: <strong><?= $esc_ref = esc_html($ref_code) ?></strong></p>
-        <p>ลิงก์สำหรับแนะนำ:<br>
-            <code style="display:block; padding:10px; background:#f0f0f0;"><?= home_url('/?ref=' . $esc_ref) ?></code>
-        </p>
-        <p>*เมื่อมีคนเข้าชมผ่านลิงก์นี้และซื้อสินค้า ระบบจะคิดค่า Commission ทันที</p>
+    if(esc_attr(get_option('affiliate_enable', 'yes')) == 'yes') {        
+        if ($ref_code) {
+            ?>
+            <p>รหัสแนะนำของคุณคือ: <strong><?= $esc_ref = esc_html($ref_code) ?></strong></p>
+            <p>ลิงก์สำหรับแนะนำ:<br>
+                <code style="display:block; padding:10px; background:#f0f0f0;"><?= home_url('/?ref=' . $esc_ref) ?></code>
+            </p>
+            <p>*เมื่อมีคนเข้าชมผ่านลิงก์นี้และซื้อสินค้า ระบบจะคิดค่า Commission ทันที</p>
 
-        <h1 style="font-size: 24px;">💵 สรุปยอด</h1>
-        <table>
-            <tr>
-                <th>ขายได้ทั้งหมด (ชิ้น)</th>
-                <th>ยอดขายทั้งหมด</th>
-                <th>ยอด Commission</th>
-            </tr>
-            <?php
-            global $wpdb;
-
-            $affiliate_users = $wpdb->prefix . 'users';
-            $affiliate_transactions = $wpdb->prefix . 'affiliate_transactions';
-            $order_stats_table = $wpdb->prefix . 'wc_order_stats';
-
-            $transactions = $wpdb->get_results($wpdb->prepare("
-            SELECT 
-                COUNT(CASE WHEN t.type = 'view' THEN 1 END) AS total_views,
-                COUNT(CASE WHEN t.type = 'sale' THEN 1 END) AS total_sales_count,
-                SUM(CASE 
-                    WHEN t.type = 'sale' AND os.total_sales IS NOT NULL 
-                    THEN os.total_sales 
-                    ELSE 0 
-                END) AS total_revenue,
-                SUM(CASE 
-                    WHEN t.type = 'sale' AND os.total_sales IS NOT NULL 
-                    THEN os.total_sales * (t.commission_percentage / 100)
-                    ELSE 0 
-                END) AS total_earns
-            FROM {$affiliate_users} AS u
-            LEFT JOIN {$affiliate_transactions} AS t
-                ON u.refCode = t.refCode
-            LEFT JOIN {$order_stats_table} AS os 
-                ON t.order_id = os.order_id
-            WHERE u.ID = %d AND t.paid = 0 
-            GROUP BY u.ID, u.display_name, u.user_email, u.refCode
-            ORDER BY u.ID DESC", $user_id));
-
-            foreach ($transactions as $tx) {
-                ?>
+            <h1 style="font-size: 24px;">💵 สรุปยอด</h1>
+            <table>
                 <tr>
-                    <td><?= $tx->total_sales_count; ?> รายการ</td>
-                    <td><?= number_format($tx->total_revenue, 2); ?> บาท</td>
-                    <td><strong><?= number_format($tx->total_earns, 2); ?> บาท</strong></td>
+                    <th>ขายได้ทั้งหมด (ชิ้น)</th>
+                    <th>ยอดขายทั้งหมด</th>
+                    <th>ยอด Commission</th>
                 </tr>
                 <?php
-            }
-            ?>
-        </table>
-        <h1 style="font-size: 24px;">ตั้งค่าระบบพันธมิตร</h1>
-        <?php
-        global $wpdb;
-        $user_id = get_current_user_id();
-        $table_info = $wpdb->prefix . 'users_affiliate_info';
+                global $wpdb;
 
-        // --- ส่วนประมวลผลการบันทึก ---
-        if (isset($_POST['save_affiliate_info'])) {
-            $account_number = sanitize_text_field($_POST['aff_account_number']);
-            $bank_name = sanitize_text_field($_POST['aff_bank_name']);
+                $affiliate_users = $wpdb->prefix . 'users';
+                $affiliate_transactions = $wpdb->prefix . 'affiliate_transactions';
+                $order_stats_table = $wpdb->prefix . 'wc_order_stats';
 
-            // เช็คก่อนว่ามีข้อมูลของ User คนนี้ในตารางหรือยัง
-            $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_info WHERE user_id = %d", $user_id));
+                $transactions = $wpdb->get_results($wpdb->prepare("
+                SELECT 
+                    COUNT(CASE WHEN t.type = 'view' THEN 1 END) AS total_views,
+                    COUNT(CASE WHEN t.type = 'sale' THEN 1 END) AS total_sales_count,
+                    SUM(CASE 
+                        WHEN t.type = 'sale' AND os.total_sales IS NOT NULL 
+                        THEN os.total_sales 
+                        ELSE 0 
+                    END) AS total_revenue,
+                    SUM(CASE 
+                        WHEN t.type = 'sale' AND os.total_sales IS NOT NULL 
+                        THEN os.total_sales * (t.commission_percentage / 100)
+                        ELSE 0 
+                    END) AS total_earns
+                FROM {$affiliate_users} AS u
+                LEFT JOIN {$affiliate_transactions} AS t
+                    ON u.refCode = t.refCode
+                LEFT JOIN {$order_stats_table} AS os 
+                    ON t.order_id = os.order_id
+                WHERE u.ID = %d AND t.paid = 0 
+                GROUP BY u.ID, u.display_name, u.user_email, u.refCode
+                ORDER BY u.ID DESC", $user_id));
 
-            if ($exists) {
-                // มีอยู่แล้วให้ Update
-                $wpdb->update(
-                    $table_info,
-                    array(
-                        'bank_account_number' => $account_number,
-                        'bank_name' => $bank_name,
-                        'updated_at' => current_time('mysql')
-                    ),
-                    array('user_id' => $user_id),
-                    array('%s', '%s', '%s'),
-                    array('%d')
-                );
-            } else {
-                // ยังไม่มีให้ Insert
-                $wpdb->insert(
-                    $table_info,
-                    array(
-                        'user_id' => $user_id,
-                        'bank_account_number' => $account_number,
-                        'bank_name' => $bank_name,
-                        'updated_at' => current_time('mysql')
-                    ),
-                    array('%d', '%s', '%s', '%s')
-                );
-            }
-            echo '<div class="woocommerce-message">บันทึกข้อมูลบัญชีรับเงินเรียบร้อยแล้ว</div>';
-        }
-
-        // --- ดึงข้อมูลปัจจุบันมาแสดงในฟอร์ม ---
-        $user_info = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_info WHERE user_id = %d", $user_id));
-        ?>
-
-        <form action="" method="post" style="margin-top: 20px;">
-            <div class="form-row" style="margin-bottom: 15px;">
-                <label>หมายเลขบัญชีธนาคาร:</label>
-                <input type="text" name="aff_account_number" value="<?= esc_attr($user_info->bank_account_number ?? ''); ?>"
-                    placeholder="ระบุเลขบัญชี" required style="width: 100%;" />
-            </div>
-
-            <div class="form-row" style="margin-bottom: 15px;">
-                <label>ธนาคาร:</label>
-                <select name="aff_bank_name" style="width: 100%;">
+                foreach ($transactions as $tx) {
+                    ?>
+                    <tr>
+                        <td><?= $tx->total_sales_count; ?> รายการ</td>
+                        <td><?= number_format($tx->total_revenue, 2); ?> บาท</td>
+                        <td><strong><?= number_format($tx->total_earns, 2); ?> บาท</strong></td>
+                    </tr>
                     <?php
-                    $banks = ["ธนาคารกรุงเทพ", "ธนาคารกสิกรไทย", "ธนาคารไทยพาณิชย์", "ธนาคารกรุงไทย", "ธนาคารกรุงศรีอยุธยา", "ธนาคารทหารไทยธนชาต", "ธนาคารยูโอบี", "ธนาคารออมสิน"];
-                    foreach ($banks as $bank):
-                        ?>
-                        <option value="<?= $bank ?>" <?php selected($user_info->bank_name ?? '', $bank); ?>><?= $bank ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
+                }
+                ?>
+            </table>
+            <h1 style="font-size: 24px;">ตั้งค่าระบบพันธมิตร</h1>
+            <?php
+            global $wpdb;
+            $user_id = get_current_user_id();
+            $table_info = $wpdb->prefix . 'users_affiliate_info';
 
-            <button type="submit" name="save_affiliate_info" class="button">บันทึกข้อมูลบัญชี</button>
-        </form>
-        <?php
+            // --- ส่วนประมวลผลการบันทึก ---
+            if (isset($_POST['save_affiliate_info'])) {
+                $account_number = sanitize_text_field($_POST['aff_account_number']);
+                $bank_name = sanitize_text_field($_POST['aff_bank_name']);
+
+                // เช็คก่อนว่ามีข้อมูลของ User คนนี้ในตารางหรือยัง
+                $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_info WHERE user_id = %d", $user_id));
+
+                if ($exists) {
+                    // มีอยู่แล้วให้ Update
+                    $wpdb->update(
+                        $table_info,
+                        array(
+                            'bank_account_number' => $account_number,
+                            'bank_name' => $bank_name,
+                            'updated_at' => current_time('mysql')
+                        ),
+                        array('user_id' => $user_id),
+                        array('%s', '%s', '%s'),
+                        array('%d')
+                    );
+                } else {
+                    // ยังไม่มีให้ Insert
+                    $wpdb->insert(
+                        $table_info,
+                        array(
+                            'user_id' => $user_id,
+                            'bank_account_number' => $account_number,
+                            'bank_name' => $bank_name,
+                            'updated_at' => current_time('mysql')
+                        ),
+                        array('%d', '%s', '%s', '%s')
+                    );
+                }
+                echo '<div class="woocommerce-message">บันทึกข้อมูลบัญชีรับเงินเรียบร้อยแล้ว</div>';
+            }
+
+            // --- ดึงข้อมูลปัจจุบันมาแสดงในฟอร์ม ---
+            $user_info = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_info WHERE user_id = %d", $user_id));
+            ?>
+
+            <form action="" method="post" style="margin-top: 20px;">
+                <div class="form-row" style="margin-bottom: 15px;">
+                    <label>หมายเลขบัญชีธนาคาร:</label>
+                    <input type="text" name="aff_account_number" value="<?= esc_attr($user_info->bank_account_number ?? ''); ?>"
+                        placeholder="ระบุเลขบัญชี" required style="width: 100%;" />
+                </div>
+
+                <div class="form-row" style="margin-bottom: 15px;">
+                    <label>ธนาคาร:</label>
+                    <select name="aff_bank_name" style="width: 100%;">
+                        <?php
+                        $banks = ["ธนาคารกรุงเทพ", "ธนาคารกสิกรไทย", "ธนาคารไทยพาณิชย์", "ธนาคารกรุงไทย", "ธนาคารกรุงศรีอยุธยา", "ธนาคารทหารไทยธนชาต", "ธนาคารยูโอบี", "ธนาคารออมสิน"];
+                        foreach ($banks as $bank):
+                            ?>
+                            <option value="<?= $bank ?>" <?php selected($user_info->bank_name ?? '', $bank); ?>><?= $bank ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <button type="submit" name="save_affiliate_info" class="button">บันทึกข้อมูลบัญชี</button>
+            </form>
+            <?php
+        } else {
+            ?>
+            <h2>คุณยังไม่ได้สมัครเป็นตัวแทนแนะนำสินค้า สมัครเพื่อรับลิงก์พิเศษและเริ่มสะสมยอดขายได้ทันที!</h2>
+            <form method="post">
+                <?php wp_nonce_field('wcc_aff_reg'); ?>
+                <button type="submit" name="register_affiliate" class="button">สมัครเป็นพันธมิตรตอนนี้</button>
+            </form>
+            <?php
+        }
     } else {
-        ?>
-        <h2>คุณยังไม่ได้สมัครเป็นตัวแทนแนะนำสินค้า สมัครเพื่อรับลิงก์พิเศษและเริ่มสะสมยอดขายได้ทันที!</h2>
-        <form method="post">
-            <?php wp_nonce_field('wcc_aff_reg'); ?>
-            <button type="submit" name="register_affiliate" class="button">สมัครเป็นพันธมิตรตอนนี้</button>
-        </form>
-        <?php
+    ?>
+    <h2>ปิดใช้งานชั่วคราว</h2>
+    <?php
     }
 }
 
