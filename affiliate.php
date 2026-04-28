@@ -259,13 +259,15 @@ function get_all_users_table() {
                 <option value="no" <?php if(esc_attr(get_option('affiliate_enable', 'yes')) == 'no') { echo "selected"; } ?>>ปิดใช้งาน</option>
             </select>
             <br>
-            <label for="affiliate_logo">ลิงค์รูปภาพ Logo บริษัท:</label>
-            <input name="affiliate_logo" type="text" value="<?=esc_attr(get_option('affiliate_logo', ''))?>">
+            <br>
+            <label for="affiliate_logo">ลิงค์รูปภาพ Logo บริษัท (สำหรับออกรายงาน):</label>
+            <input name="affiliate_logo" type="text" value="<?=esc_attr(get_option('affiliate_logo', ''))?>" style="width: 500px;">
+            <br>
             <br>
             <label for="affiliate_commission">% Commission: </label><input type="number" name="affiliate_commission"
-                value="<?= esc_attr(get_option('affiliate_commission', 10)); ?>" />
+                value="<?= esc_attr(get_option('affiliate_commission', 10)); ?>" /> %
             <p>* การอัพเดท % Commission จะไม่มีผลย้อนหลังกับข้อมูลการขายเดิมในระบบ แต่จะมีผลกับข้อมูลการขายใหม่ที่จะถูกเพิ่มเข้ามาหลังจากอัพเดท</p>
-            <?php submit_button('บันทึกการเปลี่ยนแปลง'); ?>
+            <input type="submit" class="button button-primary" value="บันทึกการเปลี่ยนแปลง">
         </form>
     </div>
     <br>
@@ -309,8 +311,6 @@ function get_all_users_table() {
                             <td><strong><?= esc_html(number_format($row->total_earns, 2)) ?> บาท</strong></td>
                             <td><?=esc_html($user_bank_info[0]->bank_account_number)?> <?=esc_html($user_bank_info[0]->bank_name)?></td>
                             <td>
-                                <button type='button' class='button'
-                                    onclick="window.location.href='<?= admin_url('admin.php?page=affiliate_report&refCode='.$row->refCode); ?>'">ออกรายงาน</button>
                                 <button type='button' class='button'
                                     onclick="window.location.href='<?= $mark_as_paid_action_url ?>'">ทำสถานะว่าจ่ายแล้ว</button>
                             </td>
@@ -361,10 +361,10 @@ function get_all_users_table() {
                             <td><?= esc_html($row->total_views) ?></td>
                             <td><?= esc_html($row->total_sales_count) ?></td>
                             <td><?= esc_html($row->total_revenue) ?> บาท </td>
-                            <td><strong><?= esc_html(floor($row->total_earns)) ?> บาท</strong></td>
+                            <td><strong><?= esc_html(number_format($row->total_earns, 2)) ?> บาท</strong></td>
                             <td><?=esc_html($user_bank_info[0]->bank_account_number)?> <?=esc_html($user_bank_info[0]->bank_name)?></td>
                             <td>
-                                <button type='button' class='button'
+                                <button type='button' class='button button-primary'
                                     onclick="window.location.href='<?= admin_url('admin.php?page=affiliate_report&refCode='.$row->refCode); ?>'">ออกรายงาน</button>
                             </td>
                         </tr>
@@ -454,7 +454,7 @@ function affiliate_report_page() {
                     <tr>
                         <td>#<?=$row->order_id?></td>
                         <td><?=$row->total_sales?> บาท</td>
-                        <td><?=$row->total_earns?> บาท</td>
+                        <td><?=number_format($row->total_earns, 2)?> บาท</td>
                         <td><?php if($row->paid == 1) { echo "<span style='color: green;'>ชำระแล้ว</span>"; } else { echo "<span style='color: red;'>รอชำระ</span>"; }?></td>
                     </tr>
                     <?php
