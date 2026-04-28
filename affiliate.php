@@ -223,7 +223,7 @@ class Affiliate {
                 os.order_id,
                 os.total_sales,
                 os.total_sales * (t.commission_percentage / 100) as total_earns,
-                t.paid 
+                t.paid
             FROM {$this->tables['users']} AS u
             LEFT JOIN {$this->tables['transactions']} AS t
                 ON u.refCode = t.refCode 
@@ -437,6 +437,8 @@ function affiliate_report_page() {
             <?php
             $total_sales_sum = 0;
             $total_earns_sum = 0;
+
+            $user_bank_info =  $affiliate->wpdb->get_results($affiliate->wpdb->prepare("SELECT bank_account_number, bank_name FROM {$affiliate->wpdb->prefix}users_affiliate_info WHERE user_id = %d LIMIT 1", get_current_user_id()));
             ?>
             <table class="widefat fixed">
                 <thead>
@@ -474,6 +476,9 @@ function affiliate_report_page() {
                     </tr>
                 </tbody>
             </table>
+            <br>
+            <h3>ทางบริษัทจะจ่ายค่าตอบแทน (Commission) ไปที่:</h3>
+            <pre><?=$user_bank_info[0]->bank_name?> - <?=$user_bank_info[0]->bank_account_number?></pre>
             <br>
             <button class="button no-print" onclick="window.print()">พิมพ์รายงาน</button>
         </div>
