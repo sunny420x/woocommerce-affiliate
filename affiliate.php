@@ -165,56 +165,84 @@ function wcc_handle_mark_as_paid()
     }
 }
 
-function get_all_users_table()
-{
+
+class Affiliate {
+    
+    public $wpdb;
+    public $tables = [];
+
+    public function __construct() {
+        global $wpdb;
+        $this->wpdb = $wpdb;
+        $this->tables = [
+            'users'        => $wpdb->prefix . 'users',
+            'transactions' => $wpdb->prefix . 'affiliate_transactions',
+            'order_stats'  => $wpdb->prefix . 'wc_order_stats',
+        ];
+    }
+
+    public function getAffiliate($query_option = '') {
+        $query = "
+            SELECT 
+                u.ID,
+                u.display_name,
+                u.user_email,
+                u.refCode,
+                COUNT(CASE WHEN t.type = 'view' THEN 1 END) AS total_views,
+                COUNT(CASE WHEN t.type = 'sale' THEN 1 END) AS total_sales_count,
+                SUM(CASE 
+                    WHEN t.type = 'sale' AND os.total_sales IS NOT NULL 
+                    THEN os.total_sales 
+                    ELSE 0 
+                END) AS total_revenue,
+                SUM(CASE 
+                    WHEN t.type = 'sale' AND os.total_sales IS NOT NULL 
+                    THEN os.total_sales * (t.commission_percentage / 100)
+                    ELSE 0 
+                END) AS total_earns
+            FROM {$this->tables['users']} AS u
+            LEFT JOIN {$this->tables['transactions']} AS t
+                ON u.refCode = t.refCode
+            LEFT JOIN {$this->tables['order_stats']} AS os 
+                ON t.order_id = os.order_id 
+            {$query_option} 
+            GROUP BY u.ID, u.display_name, u.user_email, u.refCode
+            ORDER BY u.ID DESC
+        ";
+
+        return $this->wpdb->get_results($query);
+    }
+
+    public function getAffiliateByRefCode($refCode) {
+        $query = $this->wpdb->prepare("
+            SELECT 
+                u.ID,
+                u.display_name,
+                u.user_email,
+                u.refCode, 
+                os.order_id,
+                os.total_sales,
+                os.total_sales * (t.commission_percentage / 100) as total_earns,
+                t.paid 
+            FROM {$this->tables['users']} AS u
+            LEFT JOIN {$this->tables['transactions']} AS t
+                ON u.refCode = t.refCode 
+            LEFT JOIN {$this->tables['order_stats']} AS os 
+                ON t.order_id = os.order_id 
+            WHERE u.refCode = %s 
+            ORDER BY u.ID DESC
+        ", $refCode);
+
+        return $this->wpdb->get_results($query);
+    }
+}
+
+
+function get_all_users_table() {
     global $wpdb;
-
-    $affiliate_users = $wpdb->prefix . 'users';
-    $affiliate_transactions = $wpdb->prefix . 'affiliate_transactions';
-    $order_stats_table = $wpdb->prefix . 'wc_order_stats';
-
-    $affiliate_query = "
-    SELECT 
-        u.ID,
-        u.display_name,
-        u.user_email,
-        u.refCode,
-        COUNT(CASE WHEN t.type = 'view' THEN 1 END) AS total_views,
-        COUNT(CASE WHEN t.type = 'sale' THEN 1 END) AS total_sales_count,
-        SUM(CASE 
-            WHEN t.type = 'sale' AND os.total_sales IS NOT NULL 
-            THEN os.total_sales 
-            ELSE 0 
-        END) AS total_revenue,
-        SUM(CASE 
-            WHEN t.type = 'sale' AND os.total_sales IS NOT NULL 
-            THEN os.total_sales * (t.commission_percentage / 100)
-            ELSE 0 
-        END) AS total_earns
-    FROM {$affiliate_users} AS u
-    LEFT JOIN {$affiliate_transactions} AS t
-        ON u.refCode = t.refCode
-    LEFT JOIN {$order_stats_table} AS os 
-        ON t.order_id = os.order_id 
-    ";
-
-    $affiliate_query_group_and_order = " GROUP BY u.ID, u.display_name, u.user_email, u.refCode ORDER BY u.ID DESC";
-
-    $waiting_for_payments = $wpdb->get_results(
-        $affiliate_query . " WHERE u.refCode IS NOT NULL AND u.refCode != '' AND t.paid = 0 " . $affiliate_query_group_and_order
-    );
-
-    $success_payments = $wpdb->get_results(
-        $affiliate_query . " WHERE u.refCode IS NOT NULL AND u.refCode != '' AND t.paid = 1 " . $affiliate_query_group_and_order
-    );
-
-    // WHERE MONTH(t.created_at) = MONTH(CURDATE())
-    // AND YEAR(t.created_at) = YEAR(CURDATE())
-
-    // --- ส่วนการโชว์ข้อความ (วางไว้ก่อนเริ่มวาดตาราง) ---
-    // if (isset($_GET['status']) && $_GET['status'] == 'paid_success') {
-    //     echo '<div class="updated"><p>จ่ายเงินเรียบร้อยแล้ว!</p></div>';
-    // }
+    $affiliate = new Affiliate();
+    $waiting_for_payments = $affiliate->getAffiliate("WHERE u.refCode IS NOT NULL AND u.refCode != '' AND t.paid = 0 ");
+    $success_payments = $affiliate->getAffiliate("WHERE u.refCode IS NOT NULL AND u.refCode != '' AND t.paid = 1 ");
     ?>
 
     <div class='card-admin'>
@@ -230,7 +258,10 @@ function get_all_users_table()
                 <option value="yes" <?php if(esc_attr(get_option('affiliate_enable', 'yes')) == 'yes') { echo "selected"; } ?>>เปิดใช้งาน</option>
                 <option value="no" <?php if(esc_attr(get_option('affiliate_enable', 'yes')) == 'no') { echo "selected"; } ?>>ปิดใช้งาน</option>
             </select>
-            <br><br>
+            <br>
+            <label for="affiliate_logo">ลิงค์รูปภาพ Logo บริษัท:</label>
+            <input name="affiliate_logo" type="text" value="<?=esc_attr(get_option('affiliate_logo', ''))?>">
+            <br>
             <label for="affiliate_commission">% Commission: </label><input type="number" name="affiliate_commission"
                 value="<?= esc_attr(get_option('affiliate_commission', 10)); ?>" />
             <p>* การอัพเดท % Commission จะไม่มีผลย้อนหลังกับข้อมูลการขายเดิมในระบบ แต่จะมีผลกับข้อมูลการขายใหม่ที่จะถูกเพิ่มเข้ามาหลังจากอัพเดท</p>
@@ -279,7 +310,7 @@ function get_all_users_table()
                             <td><?=esc_html($user_bank_info[0]->bank_account_number)?> <?=esc_html($user_bank_info[0]->bank_name)?></td>
                             <td>
                                 <button type='button' class='button'
-                                    onclick="window.location.href='<?= admin_url('admin.php?page=affiliate_report&id=' . absint($row->id)); ?>'">ออกรายงาน</button>
+                                    onclick="window.location.href='<?= admin_url('admin.php?page=affiliate_report&refCode='.$row->refCode); ?>'">ออกรายงาน</button>
                                 <button type='button' class='button'
                                     onclick="window.location.href='<?= $mark_as_paid_action_url ?>'">ทำสถานะว่าจ่ายแล้ว</button>
                             </td>
@@ -334,7 +365,7 @@ function get_all_users_table()
                             <td><?=esc_html($user_bank_info[0]->bank_account_number)?> <?=esc_html($user_bank_info[0]->bank_name)?></td>
                             <td>
                                 <button type='button' class='button'
-                                    onclick="window.location.href='<?= admin_url('admin.php?page=affiliate_report&id=' . absint($row->id)); ?>'">ออกรายงาน</button>
+                                    onclick="window.location.href='<?= admin_url('admin.php?page=affiliate_report&refCode='.$row->refCode); ?>'">ออกรายงาน</button>
                             </td>
                         </tr>
                         <?php
@@ -360,6 +391,109 @@ function get_all_users_table()
     <?php
 }
 
+add_action('admin_menu', function() {
+    add_submenu_page(
+        null,
+        'ออกรายงาน Affiliate',
+        'Affiliate Report',
+        'manage_options',
+        'affiliate_report',
+        'affiliate_report_page'
+    );
+});
+
+function affiliate_report_page() {
+    if(!isset($_GET['refCode'])) {
+        wp_safe_redirect(admin_url("/wp-admin/admin.php?page=affiliate&error=refcode_not_found"));
+        exit;
+    }
+
+    $refCode = sanitize_text_field($_GET['refCode']);
+    $affiliate = new Affiliate();
+    $affliate_records = $affiliate->getAffiliateByRefCode($refCode);
+
+    if ( empty($affliate_records) ) {
+        echo '<div class="wrap"><div class="notice notice-error"><p>ไม่พบข้อมูลสำหรับรหัสอ้างอิงนี้</p></div></div>';
+        return;
+    }
+    ?>
+    <div class="wrap" style="background: white; padding: 10px 30px 30px 30px;">
+        <style>
+            @media print {
+                .no-print {
+                    display: none !important;
+                }
+            }
+        </style>
+        <div class="card-admin">
+            <div style="display: flex;">
+                <img src="<?=get_option('affiliate_logo', '')?>" height="100%" alt="" style="margin: 20px;">
+                <div style="margin: 10px 20px; float: right;">
+                    <h1>รายงานรายได้จากระบบพันธมิตร - Affiliate Program Report</h1>
+                    <h4>คุณ <?=$affliate_records[0]->display_name;?> รหัสพันธมิตร <?=$refCode?></h4>
+                    <p>วันที่ออกรายงาน: <?=date('d-m-Y')?></p>
+                </div>
+            </div>
+            <?php
+            $total_sales_sum = 0;
+            $total_earns_sum = 0;
+            ?>
+            <table class="widefat fixed">
+                <thead>
+                    <tr>
+                        <th>หมายเลขคำสั่งซื้อ</th>
+                        <th>ยอดขายรวม</th>
+                        <th>% Commission</th>
+                        <th>สถานะ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                        foreach ($affliate_records as $row) {
+                    ?>
+                    <tr>
+                        <td>#<?=$row->order_id?></td>
+                        <td><?=$row->total_sales?> บาท</td>
+                        <td><?=$row->total_earns?> บาท</td>
+                        <td><?php if($row->paid == 1) { echo "<span style='color: green;'>ชำระแล้ว</span>"; } else { echo "<span style='color: red;'>รอชำระ</span>"; }?></td>
+                    </tr>
+                    <?php
+                            $total_sales_sum += $row->total_sales;
+                            if($row->paid == 1) {
+                                $total_earns_sum += $row->total_earns;
+                            }
+                        }
+                    ?>
+                    <tr>
+                        <td colspan="3"><strong>รวมยอดขายทั้งหมด</strong></td>
+                        <td><strong><?=$total_sales_sum?> บาท</strong></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"><strong>รวมยอด Commission ทั้งหมด</strong></td>
+                        <td><strong><?=$total_earns_sum?> บาท</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+            <button class="button no-print" onclick="window.print()">พิมพ์รายงาน</button>
+        </div>
+    </div>
+    <?php
+}
+
+add_filter('admin_title', function($admin_title, $title) {
+    if (isset($_GET['page']) && $_GET['page'] === 'affiliate_report') {
+        
+        $ref_code = isset($_GET['refCode']) ? sanitize_text_field($_GET['refCode']) : 'ไม่ระบุ';
+        
+        $current_date = wp_date('d/m/Y');
+
+        return "รายงานรายได้จากระบบพันธมิตรของรหัส {$ref_code} วันที่ {$current_date}";
+    }
+
+    return $admin_title;
+}, 999, 2);
+
 //Admin Setting
 add_action('admin_init', 'affiliate_settings_init');
 
@@ -367,6 +501,7 @@ function affiliate_settings_init()
 {
     register_setting('affiliate_settings_group', 'affiliate_commission');
     register_setting('affiliate_settings_group', 'affiliate_enable');
+    register_setting('affiliate_settings_group', 'affiliate_logo');
 }
 
 function addTransaction($ref, $type, $product_id, $order_id = null)
