@@ -535,9 +535,9 @@ function addTransaction($ref, $type, $product_id, $order_id = null)
     );
 }
 
-add_action('init', 'wcc_handle_global_ref_cookie');
+add_action('init', 'handle_global_ref_cookie');
 
-function wcc_handle_global_ref_cookie()
+function handle_global_ref_cookie()
 {
     if (isset($_GET['ref'])) {
         $ref = sanitize_text_field(wp_unslash($_GET['ref']));
@@ -618,15 +618,15 @@ function wcc_track_product_view()
 }
 
 // ลงทะเบียน Endpoint ใหม่
-add_action('init', 'wcc_affiliate_endpoint');
-function wcc_affiliate_endpoint()
+add_action('init', 'affiliate_endpoint');
+function affiliate_endpoint()
 {
     add_rewrite_endpoint('affiliate-program', EP_PAGES);
 }
 
 // เพิ่มเมนูเข้าไปในรายการ My Account (เรียงต่อจาก Dashboard)
-add_filter('woocommerce_account_menu_items', 'wcc_affiliate_menu_item');
-function wcc_affiliate_menu_item($items)
+add_filter('woocommerce_account_menu_items', 'affiliate_menu_item');
+function affiliate_menu_item($items)
 {
     // แทรกเมนูใหม่เข้าไป
     if(esc_attr(get_option('affiliate_enable', 'yes')) == 'yes') {        
@@ -822,4 +822,93 @@ function user_affiliate_settings_init()
 {
     register_setting('user_affiliate_settings_group', 'affiliate_payment_account_number');
     register_setting('user_affiliate_settings_group', 'affiliate_payment_account_bank');
+}
+
+add_action( 'woocommerce_single_product_summary', 'inject_affliate_share_buttons', 35 );
+
+function inject_affliate_share_buttons() {
+    global $product, $wpdb;
+    
+    // 1. ถ้าไม่ Login ไม่ต้องโชว์ (หรือจะโชว์แบบไม่มี refCode ก็ได้แล้วแต่เพื่อน)
+    if ( ! is_user_logged_in() ) return;
+
+    $user_id = get_current_user_id();
+
+    // 2. ดึง refCode มาตรงๆ (get_var คืนค่าเป็น string)
+    $ref_code = $wpdb->get_var($wpdb->prepare(
+        "SELECT refCode FROM {$wpdb->prefix}users WHERE ID = %d",
+        $user_id
+    ));
+
+    // ถ้าไม่มี refCode ให้เป็นค่าว่าง
+    $affiliate_param = $ref_code ? "?ref=" . $ref_code : "";
+
+    // 3. ประกอบ URL ก่อนแล้วค่อย urlencode ทีเดียว
+    $full_url      = get_permalink() . $affiliate_param;
+    $encoded_url   = urlencode( $full_url );
+    
+    $product_title = urlencode( get_the_title() );
+    $product_img   = urlencode( wp_get_attachment_url( get_post_thumbnail_id() ) );
+    ?>
+    <div class="affiliate_element">
+        <strong>⭐ แชร์สินค้าชิ้นนี้เพื่อรับ Commission <?=get_option('affiliate_commission');?>% เมื่อมีการซื้อสินค้าจากการแชร์</strong>
+        <div class="social-icon">
+            <label style="font-weight: bold; margin-right: 10px;">Share : </label>
+            <div class="social-share" style="display: inline-block;">
+                <!-- Facebook -->
+                <a href="https://www.facebook.com/sharer.php?u=<?php echo $encoded_url; ?>" title="Facebook" class="share-facebook" target="_blank" style="margin-right: 10px;">
+                    <i class="fa fa-facebook"></i>
+                </a>
+    
+                <!-- Twitter -->
+                <a href="https://twitter.com/intent/tweet?url=<?php echo $encoded_url; ?>&text=<?php echo $product_title; ?>" title="Twitter" class="share-twitter" target="_blank" style="margin-right: 10px;">
+                    <i class="fa fa-twitter"></i>
+                </a>
+    
+                <!-- Line -->
+                <a href="https://social-plugins.line.me/lineit/share?url=<?php echo $encoded_url; ?>" title="Line" class="share-line" target="_blank" style="margin-right: 10px;">
+                    <i class="fa fa-comment"></i>
+                </a>
+
+                <a href="javascript:void(0);" 
+                class="share-clipboard" 
+                title="Copy Link" 
+                id="copy-affiliate-link"
+                data-url="<?php echo esc_url($full_url); ?>" 
+                style="margin: 0 10px 0 0; cursor: pointer; position: relative; top: 12px;">
+                    <i style="padding: 0px 3px; margin-top: 10px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" fill="#fff" style="margin-top: 2px;"><path d="M360 160L280 160C266.7 160 256 149.3 256 136C256 122.7 266.7 112 280 112L360 112C373.3 112 384 122.7 384 136C384 149.3 373.3 160 360 160zM360 208C397.1 208 427.6 180 431.6 144L448 144C456.8 144 464 151.2 464 160L464 512C464 520.8 456.8 528 448 528L192 528C183.2 528 176 520.8 176 512L176 160C176 151.2 183.2 144 192 144L208.4 144C212.4 180 242.9 208 280 208L360 208zM419.9 96C407 76.7 385 64 360 64L280 64C255 64 233 76.7 220.1 96L192 96C156.7 96 128 124.7 128 160L128 512C128 547.3 156.7 576 192 576L448 576C483.3 576 512 547.3 512 512L512 160C512 124.7 483.3 96 448 96L419.9 96z"/></svg>
+                    </i>
+                    <span id="copy-status" style="width: max-content; display:none; position:absolute; top:-30px; left:0; background:#000; color:#fff; padding:2px 5px; font-size:10px; border-radius:3px;">คัดลอกลิงค์แล้ว !</span>
+                </a>
+            </div>
+        </div>
+        <script>
+        document.getElementById('copy-affiliate-link').addEventListener('click', function() {
+            var copyText = this.getAttribute('data-url');
+            
+            navigator.clipboard.writeText(copyText).then(function() {
+                // โชว์ป้ายว่า Copied!
+                var status = document.getElementById('copy-status');
+                status.style.display = 'block';
+                
+                setTimeout(function() {
+                    status.style.display = 'none';
+                }, 2000);
+                
+            }).catch(function(err) {
+                console.error('ไม่สามารถคัดลอกลิงก์ได้: ', err);
+            });
+        });
+        </script>
+    </div>
+
+    <style>
+        .affiliate_element {
+            background: #f8f8f8;
+            border-radius: 10px;
+            padding: 20px;
+        }
+    </style>
+    <?php
 }
