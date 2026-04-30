@@ -908,6 +908,7 @@ function inject_affliate_share_buttons() {
             background: #f8f8f8;
             border-radius: 10px;
             padding: 20px;
+            margin-top: 10px;
         }
     </style>
     <?php
