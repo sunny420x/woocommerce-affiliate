@@ -276,7 +276,6 @@ function get_all_users_table() {
         $date_label = date('d M', strtotime($row->created_at));
         
         $labels[] = $date_label;
-        $view_data[] = (int)$row->total_views;
         $sale_count_data[] = (int)$row->total_sales_count;
         $revenue_data[] = (float)$row->total_revenue;
     }
@@ -418,20 +417,19 @@ function get_all_users_table() {
     <div style="display: flex; gap: 20px;">
         <div class='card-admin'>
             <h1>🤝🏻 WooCommerce | Affiliate Program</h1>
-            <p>ระบบ Affiliate กระตุ้นการขายบนเว็บไซต์ โดยการให้เปอร์เซ็น Affiliate Partner เป็นจำนวน
-                <?= get_option('affiliate_commission', 10); ?>% ของยอดขายสินค้า</p>
+            <p>ระบบ Affiliate กระตุ้นการขายบนเว็บไซต์ โดยการให้เปอร์เซ็น Affiliate Partner เป็นจำนวน <?= get_option('affiliate_commission', 10); ?>% ของยอดขายสินค้า</p>
             <form action="options.php" method="post">
                 <?php
                 settings_fields('affiliate_settings_group');
                 ?>
-                <label for="affiliate_enable">เปิดใช้งานระบบพันธมิตร: </label>
+                <label for="affiliate_enable"><strong>เปิดใช้งานระบบพันธมิตร:</strong> </label>
                 <select name="affiliate_enable">
                     <option value="yes" <?php if(esc_attr(get_option('affiliate_enable', 'yes')) == 'yes') { echo "selected"; } ?>>เปิดใช้งาน</option>
                     <option value="no" <?php if(esc_attr(get_option('affiliate_enable', 'yes')) == 'no') { echo "selected"; } ?>>ปิดใช้งาน</option>
                 </select>
                 <br>
                 <br>
-                <label for="affiliate_logo">ลิงค์รูปภาพ Logo บริษัท (สำหรับออกรายงาน):</label><br>
+                <label for="affiliate_logo"><strong>ลิงค์รูปภาพ Logo บริษัท (สำหรับออกรายงาน):</strong></label><br>
                 <div class="image-upload-wrapper">
                     <input type="text" name="affiliate_logo" id="affiliate_logo" style="width: 400px;" value="<?=esc_attr(get_option('affiliate_logo', ''))?>"/>
 
@@ -446,9 +444,15 @@ function get_all_users_table() {
                 </div>
                 <br>
                 <br>
-                <label for="affiliate_commission">% Commission เริ่มต้น: </label><input type="number" name="affiliate_commission"
+                <label for="affiliate_commission"><strong>% Commission เริ่มต้น:</strong> </label><input type="number" name="affiliate_commission"
                     value="<?= esc_attr(get_option('affiliate_commission', 10)); ?>" /> %
                 <p>* การอัพเดท % Commission จะไม่มีผลย้อนหลังกับข้อมูลการขายเดิมในระบบ แต่จะมีผลกับข้อมูลการขายใหม่ที่จะถูกเพิ่มเข้ามาหลังจากอัพเดท</p>
+
+                <label for="affiliate_condition"><strong>เงื่อนไขการจ่ายค่าตอบแทน:</strong></label>
+                <p>เงื่อนไขการจ่ายค่าตอบแทน เช่น จ่ายค่าตอบแทนเมื่อยอดรวม 500 บาท หรือ จ่ายค่าตอบแทนทุก ๆ วันที่ 5 ของเดือน เป็นต้น</p>
+                <textarea name="affiliate_condition" id="affiliate_condition" style="width: 100%; height: 200px;"><?=get_option('affiliate_condition')?></textarea>
+                <br>
+                <br>
                 <input type="submit" class="button button-primary" value="บันทึกการเปลี่ยนแปลง">
             </form>
 
@@ -462,7 +466,7 @@ function get_all_users_table() {
             <?php
             settings_fields('affiliate_commission_settings_group');
             ?>
-            <div style="height: 350px; overflow: auto;">
+            <div style="height: 650px; overflow: auto;">
                 <table class="widefat fixed striped">
                     <thead>
                         <th>ประเภทสินค้า</th>
@@ -663,6 +667,7 @@ function affiliate_settings_init()
     register_setting('affiliate_settings_group', 'affiliate_commission');
     register_setting('affiliate_settings_group', 'affiliate_enable');
     register_setting('affiliate_settings_group', 'affiliate_logo');
+    register_setting('affiliate_settings_group', 'affiliate_condition');
 
     $args = array(
         'taxonomy'   => 'product_cat',
