@@ -593,6 +593,8 @@ function affiliate_report_page() {
                         $order = wc_get_order($row->order_id);
                         $product_display = "";
 
+                        if($row->total_sales == null) continue;
+
                         if ($order) {
                             foreach ($order->get_items() as $item_id => $item) {
                                 $product = $item->get_product();
@@ -613,7 +615,7 @@ function affiliate_report_page() {
                     <tr>
                         <td><a href="/wp-admin/post.php?post=<?=$row->order_id?>&action=edit">#<?=$row->order_id?></a></td>
                         <td><?=$product_display?></td>
-                        <td><?=$row->total_sales?> บาท</td>
+                        <td><?=number_format($row->total_sales, 2)?> บาท</td>
                         <td><?=number_format($row->total_earns, 2)?> บาท</td>
                         <td><?php if($row->paid == 1) { echo "<span style='color: green;'>ชำระแล้ว</span>"; } else { echo "<span style='color: red;'>รอชำระ</span>"; }?></td>
                     </tr>
@@ -625,12 +627,12 @@ function affiliate_report_page() {
                         }
                     ?>
                     <tr>
-                        <td colspan="3"><strong>รวมยอดขายทั้งหมด</strong></td>
-                        <td><strong><?=$total_sales_sum?> บาท</strong></td>
+                        <td colspan="4"><strong>รวมยอดขายทั้งหมด</strong></td>
+                        <td><strong><?=number_format($total_sales_sum, 2)?> บาท</strong></td>
                     </tr>
                     <tr>
-                        <td colspan="3"><strong>รวมยอด Commission ทั้งหมด</strong></td>
-                        <td><strong><?=$total_earns_sum?> บาท</strong></td>
+                        <td colspan="4"><strong>รวมยอด Commission ทั้งหมด</strong></td>
+                        <td><strong><?=number_format($total_earns_sum, 2)?> บาท</strong></td>
                     </tr>
                 </tbody>
             </table>
@@ -1060,6 +1062,8 @@ function inject_affliate_share_buttons() {
     
     $product_title = urlencode( get_the_title() );
     $product_img   = urlencode( wp_get_attachment_url( get_post_thumbnail_id() ) );
+
+    if($ref_code != '' || $ref_code != null) {
     ?>
     <div class="affiliate_element">
         <strong>⭐ แชร์สินค้าชิ้นนี้เพื่อรับ Commission <?=get_option('affiliate_commission');?>% เมื่อมีการซื้อสินค้าจากการแชร์</strong>
@@ -1118,4 +1122,5 @@ function inject_affliate_share_buttons() {
         }
     </style>
     <?php
+    }
 }
