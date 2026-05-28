@@ -74,9 +74,7 @@ add_action('admin_menu', 'affiliate_admin_menu');
 // Function to display the content of the custom page
 function affiliate_admin_management()
 {
-    echo '<div class="wrapper">';
     echo get_all_users_table();
-    echo '</div>';
 }
 
 register_activation_hook( __FILE__, 'my_plugin_install' );
@@ -278,223 +276,305 @@ function get_all_users_table() {
         $revenue_data[] = (float)$row->total_revenue;
     }
     ?>
-    <div style="display: flex; gap: 20px;">
-        <div class="card-admin" style="width: 600px; height: 400px;">
-            <div style="width: 100%; max-width: 500px;">
-                <h1>📊 สถิติการขายสินค้าจากระบบ Affiliate</h1>
-                <p>สถิติการขายสินค้าโดยหัก % Commission แล้ว</p>
-                <canvas id="myAffiliateChart"></canvas>
-            </div>
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-            <script>
-            const ctx = document.getElementById('myAffiliateChart').getContext('2d');
-            const myChart = new Chart(ctx, {
-                type: 'line', 
-                data: {
-                    labels: <?php echo json_encode($labels); ?>,
-                    datasets: [
-                        {
-                            label: 'ยอดขาย (บาท)',
-                            data: <?php echo json_encode($revenue_data); ?>,
-                            borderColor: '#27ae60',
-                            backgroundColor: 'rgba(39, 174, 96, 0.1)',
-                            yAxisID: 'y', // ใช้แกน Y ด้านขวา
-                            fill: true,
-                            tension: 0.3
-                        },
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: { // แกนขวา สำหรับ Revenue
-                            type: 'linear',
-                            display: true,
-                            position: 'left',
-                            title: { display: true, text: 'ยอดเงิน (บาท)' }
-                        }
-                    }
-                }
-            });
-            </script>
-        </div>
-        <div class='card-admin'>
-            <h1>📊 สรุปยอดของพันธมิตร</h1>
-            <hr>
-            <h2>💸 ยอด Commission ของสมาชิก</h2>
-            <div style="height: 250px; overflow: auto;">
-                <table class="widefat fixed striped">
-                    <thead>
-                        <tr>
-                            <th>ชื่อในระบบ</th>
-                            <th>Email</th>
-                            <th>ขายได้ (รายการ)</th>
-                            <th>ยอดขาย</th>
-                            <th>ยอด Commission ทั้งหมด</th>
-                            <th>บัญชีปลายทาง</th>
-                            <th>จัดการ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        if (!empty($waiting_for_payments)) {
-                            foreach ($waiting_for_payments as $row) {
-        
-                                $user_bank_info =  $wpdb->get_results($wpdb->prepare("SELECT bank_account_number, bank_name FROM {$wpdb->prefix}users_affiliate_info WHERE user_id = %d LIMIT 1", $row->ID));
-        
-                                $mark_as_paid_action_url = wp_nonce_url(
-                                    admin_url('admin.php?page=affiliate&action=mark_paid&refCode=' . $row->refCode),
-                                    'mark_paid_nonce'
-                                );
-                                ?>
-                                <tr>
-                                    <td><?= esc_html($row->display_name) ?></td>
-                                    <td><?= esc_html($row->user_email) ?></td>
-                                    <td><?= esc_html($row->total_sales_count) ?></td>
-                                    <td><?= esc_html($row->total_revenue) ?> บาท </td>
-                                    <td><strong><?= esc_html(number_format($row->total_earns, 2)) ?> บาท</strong></td>
-                                    <td><?=esc_html($user_bank_info[0]->bank_account_number)?> <?=esc_html($user_bank_info[0]->bank_name)?></td>
-                                    <td>
-                                        <button type='button' class='button'
-                                            onclick="window.location.href='<?= $mark_as_paid_action_url ?>'">ทำสถานะว่าจ่ายแล้ว</button>
-                                    </td>
-                                </tr>
-                                <?php
-                            }
-                        } else {
-                            ?>
-                            <tr>
-                                <td colspan="9">ไม่พบข้อมูล</td>
-                            </tr>
-                            <?php
-                        }
-        
-                        if (!empty($wpdb->last_error)) {
-                            echo '<div style="color:red;">SQL Error: ' . esc_html($wpdb->last_error) . '</div>';
-                        }
-                        ?>
-    
-                        <?php
-                        if (!empty($success_payments)) {
-                            foreach ($success_payments as $row) {
-        
-                                $user_bank_info =  $wpdb->get_results($wpdb->prepare("SELECT bank_account_number, bank_name FROM {$wpdb->prefix}users_affiliate_info WHERE user_id = %d LIMIT 1", $row->ID));
-                                ?>
-                                <tr>
-                                    <td><?= esc_html($row->display_name) ?></td>
-                                    <td><?= esc_html($row->user_email) ?></td>
-                                    <td><?= esc_html($row->total_sales_count) ?></td>
-                                    <td><?= esc_html($row->total_revenue) ?> บาท </td>
-                                    <td><strong><?= esc_html(number_format($row->total_earns, 2)) ?> บาท</strong></td>
-                                    <td><?=esc_html($user_bank_info[0]->bank_account_number)?> <?=esc_html($user_bank_info[0]->bank_name)?></td>
-                                    <td>
-                                        <button type='button' class='button button-primary'
-                                            onclick="window.location.href='<?= admin_url('admin.php?page=affiliate_report&refCode='.$row->refCode); ?>'">ออกรายงาน</button>
-                                    </td>
-                                </tr>
-                                <?php
-                            }
-                        } else {
-                            ?>
-                            <tr>
-                                <td colspan="9">ไม่พบข้อมูล</td>
-                            </tr>
-                            <?php
-                        }
-        
-                        if (!empty($wpdb->last_error)) {
-                            echo '<div style="color:red;">SQL Error: ' . esc_html($wpdb->last_error) . '</div>';
-                        }
-                        ?>
-                    </tbody>
-                </table>
-            </div>
+    <style>
+        ul.popup_profile_list {
+            margin: 0;
+        }
+        ul.popup_profile_list li {
+            padding: 10px 20px;
+            font-size: 14px;
+            background: #f8f8f8;
+            color: #111;
+            transition: .2s ease-in-out;
+            margin: 0;
+        }
+        ul.popup_profile_list li:hover {
+            background: #fff;
+            cursor: pointer;
+        }
+        .leftside {
+            width: 350px;
+            background: #f8f8f8;
+            height: max-content;
+        }
+        .leftside h1 {
+            background: #009FE3;
+            color: #fff;
+            font-size: 16px;
+            padding: 10px 20px;
+            margin: 0;
+        }
+        .container {
+            width: 1200px;
+            background: #fff;
+        }
+        .container h1 {
+            background: #555;
+            color: #fff;
+            font-size: 16px;
+            padding: 10px 20px;
+            margin: 0;
+        }
+        .white-label-zone {
+            width: calc(100% + 20px);
+            height: auto;
+            background: #fff;
+            display: flex;
+            margin: 0 0 0 -20px;
+        }
+        .white-label-zone h1,p {
+            padding: 0 20px;
+        }
+        .leftside a {
+            padding: 10px 20px;
+            font-size: 14px;
+            background: #f8f8f8;
+            color: #000;
+            transition: .2s ease-in-out;
+            display: block;
+            width: 100%;
+            text-decoration: none;
+        }
+        .leftside a:hover {
+            background: #fff;
+            cursor: pointer;
+        }
+    </style>
+    <div class="white-label-zone no-print">
+        <span style="padding: 60px 10px 60px 40px;float: left;font-size: 60px;">🤝</span>
+        <div style="padding: 20px 0;">
+            <h1>WooCommerce Affiliate System</h1>
+            <p>ระบบพันธมิตรสำหรับ WooCommerce
+            <br>
+            <strong>Github Repository:</strong> <a href="https://github.com/sunny420x/woocommerce-affiliate" target="_blank">https://github.com/sunny420x/woocommerce-affiliate</a>
+            </p>
         </div>
     </div>
-    <br>
-    <div style="display: flex; gap: 20px;">
-        <div class='card-admin'>
-            <h1>🤝🏻 WooCommerce | Affiliate Program</h1>
-            <p>ระบบ Affiliate กระตุ้นการขายบนเว็บไซต์ โดยการให้เปอร์เซ็น Affiliate Partner เป็นจำนวน <?= get_option('affiliate_commission', 10); ?>% ของยอดขายสินค้า</p>
-            <form action="options.php" method="post">
+    <div class="wrap">
+        <div style="display: flex;">
+            <div class="leftside">
+                <h1>WooCommerce Affiliate System</h1>
+                <a href="admin.php?page=affiliate&option=statistic" style="width: 100%;">📊 สถิติ</a>
+                <a href="admin.php?page=affiliate&option=affiliate_settings" style="width: 100%;">⚙️ ตั้งค่าระบบ</a>
+            </div>
+            <div class="container">
                 <?php
-                settings_fields('affiliate_settings_group');
+                if(isset($_GET['option']) && $_GET['option'] == "statistic") {
                 ?>
-                <label for="affiliate_enable"><strong>เปิดใช้งานระบบพันธมิตร:</strong> </label>
-                <select name="affiliate_enable">
-                    <option value="yes" <?php if(esc_attr(get_option('affiliate_enable', 'yes')) == 'yes') { echo "selected"; } ?>>เปิดใช้งาน</option>
-                    <option value="no" <?php if(esc_attr(get_option('affiliate_enable', 'yes')) == 'no') { echo "selected"; } ?>>ปิดใช้งาน</option>
-                </select>
-                <br>
-                <br>
-                <label for="affiliate_logo"><strong>ลิงค์รูปภาพ Logo บริษัท (สำหรับออกรายงาน):</strong></label><br>
-                <div class="image-upload-wrapper">
-                    <input type="text" name="affiliate_logo" id="affiliate_logo" style="width: 400px;" value="<?=esc_attr(get_option('affiliate_logo', ''))?>"/>
-
-                    <button type="button" class="button" id="upload_image_button">เลือกรูปภาพ...</button>
-
-                    <div id="image_preview" style="margin-top: 10px;">
-                        <?php if (get_option('affiliate_logo', '')): ?>
-                            <img src="<?php echo esc_url(get_option('affiliate_logo', '')); ?>"
-                                style="max-width: 300px; border: 1px solid #ccc;" />
-                        <?php endif; ?>
-                    </div>
-                </div>
-                <br>
-                <br>
-                <label for="affiliate_commission"><strong>% Commission เริ่มต้น:</strong> </label><input type="number" name="affiliate_commission"
-                    value="<?= esc_attr(get_option('affiliate_commission', 10)); ?>" /> %
-                <p>* การอัพเดท % Commission จะไม่มีผลย้อนหลังกับข้อมูลการขายเดิมในระบบ แต่จะมีผลกับข้อมูลการขายใหม่ที่จะถูกเพิ่มเข้ามาหลังจากอัพเดท</p>
-
-                <label for="affiliate_condition"><strong>เงื่อนไขการจ่ายค่าตอบแทน:</strong></label>
-                <p>เงื่อนไขการจ่ายค่าตอบแทน เช่น จ่ายค่าตอบแทนเมื่อยอดรวม 500 บาท หรือ จ่ายค่าตอบแทนทุก ๆ วันที่ 5 ของเดือน เป็นต้น</p>
-                <textarea name="affiliate_condition" id="affiliate_condition" style="width: 100%; height: 200px;"><?=get_option('affiliate_condition')?></textarea>
-                <br>
-                <br>
-                <input type="submit" class="button button-primary" value="บันทึกการเปลี่ยนแปลง">
-            </form>
-
-            <p>Github Repository: <a href="https://github.com/sunny420x/woocommerce-affiliate"
-                target="_blank">github.com/sunny420x/woocommerce-affiliate</a></p>
-        </div>
-        <div class="card-admin">
-            <h1>💵 กำหนด % Commission ตามประเภทสินค้า</h1>
-            <p>หากสินค้ามีหลายหมวดหมู่ในชิ้นเดียว ระบบจะเลือก % Commission ที่สูงที่สุดจากหมวดหมู่ที่กำหนดในสินค้านั้น ๆ</p>
-            <form action="options.php" method="post">
-            <?php
-            settings_fields('affiliate_commission_settings_group');
-            ?>
-            <div style="height: 650px; overflow: auto;">
-                <table class="widefat fixed striped">
-                    <thead>
-                        <th>ประเภทสินค้า</th>
-                        <th>% Commission</th>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $args = array(
-                            'taxonomy'   => 'product_cat',
-                            'hide_empty' => false,
-                        );
-        
-                        $product_categories = get_terms($args);
-        
-                        if ( ! empty($product_categories) && ! is_wp_error($product_categories) ) {
-                            foreach ( $product_categories as $category ) {
-                        ?>
-                        <tr>
-                            <td><?=$category->name?></td>
-                            <td><input type="number" name="commission_by_slug_<?=str_replace(" ", "_", $category->name)?>" value="<?=get_option('commission_by_slug_'.str_replace(" ", "_", $category->name), 10)?>"> %</td>
-                        </tr>
-                        <?php
+                <h1>📊 สถิติการขายสินค้าจากระบบ Affiliate</h1>
+                <div style="padding: 0 25px 25px 25px;">
+                    <p>สถิติการขายสินค้าโดยหัก % Commission แล้ว</p>
+                    <canvas id="myAffiliateChart"></canvas>
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                    <script>
+                    const ctx = document.getElementById('myAffiliateChart').getContext('2d');
+                    const myChart = new Chart(ctx, {
+                        type: 'line', 
+                        data: {
+                            labels: <?php echo json_encode($labels); ?>,
+                            datasets: [
+                                {
+                                    label: 'ยอดขาย (บาท)',
+                                    data: <?php echo json_encode($revenue_data); ?>,
+                                    borderColor: '#27ae60',
+                                    backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                                    yAxisID: 'y', // ใช้แกน Y ด้านขวา
+                                    fill: true,
+                                    tension: 0.3
+                                },
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: { // แกนขวา สำหรับ Revenue
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'left',
+                                    title: { display: true, text: 'ยอดเงิน (บาท)' }
+                                }
                             }
                         }
+                    });
+                    </script>
+                </div>
+                <h1>📊 สรุปยอดของพันธมิตร</h1>
+                <div style="padding: 0 25px 25px 25px;">
+                    <h2>💸 ยอด Commission ของสมาชิก</h2>
+                    <table class="widefat fixed striped">
+                        <thead>
+                            <tr>
+                                <th>ชื่อในระบบ</th>
+                                <th>Email</th>
+                                <th>ขายได้ (รายการ)</th>
+                                <th>ยอดขาย</th>
+                                <th>ยอด Commission ทั้งหมด</th>
+                                <th>บัญชีปลายทาง</th>
+                                <th>จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if (!empty($waiting_for_payments)) {
+                                foreach ($waiting_for_payments as $row) {
+            
+                                    $user_bank_info =  $wpdb->get_results($wpdb->prepare("SELECT bank_account_number, bank_name FROM {$wpdb->prefix}users_affiliate_info WHERE user_id = %d LIMIT 1", $row->ID));
+            
+                                    $mark_as_paid_action_url = wp_nonce_url(
+                                        admin_url('admin.php?page=affiliate&action=mark_paid&refCode=' . $row->refCode),
+                                        'mark_paid_nonce'
+                                    );
+                                    ?>
+                                    <tr>
+                                        <td><?= esc_html($row->display_name) ?></td>
+                                        <td><?= esc_html($row->user_email) ?></td>
+                                        <td><?= esc_html($row->total_sales_count) ?></td>
+                                        <td><?= esc_html($row->total_revenue) ?> บาท </td>
+                                        <td><strong><?= esc_html(number_format($row->total_earns, 2)) ?> บาท</strong></td>
+                                        <td><?=esc_html($user_bank_info[0]->bank_account_number)?> <?=esc_html($user_bank_info[0]->bank_name)?></td>
+                                        <td>
+                                            <button type='button' class='button'
+                                                onclick="window.location.href='<?= $mark_as_paid_action_url ?>'">ทำสถานะว่าจ่ายแล้ว</button>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                }
+                            } else {
+                                ?>
+                                <tr>
+                                    <td colspan="7">ไม่พบข้อมูล</td>
+                                </tr>
+                                <?php
+                            }
+            
+                            if (!empty($wpdb->last_error)) {
+                                echo '<div style="color:red;">SQL Error: ' . esc_html($wpdb->last_error) . '</div>';
+                            }
+                            ?>
+        
+                            <?php
+                            if (!empty($success_payments)) {
+                                foreach ($success_payments as $row) {
+            
+                                    $user_bank_info =  $wpdb->get_results($wpdb->prepare("SELECT bank_account_number, bank_name FROM {$wpdb->prefix}users_affiliate_info WHERE user_id = %d LIMIT 1", $row->ID));
+                                    ?>
+                                    <tr>
+                                        <td><?= esc_html($row->display_name) ?></td>
+                                        <td><?= esc_html($row->user_email) ?></td>
+                                        <td><?= esc_html($row->total_sales_count) ?></td>
+                                        <td><?= esc_html($row->total_revenue) ?> บาท </td>
+                                        <td><strong><?= esc_html(number_format($row->total_earns, 2)) ?> บาท</strong></td>
+                                        <td><?=esc_html($user_bank_info[0]->bank_account_number)?> <?=esc_html($user_bank_info[0]->bank_name)?></td>
+                                        <td>
+                                            <button type='button' class='button button-primary'
+                                                onclick="window.location.href='<?= admin_url('admin.php?page=affiliate_report&refCode='.$row->refCode); ?>'">ออกรายงาน</button>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                }
+                            } else {
+                                ?>
+                                <tr>
+                                    <td colspan="9">ไม่พบข้อมูล</td>
+                                </tr>
+                                <?php
+                            }
+            
+                            if (!empty($wpdb->last_error)) {
+                                echo '<div style="color:red;">SQL Error: ' . esc_html($wpdb->last_error) . '</div>';
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+                <?php
+                } elseif(isset($_GET['option']) && $_GET['option'] == "affiliate_settings") {
+                ?>
+                <h1>🤝🏻 WooCommerce | Affiliate Program</h1>
+                <div style="padding: 25px 25px 25px 25px;">
+                    <span>ระบบ Affiliate กระตุ้นการขายบนเว็บไซต์ โดยการให้เปอร์เซ็น Affiliate Partner เป็นจำนวน <?= get_option('affiliate_commission', 10); ?>% ของยอดขายสินค้า</span>
+                    <form action="options.php" method="post">
+                        <?php
+                        settings_fields('affiliate_settings_group');
                         ?>
-                    </tbody>
-                </table>
+                        <label for="affiliate_enable"><strong>เปิดใช้งานระบบพันธมิตร:</strong> </label>
+                        <select name="affiliate_enable">
+                            <option value="yes" <?php if(esc_attr(get_option('affiliate_enable', 'yes')) == 'yes') { echo "selected"; } ?>>เปิดใช้งาน</option>
+                            <option value="no" <?php if(esc_attr(get_option('affiliate_enable', 'yes')) == 'no') { echo "selected"; } ?>>ปิดใช้งาน</option>
+                        </select>
+                        <br>
+                        <br>
+                        <label for="affiliate_logo"><strong>ลิงค์รูปภาพ Logo บริษัท (สำหรับออกรายงาน):</strong></label><br>
+                        <div class="image-upload-wrapper">
+                            <input type="text" name="affiliate_logo" id="affiliate_logo" style="width: 400px;" value="<?=esc_attr(get_option('affiliate_logo', ''))?>"/>
+
+                            <button type="button" class="button" id="upload_image_button">เลือกรูปภาพ...</button>
+
+                            <div id="image_preview" style="margin-top: 10px;">
+                                <?php if (get_option('affiliate_logo', '')): ?>
+                                    <img src="<?php echo esc_url(get_option('affiliate_logo', '')); ?>"
+                                        style="max-width: 300px; border: 1px solid #ccc;" />
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <br>
+                        <br>
+                        <label for="affiliate_commission"><strong>% Commission เริ่มต้น:</strong> </label><input type="number" name="affiliate_commission"
+                            value="<?= esc_attr(get_option('affiliate_commission', 10)); ?>" /> %
+                        <p>* การอัพเดท % Commission จะไม่มีผลย้อนหลังกับข้อมูลการขายเดิมในระบบ แต่จะมีผลกับข้อมูลการขายใหม่ที่จะถูกเพิ่มเข้ามาหลังจากอัพเดท</p>
+
+                        <label for="affiliate_condition"><strong>เงื่อนไขการจ่ายค่าตอบแทน:</strong></label>
+                        <p>เงื่อนไขการจ่ายค่าตอบแทน เช่น จ่ายค่าตอบแทนเมื่อยอดรวม 500 บาท หรือ จ่ายค่าตอบแทนทุก ๆ วันที่ 5 ของเดือน เป็นต้น</p>
+                        <textarea name="affiliate_condition" id="affiliate_condition" style="width: 100%; height: 200px;"><?=get_option('affiliate_condition')?></textarea>
+                        <br>
+                        <br>
+                        <input type="submit" class="button button-primary" value="บันทึกการเปลี่ยนแปลง">
+                    </form>
+                </div>
+
+                <h1>💵 กำหนด % Commission ตามประเภทสินค้า</h1>
+                <div style="padding: 0px 25px 25px 25px;">
+                    <p>หากสินค้ามีหลายหมวดหมู่ในชิ้นเดียว ระบบจะเลือก % Commission ที่สูงที่สุดจากหมวดหมู่ที่กำหนดในสินค้านั้น ๆ</p>
+                    <form action="options.php" method="post">
+                    <?php
+                    settings_fields('affiliate_commission_settings_group');
+                    ?>
+                    <div style="height: 650px; overflow: auto;">
+                        <table class="widefat fixed striped">
+                            <thead>
+                                <th>ประเภทสินค้า</th>
+                                <th>% Commission</th>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $args = array(
+                                    'taxonomy'   => 'product_cat',
+                                    'hide_empty' => false,
+                                );
+                
+                                $product_categories = get_terms($args);
+                
+                                if ( ! empty($product_categories) && ! is_wp_error($product_categories) ) {
+                                    foreach ( $product_categories as $category ) {
+                                ?>
+                                <tr>
+                                    <td><?=$category->name?></td>
+                                    <td><input type="number" name="commission_by_slug_<?=str_replace(" ", "_", $category->name)?>" value="<?=get_option('commission_by_slug_'.str_replace(" ", "_", $category->name), 10)?>"> %</td>
+                                </tr>
+                                <?php
+                                    }
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <br>
+                    <input type="submit" class="button button-primary" name="setCommissionByProductCategory" value="บันทึกการเปลี่ยนแปลง">
+                </div>
+                <?php
+                }
+                ?>
             </div>
-            <br>
-            <input type="submit" class="button button-primary" name="setCommissionByProductCategory" value="บันทึกการเปลี่ยนแปลง">
         </div>
     </div>
     <script type="text/javascript">
@@ -525,7 +605,6 @@ function get_all_users_table() {
         });
     });
     </script>
-    <br>
     <?php
 }
 
