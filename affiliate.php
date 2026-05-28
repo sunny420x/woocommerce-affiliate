@@ -362,8 +362,8 @@ function get_all_users_table() {
                 if(isset($_GET['option']) && $_GET['option'] == "statistic") {
                 ?>
                 <h1>📊 สถิติการขายสินค้าจากระบบ Affiliate</h1>
-                <div style="padding: 0 25px 25px 25px;">
-                    <p>สถิติการขายสินค้าโดยหัก % Commission แล้ว</p>
+                <div style="padding: 25px 25px 25px 25px;">
+                    <span>สถิติการขายสินค้าโดยหัก % Commission แล้ว</span>
                     <canvas id="myAffiliateChart"></canvas>
                     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
                     <script>
@@ -533,8 +533,8 @@ function get_all_users_table() {
                 </div>
 
                 <h1>💵 กำหนด % Commission ตามประเภทสินค้า</h1>
-                <div style="padding: 0px 25px 25px 25px;">
-                    <p>หากสินค้ามีหลายหมวดหมู่ในชิ้นเดียว ระบบจะเลือก % Commission ที่สูงที่สุดจากหมวดหมู่ที่กำหนดในสินค้านั้น ๆ</p>
+                <div style="padding: 25px 25px 25px 25px;">
+                    <span>หากสินค้ามีหลายหมวดหมู่ในชิ้นเดียว ระบบจะเลือก % Commission ที่สูงที่สุดจากหมวดหมู่ที่กำหนดในสินค้านั้น ๆ</span>
                     <form action="options.php" method="post">
                     <?php
                     settings_fields('affiliate_commission_settings_group');
