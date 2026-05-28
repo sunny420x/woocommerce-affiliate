@@ -475,7 +475,7 @@ function get_all_users_table() {
                             } else {
                                 ?>
                                 <tr>
-                                    <td colspan="9">ไม่พบข้อมูล</td>
+                                    <td colspan="7">ไม่พบข้อมูล</td>
                                 </tr>
                                 <?php
                             }
@@ -570,6 +570,22 @@ function get_all_users_table() {
                     </div>
                     <br>
                     <input type="submit" class="button button-primary" name="setCommissionByProductCategory" value="บันทึกการเปลี่ยนแปลง">
+                </div>
+                <?php
+                } else {
+                ?>
+                <h1>WooCommerce Affiliate</h1>
+                <div style="padding: 0 25px 25px 25px;">
+                    <h2>ระบบนี้คืออะไร ?</h2>
+                    <p>ระบบ WooCommerce Affiliate
+                        คือระบบที่ออกแบบมาสำหรับรองรับการทำการตลาดแบบพันธมิตร หรือที่เรียกว่าระบบ Affiliate ที่ปลั้กอินนี้สามารถกำหนด % Commission เริ่มต้น และจากประเภทสินค้าได้ สามารถออกรายงานได้
+                        ในฝั่งผู้ใช้งานที่หน้า /my-account/ จะมีเมนูใหม่ให้สามารถสมัครเป็นพันธมิตรกับร้านค้าได้ โดยภายในจะแสดงยอด Commission ที่ทำได้และสามารถกรอกช่องทางการรับเงินได้
+                    </p>
+                    <h2>วิธีการติดตั้ง</h2>
+                    <p>
+                        สามารถติดตั้งปลั้กอินนี้ได้โดยการดาวน์โหลดไฟล์นี้จาก Github หน้านี้ และอัพโหลดลงในหน้า /wp-admin/plugin-install.php หลังจากอัพโหลด 
+                        และเปิดใช้งาน (Activate) ระบบจะทำการสร้างตารางและคอลัมน์ใหม่จากตารางเดิมโดยอัตโนมัติ
+                    </p>
                 </div>
                 <?php
                 }
