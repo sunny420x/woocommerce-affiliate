@@ -258,11 +258,19 @@ class Affiliate {
 function get_all_users_table() {
     global $wpdb;
     $affiliate = new Affiliate();
-    $waiting_for_payments = $affiliate->getAffiliate("WHERE u.refCode IS NOT NULL AND u.refCode != '' AND t.paid = 0 ");
-    $success_payments = $affiliate->getAffiliate("WHERE u.refCode IS NOT NULL AND u.refCode != '' AND t.paid = 1 ");
 
-    $affiliate_chart = $affiliate->getAffiliateChart();
-    //"WHERE MONTH(t.created_at) = MONTH(CURRENT_DATE()) AND YEAR(t.created_at) = YEAR(CURRENT_DATE())"
+    if(isset($_GET['from']) && isset($_GET['to'])) {
+        $from = sanitize_text_field($_GET['from']);
+        $to = sanitize_text_field($_GET['to']);
+
+        $waiting_for_payments = $affiliate->getAffiliate("WHERE u.refCode IS NOT NULL AND u.refCode != '' AND t.paid = 0 AND t.created_at BETWEEN '{$from}' AND '{$to}' ");
+        $success_payments = $affiliate->getAffiliate("WHERE u.refCode IS NOT NULL AND u.refCode != '' AND t.paid = 1 AND t.created_at BETWEEN '{$from}' AND '{$to}' ");
+        $affiliate_chart = $affiliate->getAffiliateChart("WHERE t.created_at BETWEEN '{$from}' AND '{$to}' ");
+    } else {
+        $waiting_for_payments = $affiliate->getAffiliate("WHERE u.refCode IS NOT NULL AND u.refCode != '' AND t.paid = 0 ");
+        $success_payments = $affiliate->getAffiliate("WHERE u.refCode IS NOT NULL AND u.refCode != '' AND t.paid = 1 ");
+        $affiliate_chart = $affiliate->getAffiliateChart();
+    }
 
     $labels = [];
     $revenue_data = [];
@@ -363,6 +371,16 @@ function get_all_users_table() {
                 ?>
                 <h1>📊 สถิติการขายสินค้าจากระบบ Affiliate</h1>
                 <div style="padding: 25px 25px 25px 25px;">
+                    จากวันที่: <input type="date" name="from_filter" id="from_filter" value="<?=$_GET['from'] ?? '' ?>">
+                    ถึงวันที่: <input type="date" name="to_filter" id="to_filter" value="<?=$_GET['to'] ?? '' ?>">
+                    <button class="button" onclick="applyFilter(document.getElementById('from_filter').value, document.getElementById('to_filter').value)">กรอง</button>
+                    <script>
+                        function applyFilter(from, to) {
+                            window.location.href=`admin.php?page=affiliate&option=statistic&from=${from}&to=${to}`;
+                        }
+                    </script>
+                    <br>
+                    <br>
                     <span>สถิติการขายสินค้าโดยหัก % Commission แล้ว</span>
                     <canvas id="myAffiliateChart"></canvas>
                     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
