@@ -259,7 +259,7 @@ function get_all_users_table() {
     global $wpdb;
     $affiliate = new Affiliate();
 
-    if(isset($_GET['from']) && isset($_GET['to'])) {
+    if(isset($_GET['from']) && !empty($_GET['from']) && isset($_GET['to']) && !empty($_GET['to'])) {
         $from = sanitize_text_field($_GET['from']);
         $to = sanitize_text_field($_GET['to']);
 
