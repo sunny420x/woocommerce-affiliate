@@ -14,21 +14,6 @@ if (!defined('ABSPATH'))
 
 function afiliate_enqueue_assets()
 {
-    //Load CSS
-    wp_enqueue_style(
-        'style',
-        plugins_url('/css/style.css', __FILE__),
-        array(),
-        time()
-    );
-
-    wp_enqueue_style(
-        'style',
-        plugins_url('/css/admin.css', __FILE__),
-        array(),
-        time()
-    );
-
     //Load JS
     wp_enqueue_script(
         'sds',
@@ -41,18 +26,6 @@ function afiliate_enqueue_assets()
 
 //Load Afiliate Assets
 add_action('wp_enqueue_scripts', 'afiliate_enqueue_assets');
-
-function dashboard_styling()
-{
-    wp_enqueue_style(
-        'affiliate-admin-style',
-        plugins_url('/css/admin.css', __FILE__),
-        array(),
-        '1.0.0'
-    );
-}
-// Change 'admin_head' to 'admin_enqueue_scripts'
-add_action('admin_enqueue_scripts', 'dashboard_styling');
 
 // Function to add the menu page
 function affiliate_admin_menu()
