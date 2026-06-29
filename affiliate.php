@@ -1025,7 +1025,7 @@ function affiliate_content()
                 <div class="card">
                     <div class="card-header"><button class="btn btn-link" data-toggle="collapse" data-target="#affiliateSettingsAccordion" aria-expanded="true" aria-controls="affiliateSettingsAccordion">⚙️ ตั้งค่าระบบพันธมิตร</button></h5></div>
                     <div id="affiliateSettingsAccordion" class="collapse show" data-parent="#affiliate_settings">
-                        <div class="card-body" style="padding: 20px; background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);">
+                        <div class="card-body" style="padding: 20px; background: #fff; border-radius: 12px;">
                             <?php
                             global $wpdb;
                             $user_id = get_current_user_id();
