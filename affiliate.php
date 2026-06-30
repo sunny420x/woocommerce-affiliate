@@ -949,24 +949,24 @@ function affiliate_content()
             echo '<div class="woocommerce-message">ยินดีด้วย! คุณสมัครเป็นตัวแทนสำเร็จแล้ว</div>';
         }
     }
-
-    // --- ส่วนแสดงผล UI ---
-    echo '<h1 style="font-size: 24px; margin-top: 0;">🤝🏻 ระบบพันธมิตร | Affliate Program</h1>';
-
     if(esc_attr(get_option('affiliate_enable', 'yes')) == 'yes') {        
         if ($ref_code) {
             ?>
-            <p>รหัสแนะนำของคุณคือ: <strong><?= $esc_ref = esc_html($ref_code) ?></strong></p>
-            <p>ลิงก์สำหรับแนะนำ:<br>
-                <code style="display:block; padding:10px; background:#f0f0f0;"><?= home_url('/?ref=' . $esc_ref) ?></code>
-            </p>
-            <p>*เมื่อมีคนเข้าชมผ่านลิงก์นี้และซื้อสินค้า ระบบจะคิดค่า Commission ทันที</p>
-
             <div class="accordion" id="affiliate_report">
                 <div class="card">
-                    <div class="card-header"><button class="btn btn-link" data-toggle="collapse" data-target="#affiliateReportAccordion" aria-expanded="true" aria-controls="affiliateReportAccordion">💵 สรุปยอด Commission ของฉัน</button></h5></div>
+                    <div class="card-header">
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#affiliateReportAccordion" aria-expanded="true" aria-controls="affiliateReportAccordion">สรุปยอด Commission ของฉัน</button>
+                    </div>
                     <div id="affiliateReportAccordion" class="collapse show" data-parent="#affiliate_report">
                         <div class="card-body">
+                            <div class="row" style="margin: 20px 0;">
+                                <div class="col-lg-3">
+                                    <canvas id="commissionChart" width="400" height="150"></canvas>
+                                </div>
+                                <div class="col-lg-9">
+                                    <canvas id="commissionFullChart" width="400" height="150"></canvas>
+                                </div>
+                            </div>
                             <table>
                                 <tr>
                                     <th>ขายได้ทั้งหมด (ชิ้น)</th>
@@ -980,6 +980,12 @@ function affiliate_content()
                                 $affiliate_users = $wpdb->prefix . 'users';
                                 $affiliate_transactions = $wpdb->prefix . 'affiliate_transactions';
                                 $order_stats_table = $wpdb->prefix . 'wc_order_stats';
+
+                                $chart_labels = [];
+                                $chart_data = [];
+
+                                $full_chart_labels = [];
+                                $full_chart_data = [];
 
                                 $transactions = $wpdb->get_results($wpdb->prepare("
                                 SELECT 
@@ -1005,7 +1011,21 @@ function affiliate_content()
                                 GROUP BY u.ID, u.display_name, u.user_email, u.refCode, t.paid
                                 ORDER BY t.ID DESC", $user_id));
 
+                                $transactions_full = $wpdb->get_results($wpdb->prepare("
+                                SELECT 
+                                    t.created_at,
+                                    os.total_sales
+                                FROM {$affiliate_users} AS u
+                                LEFT JOIN {$affiliate_transactions} AS t
+                                    ON u.refCode = t.refCode
+                                LEFT JOIN {$order_stats_table} AS os 
+                                    ON t.order_id = os.order_id
+                                WHERE u.ID = %d 
+                                ORDER BY t.ID DESC", $user_id));
+
                                 foreach ($transactions as $tx) {
+                                    $chart_labels[] = ($tx->paid == 1) ? 'จ่ายแล้ว' : 'รอชำระ';
+                                    $chart_data[] = $tx->total_earns;
                                     ?>
                                     <tr>
                                         <td><?= $tx->total_sales_count; ?> รายการ</td>
@@ -1015,84 +1035,136 @@ function affiliate_content()
                                     </tr>
                                     <?php
                                 }
+
+                                foreach ($transactions_full as $tx) {
+                                    $full_chart_labels[] = $tx->created_at;
+                                    $full_chart_data[] = $tx->total_sales;
+                                }
                                 ?>
                             </table>
+                            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function() {
+                                    const ctx = document.getElementById('commissionChart').getContext('2d');
+                                    const ctx_full = document.getElementById('commissionFullChart').getContext('2d');
+                                    if (!ctx || !ctx_full) {
+                                        console.error("ไม่พบ Canvas ID!");
+                                        return;
+                                    }
+                                    const myChart = new Chart(ctx, {
+                                        type: 'pie',
+                                        data: {
+                                            labels: <?php echo json_encode($chart_labels); ?>,
+                                            datasets: [{
+                                                label: 'ยอดเงิน (บาท)',
+                                                data: <?php echo !empty($chart_data) ? json_encode($chart_data) : '[]'; ?>,
+                                                backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)'],
+                                            }]
+                                        },
+                                    });
+                                    const myFullChart = new Chart(ctx_full, {
+                                        type: 'line',
+                                        data: {
+                                            labels: <?php echo json_encode($full_chart_labels); ?>,
+                                            datasets: [{
+                                                label: 'ยอดขาย (บาท)',
+                                                data: <?php echo !empty($full_chart_data) ? json_encode($full_chart_data) : '[]'; ?>,
+                                                backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)'],
+                                                borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
+                                                borderWidth: 1
+                                            }]
+                                        },
+                                        options: {
+                                            scales: { y: { beginAtZero: true } }
+                                        }
+                                    });
+                                })
+                            </script>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="accordion" id="affiliate_settings">
                 <div class="card">
-                    <div class="card-header"><button class="btn btn-link" data-toggle="collapse" data-target="#affiliateSettingsAccordion" aria-expanded="true" aria-controls="affiliateSettingsAccordion">⚙️ ตั้งค่าระบบพันธมิตร</button></h5></div>
+                    <div class="card-header"><button class="btn btn-link" data-toggle="collapse" data-target="#affiliateSettingsAccordion" aria-expanded="true" aria-controls="affiliateSettingsAccordion">ตั้งค่าระบบพันธมิตร</button></h5></div>
                     <div id="affiliateSettingsAccordion" class="collapse show" data-parent="#affiliate_settings">
                         <div class="card-body" style="padding: 20px; background: #fff; border-radius: 12px;">
-                            <?php
-                            global $wpdb;
-                            $user_id = get_current_user_id();
-                            $table_info = $wpdb->prefix . 'users_affiliate_info';
-
-                            // --- ส่วนประมวลผลการบันทึก ---
-                            if (isset($_POST['save_affiliate_info'])) {
-                                $account_number = sanitize_text_field($_POST['aff_account_number']);
-                                $bank_name = sanitize_text_field($_POST['aff_bank_name']);
-
-                                // เช็คก่อนว่ามีข้อมูลของ User คนนี้ในตารางหรือยัง
-                                $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_info WHERE user_id = %d", $user_id));
-
-                                if ($exists) {
-                                    // มีอยู่แล้วให้ Update
-                                    $wpdb->update(
-                                        $table_info,
-                                        array(
-                                            'bank_account_number' => $account_number,
-                                            'bank_name' => $bank_name,
-                                            'updated_at' => current_time('mysql')
-                                        ),
-                                        array('user_id' => $user_id),
-                                        array('%s', '%s', '%s'),
-                                        array('%d')
-                                    );
-                                } else {
-                                    // ยังไม่มีให้ Insert
-                                    $wpdb->insert(
-                                        $table_info,
-                                        array(
-                                            'user_id' => $user_id,
-                                            'bank_account_number' => $account_number,
-                                            'bank_name' => $bank_name,
-                                            'updated_at' => current_time('mysql')
-                                        ),
-                                        array('%d', '%s', '%s', '%s')
-                                    );
-                                }
-                                echo '<div class="woocommerce-message">บันทึกข้อมูลบัญชีรับเงินเรียบร้อยแล้ว</div>';
-                            }
-
-                            // --- ดึงข้อมูลปัจจุบันมาแสดงในฟอร์ม ---
-                            $user_info = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_info WHERE user_id = %d", $user_id));
-                            ?>
-
-                            <form action="" method="post">
-                                <div class="form-row" style="margin-bottom: 15px;">
-                                    <label>หมายเลขบัญชีธนาคาร:</label>
-                                    <input type="text" name="aff_account_number" value="<?= esc_attr($user_info->bank_account_number ?? ''); ?>"
-                                        placeholder="ระบุเลขบัญชี" required style="width: 100%;" />
+                            <div class="row">
+                                <div class="col-lg">
+                                    <p>รหัสแนะนำของคุณคือ: <strong><?= $esc_ref = esc_html($ref_code) ?></strong></p>
+                                    <p>ลิงก์สำหรับแนะนำ:<br>
+                                        <code style="display:block; padding:10px; background:#f0f0f0;"><?= home_url('/?ref=' . $esc_ref) ?></code>
+                                    </p>
+                                    <p>*เมื่อมีคนเข้าชมผ่านลิงก์นี้และซื้อสินค้า ระบบจะคิดค่า Commission จากการซื้อทันที คุณสามารถนำ  <strong>?ref=<?= $esc_ref = esc_html($ref_code) ?></strong> ไปวางหลังลิงค์จากเว็บไซต์ได้ทุกลิงค์เพื่อติดตามการซื้อ</p>
                                 </div>
-
-                                <div class="form-row" style="margin-bottom: 15px;">
-                                    <label>ธนาคาร:</label>
-                                    <select name="aff_bank_name" style="width: 100%;">
-                                        <?php
-                                        $banks = ["ธนาคารกรุงเทพ", "ธนาคารกสิกรไทย", "ธนาคารไทยพาณิชย์", "ธนาคารกรุงไทย", "ธนาคารกรุงศรีอยุธยา", "ธนาคารทหารไทยธนชาต", "ธนาคารยูโอบี", "ธนาคารออมสิน"];
-                                        foreach ($banks as $bank):
-                                            ?>
-                                            <option value="<?= $bank ?>" <?php selected($user_info->bank_name ?? '', $bank); ?>><?= $bank ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
+                                <div class="col-lg">
+                                    <?php
+                                    global $wpdb;
+                                    $user_id = get_current_user_id();
+                                    $table_info = $wpdb->prefix . 'users_affiliate_info';
+        
+                                    // --- ส่วนประมวลผลการบันทึก ---
+                                    if (isset($_POST['save_affiliate_info'])) {
+                                        $account_number = sanitize_text_field($_POST['aff_account_number']);
+                                        $bank_name = sanitize_text_field($_POST['aff_bank_name']);
+        
+                                        // เช็คก่อนว่ามีข้อมูลของ User คนนี้ในตารางหรือยัง
+                                        $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_info WHERE user_id = %d", $user_id));
+        
+                                        if ($exists) {
+                                            // มีอยู่แล้วให้ Update
+                                            $wpdb->update(
+                                                $table_info,
+                                                array(
+                                                    'bank_account_number' => $account_number,
+                                                    'bank_name' => $bank_name,
+                                                    'updated_at' => current_time('mysql')
+                                                ),
+                                                array('user_id' => $user_id),
+                                                array('%s', '%s', '%s'),
+                                                array('%d')
+                                            );
+                                        } else {
+                                            // ยังไม่มีให้ Insert
+                                            $wpdb->insert(
+                                                $table_info,
+                                                array(
+                                                    'user_id' => $user_id,
+                                                    'bank_account_number' => $account_number,
+                                                    'bank_name' => $bank_name,
+                                                    'updated_at' => current_time('mysql')
+                                                ),
+                                                array('%d', '%s', '%s', '%s')
+                                            );
+                                        }
+                                        echo '<div class="woocommerce-message">บันทึกข้อมูลบัญชีรับเงินเรียบร้อยแล้ว</div>';
+                                    }
+        
+                                    // --- ดึงข้อมูลปัจจุบันมาแสดงในฟอร์ม ---
+                                    $user_info = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_info WHERE user_id = %d", $user_id));
+                                    ?>
+                                    <form action="" method="post">
+                                        <div class="form-row" style="margin-bottom: 15px;">
+                                            <label>หมายเลขบัญชีธนาคาร:</label>
+                                            <input type="text" name="aff_account_number" value="<?= esc_attr($user_info->bank_account_number ?? ''); ?>"
+                                                placeholder="ระบุเลขบัญชี" required style="width: 100%;" />
+                                        </div>
+        
+                                        <div class="form-row" style="margin-bottom: 15px;">
+                                            <label>ธนาคาร:</label>
+                                            <select name="aff_bank_name" style="width: 100%;">
+                                                <?php
+                                                $banks = ["ธนาคารกรุงเทพ", "ธนาคารกสิกรไทย", "ธนาคารไทยพาณิชย์", "ธนาคารกรุงไทย", "ธนาคารกรุงศรีอยุธยา", "ธนาคารทหารไทยธนชาต", "ธนาคารยูโอบี", "ธนาคารออมสิน"];
+                                                foreach ($banks as $bank):
+                                                    ?>
+                                                    <option value="<?= $bank ?>" <?php selected($user_info->bank_name ?? '', $bank); ?>><?= $bank ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <button type="submit" name="save_affiliate_info" class="button">บันทึกข้อมูลบัญชี</button>
+                                    </form>
                                 </div>
-
-                                <button type="submit" name="save_affiliate_info" class="button">บันทึกข้อมูลบัญชี</button>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>
