@@ -285,6 +285,23 @@ function get_all_users_table() {
             padding: 10px 20px;
             margin: 0;
         }
+        .leftside a {
+            padding: 10px 20px;
+            font-size: 14px;
+            background: #f8f8f8;
+            color: #000;
+            transition: .2s ease-in-out;
+            display: block;
+            width: 100%;
+            text-decoration: none;
+        }
+        .leftside a.active {
+            background: #fff;
+        }
+        .leftside a:hover {
+            background: #fff;
+            cursor: pointer;
+        }
         .container {
             width: 1200px;
             background: #fff;
@@ -306,20 +323,6 @@ function get_all_users_table() {
         .white-label-zone h1,p {
             padding: 0 20px;
         }
-        .leftside a {
-            padding: 10px 20px;
-            font-size: 14px;
-            background: #f8f8f8;
-            color: #000;
-            transition: .2s ease-in-out;
-            display: block;
-            width: 100%;
-            text-decoration: none;
-        }
-        .leftside a:hover {
-            background: #fff;
-            cursor: pointer;
-        }
     </style>
     <div class="white-label-zone no-print">
         <span style="padding: 60px 10px 60px 40px;float: left;font-size: 60px;">🤝</span>
@@ -335,8 +338,9 @@ function get_all_users_table() {
         <div style="display: flex;">
             <div class="leftside">
                 <h1>WooCommerce Affiliate System</h1>
-                <a href="admin.php?page=affiliate&option=statistic" style="width: 100%;">📊 สถิติ</a>
-                <a href="admin.php?page=affiliate&option=affiliate_settings" style="width: 100%;">⚙️ ตั้งค่าระบบ</a>
+                <a href="admin.php?page=affiliate&option=affiliate_commission_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_commission_settings") { echo "class='active'"; } ?>>📦 Commission ตามประเภทสินค้า</a>
+                <a href="admin.php?page=affiliate&option=statistic" <?php if(isset($_GET['option']) && $_GET['option'] == "statistic") { echo "class='active'"; } ?>>📊 สถิติการใช้งาน</a>
+                <a href="admin.php?page=affiliate&option=affiliate_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_settings") { echo "class='active'"; } ?>>⚙️ ตั้งค่าระบบ</a>
             </div>
             <div class="container">
                 <?php
@@ -497,14 +501,15 @@ function get_all_users_table() {
                         <br>
                         <label for="affiliate_logo"><strong>ลิงค์รูปภาพ Logo บริษัท (สำหรับออกรายงาน):</strong></label><br>
                         <div class="image-upload-wrapper">
-                            <input type="text" name="affiliate_logo" id="affiliate_logo" style="width: 400px;" value="<?=esc_attr(get_option('affiliate_logo', ''))?>"/>
+                            <input type="text" name="affiliate_logo" id="affiliate_logo" style="width: 400px;" value="<?php echo esc_attr(get_option('affiliate_logo', ''))?>"/>
 
                             <button type="button" class="button" id="upload_image_button">เลือกรูปภาพ...</button>
 
                             <div id="image_preview" style="margin-top: 10px;">
-                                <?php if (get_option('affiliate_logo', '')): ?>
-                                    <img src="<?php echo esc_url(get_option('affiliate_logo', '')); ?>"
-                                        style="max-width: 300px; border: 1px solid #ccc;" />
+                                <?php 
+                                $affiliate_logo = get_option('affiliate_logo');
+                                if ($affiliate_logo): ?>
+                                    <img src="<?php echo esc_url($affiliate_logo); ?>" style="max-width: 300px; border: 1px solid #ccc;" />
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -519,10 +524,40 @@ function get_all_users_table() {
                         <textarea name="affiliate_condition" id="affiliate_condition" style="width: 100%; height: 200px;"><?=get_option('affiliate_condition')?></textarea>
                         <br>
                         <br>
-                        <input type="submit" class="button button-primary" value="บันทึกการเปลี่ยนแปลง">
+                        <?php submit_button('บันทึกการเปลี่ยนแปลง'); ?>
                     </form>
-                </div>
+                    <script type="text/javascript">
+                    jQuery(document).ready(function($){
+                        $('#upload_image_button').click(function(e) {
+                            e.preventDefault();
+                            
+                            // สร้าง Media Frame
+                            var image_frame = wp.media({
+                                title: 'เลือกรูปภาพ Logo',
+                                multiple: false,
+                                library: { type: 'image' }
+                            });
 
+                            // เมื่อเลือกรูปภาพเสร็จแล้ว
+                            image_frame.on('select', function() {
+                                var selection = image_frame.state().get('selection').first().toJSON();
+                                var image_url = selection.url;
+
+                                // 1. เอา URL ไปใส่ใน Input
+                                $('#affiliate_logo').val(image_url);
+                                
+                                // 2. แสดงตัวอย่างรูปภาพ (Preview)
+                                $('#image_preview').html('<img src="'+image_url+'" style="max-width: 300px; border: 1px solid #ccc;" />');
+                            });
+
+                            image_frame.open();
+                        });
+                    });
+                    </script>
+                </div>
+                <?php
+                } elseif(isset($_GET['option']) && $_GET['option'] == "affiliate_commission_settings") {
+                ?>
                 <h1>💵 กำหนด % Commission ตามประเภทสินค้า</h1>
                 <div style="padding: 25px 25px 25px 25px;">
                     <span>หากสินค้ามีหลายหมวดหมู่ในชิ้นเดียว ระบบจะเลือก % Commission ที่สูงที่สุดจากหมวดหมู่ที่กำหนดในสินค้านั้น ๆ</span>
@@ -584,34 +619,6 @@ function get_all_users_table() {
             </div>
         </div>
     </div>
-    <script type="text/javascript">
-    jQuery(document).ready(function ($) {
-        $('#upload_image_button').click(function (e) {
-            e.preventDefault();
-
-            // สร้าง Media Frame
-            var image_frame = wp.media({
-                title: 'เลือกรูปภาพ',
-                multiple: false,
-                library: { type: 'image' }
-            });
-
-            // เมื่อเลือกรูปภาพเสร็จแล้ว
-            image_frame.on('select', function () {
-                var selection = image_frame.state().get('selection').first().toJSON();
-                var image_url = selection.url;
-
-                // 1. เอา URL ไปใส่ใน Input
-                $('#popup_image_url').val(image_url);
-
-                // 2. แสดงตัวอย่างรูปภาพ (Preview)
-                $('#image_preview').html('<img src="' + image_url + '" style="max-width: 300px; border: 1px solid #ccc;" />');
-            });
-
-            image_frame.open();
-        });
-    });
-    </script>
     <?php
 }
 
