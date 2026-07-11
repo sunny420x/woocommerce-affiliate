@@ -339,6 +339,7 @@ function get_all_users_table() {
             <div class="leftside">
                 <h1>WooCommerce Affiliate System</h1>
                 <a href="admin.php?page=affiliate&option=affiliate_commission_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_commission_settings") { echo "class='active'"; } ?>>📦 Commission ตามประเภทสินค้า</a>
+                <a href="admin.php?page=affiliate&option=affiliate" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate") { echo "class='active'"; } ?>>💰 สรุปยอดของพันธมิตร</a>
                 <a href="admin.php?page=affiliate&option=statistic" <?php if(isset($_GET['option']) && $_GET['option'] == "statistic") { echo "class='active'"; } ?>>📊 สถิติการใช้งาน</a>
                 <a href="admin.php?page=affiliate&option=affiliate_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_settings") { echo "class='active'"; } ?>>⚙️ ตั้งค่าระบบ</a>
             </div>
@@ -393,9 +394,12 @@ function get_all_users_table() {
                     });
                     </script>
                 </div>
+                <?php
+                } else if(isset($_GET['option']) && $_GET['option'] == "affiliate") {
+                ?>
                 <h1>📊 สรุปยอดของพันธมิตร</h1>
                 <div style="padding: 0 25px 25px 25px;">
-                    <h2>💸 ยอด Commission ของสมาชิก</h2>
+                    <h2>💸 ยอด Commission ของพันธมิตร</h2>
                     <table class="widefat fixed striped">
                         <thead>
                             <tr>
@@ -657,12 +661,12 @@ function affiliate_report_page() {
             }
         </style>
         <div class="card-admin">
-            <div style="display: flex;">
-                <img src="<?=get_option('affiliate_logo', '')?>" height="100%" alt="" style="margin: 20px;">
-                <div style="margin: 10px 20px; float: right;">
+            <div style="display: grid; grid-template-columns: 100px 1fr;">
+                <img src="<?=get_option('affiliate_logo', '')?>" alt="Logo" width="100%" style="margin: 20px;">
+                <div style="margin: 10px 40px; float: right;">
                     <h1>รายงานรายได้จากระบบพันธมิตร - Affiliate Program Report</h1>
-                    <h4>คุณ <?=$affliate_records[0]->display_name;?> รหัสพันธมิตร <?=$refCode?></h4>
-                    <p>วันที่ออกรายงาน: <?=date('d-m-Y')?></p>
+                    <h4 style="margin: 5px 0;">คุณ <?=$affliate_records[0]->display_name;?> รหัสพันธมิตร <?=$refCode?></h4>
+                    <p style="padding: 0;">วันที่ออกรายงาน: <?=date('d-m-Y')?></p>
                 </div>
             </div>
             <?php
@@ -674,7 +678,8 @@ function affiliate_report_page() {
             <table class="widefat fixed">
                 <thead>
                     <tr>
-                        <th colspan="2">หมายเลขคำสั่งซื้อ</th>
+                        <th style="width: 10%;">#</th>
+                        <th>รายการสินค้า</th>
                         <th>ยอดขายรวม</th>
                         <th>% Commission</th>
                         <th>สถานะ</th>
@@ -720,12 +725,12 @@ function affiliate_report_page() {
                         }
                     ?>
                     <tr>
-                        <td colspan="4"><strong>รวมยอดขายทั้งหมด</strong></td>
-                        <td><strong><?=number_format($total_sales_sum, 2)?> บาท</strong></td>
+                        <th colspan="4"><strong>รวมยอดขายทั้งหมด</strong></th>
+                        <th><strong><?=number_format($total_sales_sum, 2)?> บาท</strong></th>
                     </tr>
                     <tr>
-                        <td colspan="4"><strong>รวมยอด Commission ทั้งหมด</strong></td>
-                        <td><strong><?=number_format($total_earns_sum, 2)?> บาท</strong></td>
+                        <th colspan="4"><strong>รวมยอด Commission ทั้งหมด</strong></th>
+                        <th><strong><?=number_format($total_earns_sum, 2)?> บาท</strong></th>
                     </tr>
                 </tbody>
             </table>
