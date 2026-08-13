@@ -880,8 +880,28 @@ function affiliate_track_conversion($order_id, $posted_data, $order)
             }
 
             if ($ref_owner_id && $ref_owner_id === $buyer_id) {
-                // ข้ามรายการนี้ (ไม่บันทึกคอมมิชชั่น)
+                // บันทึก Note ว่าเป็นการสั่งซื้อของเจ้าของ refCode เอง และจะไม่ให้คอมมิชชั่น
+                if (is_object($order) && method_exists($order, 'add_order_note')) {
+                    $order->add_order_note(sprintf('ตรวจพบ Affiliate refCode "%s" แต่ว่าผู้สั่งซื้อเป็นเจ้าของโค้ด — ข้ามการให้ค่า commission', esc_html($ref)));
+                }
+                // เก็บลง order meta เผื่อใช้อ้างอิงภายหลัง
+                if ($order_id) {
+                    update_post_meta($order_id, '_affiliate_refcode', $ref);
+                    update_post_meta($order_id, '_affiliate_ref_self_purchase', 1);
+                }
+
+                // ข้ามการให้คอมมิชชั่น
                 continue;
+            }
+
+            // บันทึก Note ลงในออเดอร์ว่าอ้างอิงมาจาก refCode ใด
+            if (is_object($order) && method_exists($order, 'add_order_note')) {
+                $order->add_order_note(sprintf('Affiliate refCode คือ "%s"', esc_html($ref)));
+            }
+
+            // เก็บ refCode ลงใน order meta เพื่อให้ง่ายต่อการค้นหา/รายงาน
+            if ($order_id) {
+                update_post_meta($order_id, '_affiliate_refcode', $ref);
             }
 
             // บันทึกธุรกรรมลงตาราง (เปลี่ยน Type เป็น 'sale' หรือ 'conversion')
