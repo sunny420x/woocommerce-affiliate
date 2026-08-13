@@ -925,27 +925,22 @@ function handle_global_ref_cookie()
     if (isset($_GET['ref'])) {
         $ref = sanitize_text_field(wp_unslash($_GET['ref']));
 
-        if (!isset($_COOKIE['aff_global_ref'])) {
-            setcookie(
-                'aff_global_ref',
-                $ref,
-                time() + (30 * 24 * 60 * 60), //ติดตามการซื้อ 30 วัน
-                '/',
-                $_SERVER['HTTP_HOST'],
-                true,
-                false
-            );
-            // บังคับให้ PHP มองเห็นทันทีในรอบการโหลดนี้
-            $_COOKIE['aff_global_ref'] = $ref;
-        } else {
-            // ถ้าเป็นหน้าสินค้า ค่อยรัน Logic บันทึกการเข้าชม
-            if (is_product()) {
-                track_product_view();
-            }
-        }
+        setcookie(
+            'aff_global_ref',
+            $ref,
+            time() + (30 * DAY_IN_SECONDS), 
+            '/',
+            COOKIE_DOMAIN,
+            true,
+            false
+        );
 
+        $_COOKIE['aff_global_ref'] = $ref;
     }
 
+    if (is_product() && isset($_COOKIE['aff_global_ref'])) {
+        track_product_view();
+    }
 }
 
 add_action('woocommerce_checkout_order_processed', 'affiliate_track_conversion', 10, 3);
