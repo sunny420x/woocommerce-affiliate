@@ -838,7 +838,7 @@ function handle_global_ref_cookie()
             setcookie(
                 'aff_global_ref',
                 $ref,
-                time() + 86400,
+                time() + (30 * 24 * 60 * 60), //ติดตามการซื้อ 30 วัน
                 '/',
                 $_SERVER['HTTP_HOST'],
                 true,
