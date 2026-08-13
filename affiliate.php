@@ -1138,7 +1138,7 @@ function affiliate_content()
                                 LEFT JOIN {$affiliate_transactions} AS t
                                     ON u.refCode = t.refCode
                                 LEFT JOIN {$order_stats_table} AS os 
-                                    ON t.order_id = os.order_id
+                                    ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed')
                                 WHERE u.ID = %d 
                                 GROUP BY u.ID, u.display_name, u.user_email, u.refCode, t.paid
                                 ORDER BY t.ID DESC", $user_id));
@@ -1151,7 +1151,7 @@ function affiliate_content()
                                 LEFT JOIN {$affiliate_transactions} AS t
                                     ON u.refCode = t.refCode
                                 LEFT JOIN {$order_stats_table} AS os 
-                                    ON t.order_id = os.order_id
+                                    ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed')
                                 WHERE u.ID = %d 
                                 ORDER BY t.ID DESC", $user_id));
 
