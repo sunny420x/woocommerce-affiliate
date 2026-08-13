@@ -166,7 +166,7 @@ class Affiliate {
             LEFT JOIN {$this->tables['transactions']} AS t
                 ON u.refCode = t.refCode
             LEFT JOIN {$this->tables['order_stats']} AS os 
-                ON t.order_id = os.order_id 
+                ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed') 
             {$query_option} 
             GROUP BY u.ID, u.display_name, u.user_email, u.refCode
             ORDER BY u.ID DESC
@@ -190,7 +190,7 @@ class Affiliate {
             LEFT JOIN {$this->tables['transactions']} AS t
                 ON u.refCode = t.refCode 
             LEFT JOIN {$this->tables['order_stats']} AS os 
-                ON t.order_id = os.order_id 
+                ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed') 
             WHERE u.refCode = %s 
             ORDER BY u.ID DESC
         ", $refCode);
@@ -217,7 +217,7 @@ class Affiliate {
             LEFT JOIN {$this->tables['transactions']} AS t
                 ON u.refCode = t.refCode
             LEFT JOIN {$this->tables['order_stats']} AS os 
-                ON t.order_id = os.order_id 
+                ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed') 
             {$query_option} 
             GROUP BY DATE(t.created_at)
             ORDER BY t.id
