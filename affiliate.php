@@ -861,14 +861,28 @@ add_action('woocommerce_checkout_order_processed', 'affiliate_track_conversion',
 
 function affiliate_track_conversion($order_id, $posted_data, $order)
 {
+    global $wpdb;
+
     // วนลูปสินค้าใน Order ทั้งหมด
     foreach ($order->get_items() as $item_id => $item) {
         $product_id = $item->get_product_id();
         $cookie_name = 'aff_global_ref';
 
-        // เช็คว่าคนซื้อมี Cookie 'aff_view_[ID]' ของสินค้าชิ้นนี้ไหม
+        // เช็คว่าคนซื้อมี Cookie 'aff_global_ref' ของสินค้าชิ้นนี้ไหม
         if (isset($_COOKIE[$cookie_name])) {
             $ref = sanitize_text_field($_COOKIE[$cookie_name]);
+
+            // ถ้าเจ้าของ refCode เป็นคนสั่งซื้อเอง ให้ข้ามการให้คอมมิชชั่น
+            $ref_owner_id = $wpdb->get_var($wpdb->prepare("SELECT ID FROM {$wpdb->prefix}users WHERE refCode = %s LIMIT 1", $ref));
+            $buyer_id = 0;
+            if (is_object($order) && method_exists($order, 'get_user_id')) {
+                $buyer_id = (int) $order->get_user_id();
+            }
+
+            if ($ref_owner_id && $ref_owner_id === $buyer_id) {
+                // ข้ามรายการนี้ (ไม่บันทึกคอมมิชชั่น)
+                continue;
+            }
 
             // บันทึกธุรกรรมลงตาราง (เปลี่ยน Type เป็น 'sale' หรือ 'conversion')
             // เราส่ง $order_id ไปด้วยเพื่อให้ตรวจสอบย้อนหลังได้
