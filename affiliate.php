@@ -320,8 +320,13 @@ function get_all_users_table() {
             display: flex;
             margin: 0 0 0 -20px;
         }
-        .white-label-zone h1,p {
-            padding: 0 20px;
+        .white-label-zone {
+            h1 {
+                padding: 0 20px;
+            }
+            p {
+                padding: 0 20px;
+            }
         }
     </style>
     <div class="white-label-zone no-print">
@@ -339,6 +344,7 @@ function get_all_users_table() {
             <div class="leftside">
                 <h1>WooCommerce Affiliate System</h1>
                 <a href="admin.php?page=affiliate&option=affiliate_commission_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_commission_settings") { echo "class='active'"; } ?>>📦 Commission ตามประเภทสินค้า</a>
+                <a href="admin.php?page=affiliate&option=affiliate_tiers_commission_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_tiers_commission_settings") { echo "class='active'"; } ?>>🪜 Commission แบบขั้นบันใด</a>
                 <a href="admin.php?page=affiliate&option=affiliate" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate") { echo "class='active'"; } ?>>💰 สรุปยอดของพันธมิตร</a>
                 <a href="admin.php?page=affiliate&option=statistic" <?php if(isset($_GET['option']) && $_GET['option'] == "statistic") { echo "class='active'"; } ?>>📊 สถิติการใช้งาน</a>
                 <a href="admin.php?page=affiliate&option=affiliate_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_settings") { echo "class='active'"; } ?>>⚙️ ตั้งค่าระบบ</a>
@@ -526,38 +532,6 @@ function get_all_users_table() {
                         <label for="affiliate_condition"><strong>เงื่อนไขการจ่ายค่าตอบแทน:</strong></label>
                         <p>เงื่อนไขการจ่ายค่าตอบแทน เช่น จ่ายค่าตอบแทนเมื่อยอดรวม 500 บาท หรือ จ่ายค่าตอบแทนทุก ๆ วันที่ 5 ของเดือน เป็นต้น</p>
                         <textarea name="affiliate_condition" id="affiliate_condition" style="width: 100%; height: 200px;"><?=get_option('affiliate_condition')?></textarea>
-                        <br>
-                        <br>
-                        <h3>ระดับ Commission ตามยอดขาย (Tiered)</h3>
-                        <p>กำหนดเกณฑ์และโบนัส % เพิ่มเติมจาก % Commission เริ่มต้น</p>
-                        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-                            <div>
-                                <label>เกณฑ์ ขั้นที่ 1 (บาท):</label><br>
-                                <input type="number" name="affiliate_tier_threshold_1" value="<?= esc_attr(get_option('affiliate_tier_threshold_1', 10000)); ?>" />
-                            </div>
-                            <div>
-                                <label>โบนัส % ขั้นที่ 1:</label><br>
-                                <input type="number" step="0.1" name="affiliate_tier_bonus_1" value="<?= esc_attr(get_option('affiliate_tier_bonus_1', 1)); ?>" />
-                            </div>
-                            <div>
-                                <label>เกณฑ์ ขั้นที่ 2 (บาท):</label><br>
-                                <input type="number" name="affiliate_tier_threshold_2" value="<?= esc_attr(get_option('affiliate_tier_threshold_2', 30000)); ?>" />
-                            </div>
-                            <div>
-                                <label>โบนัส % ขั้นที่ 2:</label><br>
-                                <input type="number" step="0.1" name="affiliate_tier_bonus_2" value="<?= esc_attr(get_option('affiliate_tier_bonus_2', 2)); ?>" />
-                            </div>
-                            <div>
-                                <label>เกณฑ์ ขั้นที่ 3 (บาท):</label><br>
-                                <input type="number" name="affiliate_tier_threshold_3" value="<?= esc_attr(get_option('affiliate_tier_threshold_3', 60000)); ?>" />
-                            </div>
-                            <div>
-                                <label>โบนัส % ขั้นที่ 3:</label><br>
-                                <input type="number" step="0.1" name="affiliate_tier_bonus_3" value="<?= esc_attr(get_option('affiliate_tier_bonus_3', 3)); ?>" />
-                            </div>
-                        </div>
-                        <br>
-                        <br>
                         <?php submit_button('บันทึกการเปลี่ยนแปลง'); ?>
                     </form>
                     <script type="text/javascript">
@@ -593,8 +567,8 @@ function get_all_users_table() {
                 } elseif(isset($_GET['option']) && $_GET['option'] == "affiliate_commission_settings") {
                 ?>
                 <h1>💵 กำหนด % Commission ตามประเภทสินค้า</h1>
-                <div style="padding: 25px 25px 25px 25px;">
-                    <span>หากสินค้ามีหลายหมวดหมู่ในชิ้นเดียว ระบบจะเลือก % Commission ที่สูงที่สุดจากหมวดหมู่ที่กำหนดในสินค้านั้น ๆ</span>
+                <div style="padding: 0 25px 25px 25px;">
+                    <p>หากสินค้ามีหลายหมวดหมู่ในชิ้นเดียว ระบบจะเลือก % Commission ที่สูงที่สุดจากหมวดหมู่ที่กำหนดในสินค้านั้น ๆ</p>
                     <form action="options.php" method="post">
                     <?php
                     settings_fields('affiliate_commission_settings_group');
@@ -630,6 +604,57 @@ function get_all_users_table() {
                     </div>
                     <br>
                     <input type="submit" class="button button-primary" name="setCommissionByProductCategory" value="บันทึกการเปลี่ยนแปลง">
+                </div>
+                <?php
+                } elseif(isset($_GET['option']) && $_GET['option'] == "affiliate_tiers_commission_settings") {
+                ?>
+                <h1>ระดับ Commission ตามยอดขาย (Tiered)</h1>
+                <div style="padding: 0 25px 25px 25px;">
+                    <form action="options.php" method="post">
+                        <?php
+                        settings_fields('affiliate_tiers_settings_group');
+                        ?>
+                        <p>กำหนดเกณฑ์และโบนัส % เพิ่มเติมจาก % Commission เริ่มต้น</p>
+                        <table class="widefat fixed striped">
+                            <thead>
+                                <th>เกณฑ์</th>
+                                <th>โบนัส</th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <label>เกณฑ์ ขั้นที่ 1 (บาท):</label><br>
+                                        <input type="number" name="affiliate_tier_threshold_1" value="<?= esc_attr(get_option('affiliate_tier_threshold_1', 10000)); ?>" />
+                                    </td>
+                                    <td>
+                                        <label>โบนัส % ขั้นที่ 1:</label><br>
+                                        <input type="number" step="0.1" name="affiliate_tier_bonus_1" value="<?= esc_attr(get_option('affiliate_tier_bonus_1', 1)); ?>" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label>เกณฑ์ ขั้นที่ 2 (บาท):</label><br>
+                                        <input type="number" name="affiliate_tier_threshold_2" value="<?= esc_attr(get_option('affiliate_tier_threshold_2', 30000)); ?>" />
+                                    </td>
+                                    <td>
+                                        <label>โบนัส % ขั้นที่ 2:</label><br>
+                                        <input type="number" step="0.1" name="affiliate_tier_bonus_2" value="<?= esc_attr(get_option('affiliate_tier_bonus_2', 2)); ?>" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label>เกณฑ์ ขั้นที่ 3 (บาท):</label><br>
+                                        <input type="number" name="affiliate_tier_threshold_3" value="<?= esc_attr(get_option('affiliate_tier_threshold_3', 60000)); ?>" />
+                                    </td>
+                                    <td>
+                                        <label>โบนัส % ขั้นที่ 3:</label><br>
+                                        <input type="number" step="0.1" name="affiliate_tier_bonus_3" value="<?= esc_attr(get_option('affiliate_tier_bonus_3', 3)); ?>" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                    <?php submit_button('บันทึกการเปลี่ยนแปลง'); ?>
                 </div>
                 <?php
                 } else {
@@ -796,13 +821,14 @@ function affiliate_settings_init()
     register_setting('affiliate_settings_group', 'affiliate_enable');
     register_setting('affiliate_settings_group', 'affiliate_logo');
     register_setting('affiliate_settings_group', 'affiliate_condition');
+
     // Tiered commission settings (thresholds and extra %)
-    register_setting('affiliate_settings_group', 'affiliate_tier_threshold_1');
-    register_setting('affiliate_settings_group', 'affiliate_tier_threshold_2');
-    register_setting('affiliate_settings_group', 'affiliate_tier_threshold_3');
-    register_setting('affiliate_settings_group', 'affiliate_tier_bonus_1');
-    register_setting('affiliate_settings_group', 'affiliate_tier_bonus_2');
-    register_setting('affiliate_settings_group', 'affiliate_tier_bonus_3');
+    register_setting('affiliate_tiers_settings_group', 'affiliate_tier_threshold_1');
+    register_setting('affiliate_tiers_settings_group', 'affiliate_tier_threshold_2');
+    register_setting('affiliate_tiers_settings_group', 'affiliate_tier_threshold_3');
+    register_setting('affiliate_tiers_settings_group', 'affiliate_tier_bonus_1');
+    register_setting('affiliate_tiers_settings_group', 'affiliate_tier_bonus_2');
+    register_setting('affiliate_tiers_settings_group', 'affiliate_tier_bonus_3');
 
     $args = array(
         'taxonomy'   => 'product_cat',
