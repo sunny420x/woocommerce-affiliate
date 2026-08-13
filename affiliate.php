@@ -528,6 +528,36 @@ function get_all_users_table() {
                         <textarea name="affiliate_condition" id="affiliate_condition" style="width: 100%; height: 200px;"><?=get_option('affiliate_condition')?></textarea>
                         <br>
                         <br>
+                        <h3>ระดับ Commission ตามยอดขาย (Tiered)</h3>
+                        <p>กำหนดเกณฑ์และโบนัส % เพิ่มเติมจาก % Commission เริ่มต้น</p>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                            <div>
+                                <label>เกณฑ์ ขั้นที่ 1 (บาท):</label><br>
+                                <input type="number" name="affiliate_tier_threshold_1" value="<?= esc_attr(get_option('affiliate_tier_threshold_1', 10000)); ?>" />
+                            </div>
+                            <div>
+                                <label>โบนัส % ขั้นที่ 1:</label><br>
+                                <input type="number" step="0.1" name="affiliate_tier_bonus_1" value="<?= esc_attr(get_option('affiliate_tier_bonus_1', 1)); ?>" />
+                            </div>
+                            <div>
+                                <label>เกณฑ์ ขั้นที่ 2 (บาท):</label><br>
+                                <input type="number" name="affiliate_tier_threshold_2" value="<?= esc_attr(get_option('affiliate_tier_threshold_2', 30000)); ?>" />
+                            </div>
+                            <div>
+                                <label>โบนัส % ขั้นที่ 2:</label><br>
+                                <input type="number" step="0.1" name="affiliate_tier_bonus_2" value="<?= esc_attr(get_option('affiliate_tier_bonus_2', 2)); ?>" />
+                            </div>
+                            <div>
+                                <label>เกณฑ์ ขั้นที่ 3 (บาท):</label><br>
+                                <input type="number" name="affiliate_tier_threshold_3" value="<?= esc_attr(get_option('affiliate_tier_threshold_3', 60000)); ?>" />
+                            </div>
+                            <div>
+                                <label>โบนัส % ขั้นที่ 3:</label><br>
+                                <input type="number" step="0.1" name="affiliate_tier_bonus_3" value="<?= esc_attr(get_option('affiliate_tier_bonus_3', 3)); ?>" />
+                            </div>
+                        </div>
+                        <br>
+                        <br>
                         <?php submit_button('บันทึกการเปลี่ยนแปลง'); ?>
                     </form>
                     <script type="text/javascript">
@@ -766,6 +796,13 @@ function affiliate_settings_init()
     register_setting('affiliate_settings_group', 'affiliate_enable');
     register_setting('affiliate_settings_group', 'affiliate_logo');
     register_setting('affiliate_settings_group', 'affiliate_condition');
+    // Tiered commission settings (thresholds and extra %)
+    register_setting('affiliate_settings_group', 'affiliate_tier_threshold_1');
+    register_setting('affiliate_settings_group', 'affiliate_tier_threshold_2');
+    register_setting('affiliate_settings_group', 'affiliate_tier_threshold_3');
+    register_setting('affiliate_settings_group', 'affiliate_tier_bonus_1');
+    register_setting('affiliate_settings_group', 'affiliate_tier_bonus_2');
+    register_setting('affiliate_settings_group', 'affiliate_tier_bonus_3');
 
     $args = array(
         'taxonomy'   => 'product_cat',
@@ -810,7 +847,35 @@ function addTransaction($ref, $type, $product_id, $order_id = null)
         $max_commission = $default_commission;
     }
 
-    // 3. บันทึกลง Database
+    // 3. คำนวณ Tier Bonus (ถ้ามีการส่ง order_id)
+    $final_commission = $max_commission;
+    if ($order_id && function_exists('wc_get_order')) {
+        $order_obj = wc_get_order($order_id);
+        if ($order_obj) {
+            $order_total = (float) $order_obj->get_total();
+
+            $t1 = (float) get_option('affiliate_tier_threshold_1', 10000);
+            $t2 = (float) get_option('affiliate_tier_threshold_2', 30000);
+            $t3 = (float) get_option('affiliate_tier_threshold_3', 60000);
+
+            $b1 = (float) get_option('affiliate_tier_bonus_1', 1);
+            $b2 = (float) get_option('affiliate_tier_bonus_2', 2);
+            $b3 = (float) get_option('affiliate_tier_bonus_3', 3);
+
+            $tier_bonus = 0;
+            if ($order_total >= $t3) {
+                $tier_bonus = $b3;
+            } elseif ($order_total >= $t2) {
+                $tier_bonus = $b2;
+            } elseif ($order_total >= $t1) {
+                $tier_bonus = $b1;
+            }
+
+            $final_commission = $max_commission + $tier_bonus;
+        }
+    }
+
+    // 4. บันทึกลง Database
     $wpdb->insert(
         $affiliate_transactions,
         [
@@ -818,7 +883,7 @@ function addTransaction($ref, $type, $product_id, $order_id = null)
             'type'                  => $type,
             'product_id'            => $product_id,
             'order_id'              => $order_id,
-            'commission_percentage' => $max_commission, // ค่าที่มากที่สุด
+            'commission_percentage' => $final_commission, // ค่าที่คำนวณแล้ว (รวม Tier Bonus)
             'created_at'            => current_time('mysql'),
         ],
         [
