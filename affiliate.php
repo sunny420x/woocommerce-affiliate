@@ -66,6 +66,7 @@ function my_plugin_install() {
         user_id int(11) NOT NULL,
         bank_account_number varchar(20) NOT NULL,
         bank_name varchar(50) NOT NULL,
+        verified int(1) DEFAULT 0,
         updated_at datetime NOT NULL,
         PRIMARY KEY  (id)
     ) $charset_collate;";
@@ -343,6 +344,7 @@ function get_all_users_table() {
         <div style="display: flex;">
             <div class="leftside">
                 <h1>WooCommerce Affiliate System</h1>
+                <a href="admin.php?page=affiliate&option=affiliate_users" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_users") { echo "class='active'"; } ?>>🤝 พันธมิตรในระบบ</a>
                 <a href="admin.php?page=affiliate&option=affiliate_commission_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_commission_settings") { echo "class='active'"; } ?>>📦 Commission ตามประเภทสินค้า</a>
                 <a href="admin.php?page=affiliate&option=affiliate_tiers_commission_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_tiers_commission_settings") { echo "class='active'"; } ?>>🪜 Commission แบบขั้นบันใด</a>
                 <a href="admin.php?page=affiliate&option=affiliate" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate") { echo "class='active'"; } ?>>💰 สรุปยอดของพันธมิตร</a>
@@ -655,6 +657,54 @@ function get_all_users_table() {
                         </table>
                     </form>
                     <?php submit_button('บันทึกการเปลี่ยนแปลง'); ?>
+                </div>
+                <?php
+                } elseif(isset($_GET['option']) && $_GET['option'] == "affiliate_users") {
+                ?>
+                <h1>พันธมิตรผู้ใช้งาน Affiliate</h1>
+                <div style="padding: 25px 25px 25px 25px;">
+                    <table class="widefat fixed striped">
+                        <thead>
+                            <th>#</th>
+                            <th>Username</th>
+                            <th>เอกสารยืนยันตัวตน</th>
+                            <th>refCode</th>
+                        </thead>
+                        <tbody>
+                            <?php
+                            global $wpdb;
+
+                            $users = $wpdb->get_results("SELECT refCode, display_name, ID FROM {$wpdb->prefix}users WHERE refCode IS NOT NULL ORDER BY ID DESC");
+                            foreach($users as $user) {
+                                $doc_url = get_user_meta($user->ID, 'affiliate_identity_doc', true);
+                            ?>
+                            <tr>
+                                <td><?=$user->ID?></td>
+                                <td><?=$user->display_name?></td>
+                                <td>
+                                    <?php
+                                    if($doc_url != "") {
+                                        if (is_array($doc_url)) {
+                                            foreach ($doc_url as $index => $url) {
+                                                echo '<a href="' . esc_url($url) . '" target="_blank">ดูรูปเอกสารยืนยันตัวตนรูปที่ ' . ($index + 1) . '</a><br>';
+                                            }
+                                        } else {
+                                                echo '<a href="' . esc_url($doc_url) . '" target="_blank">ดูรูปเอกสารยืนยันตัวตน</a><br>';
+                                        }
+                                    } else {
+                                    ?>
+                                    <div class="badge pending" style="width: max-content">ยังไม่ได้อัพโหลดเอกสาร</div>
+                                    <?php
+                                    }
+                                    ?>
+                                </td>
+                                <td><?=$user->refCode?></td>
+                            </tr>
+                            <?php
+                            }
+                            ?>
+                        </tbody>
+                    </table>
                 </div>
                 <?php
                 } else {
@@ -1036,286 +1086,25 @@ function affiliate_endpoint()
     add_rewrite_endpoint('affiliate-program', EP_PAGES);
 }
 
-// เพิ่มเมนูเข้าไปในรายการ My Account (เรียงต่อจาก Dashboard)
+// My Account Menu
 add_filter('woocommerce_account_menu_items', 'affiliate_menu_item');
 function affiliate_menu_item($items)
 {
-    // แทรกเมนูใหม่เข้าไป
-    if(esc_attr(get_option('affiliate_enable', 'yes')) == 'yes') {        
+    if (esc_attr(get_option('affiliate_enable', 'yes')) === 'yes') {        
         $new_items = array('affiliate-program' => 'โปรแกรมพันธมิตร (Affiliate)');
         return array_slice($items, 0, 1, true) + $new_items + array_slice($items, 1, count($items), true);
-    } else {
-        return $items;
     }
+    return $items;
 }
 
-// เนื้อหาภายในหน้า Affiliate
-add_action('woocommerce_account_affiliate-program_endpoint', 'affiliate_content');
-function affiliate_content()
+add_filter('woocommerce_get_endpoint_url', 'custom_affiliate_menu_endpoint_url', 10, 4);
+function custom_affiliate_menu_endpoint_url($url, $endpoint, $value, $permalink)
 {
-    global $wpdb;
-    $user_id = get_current_user_id();
-
-    $ref_code = $wpdb->get_var($wpdb->prepare(
-        "SELECT refCode FROM {$wpdb->prefix}users WHERE ID = %d",
-        $user_id
-    ));
-
-    if (isset($_POST['register_affiliate'])) {
-        check_admin_referer('aff_reg');
-
-        // เจนรหัสสุ่ม 8 หลัก
-        $new_ref = strtoupper(substr(md5($user_id . time()), 0, 8));
-
-        // 2. อัปเดตลงตาราง users ใน field refCode
-        $updated = $wpdb->update(
-            "{$wpdb->prefix}users",
-            array('refCode' => $new_ref), // Field
-            array('ID' => $user_id),      // เงื่อนไข
-            array('%s'),                  // Format ของค่าที่ใส่
-            array('%d')                   // Format ของเงื่อนไข
-        );
-
-        if ($updated !== false) {
-            $ref_code = $new_ref; // อัปเดตตัวแปรไว้โชว์ในหน้าเว็บทันที
-            echo '<div class="woocommerce-message">ยินดีด้วย! คุณสมัครเป็นตัวแทนสำเร็จแล้ว</div>';
-        }
+    if ($endpoint === 'affiliate-program') {
+        // ชี้ไปที่ URL /affiliate/dashboard/ โดยตรง
+        return site_url('/affiliate/dashboard/');
     }
-    if(esc_attr(get_option('affiliate_enable', 'yes')) == 'yes') {        
-        if ($ref_code) {
-            ?>
-            <div class="accordion" id="affiliate_report">
-                <div class="card">
-                    <div class="card-header">
-                        <button class="btn btn-link" data-toggle="collapse" data-target="#affiliateReportAccordion" aria-expanded="true" aria-controls="affiliateReportAccordion">สรุปยอด Commission ของฉัน</button>
-                    </div>
-                    <div id="affiliateReportAccordion" class="collapse show" data-parent="#affiliate_report">
-                        <div class="card-body">
-                            <div class="row" style="margin: 20px 0;">
-                                <div class="col-lg-3">
-                                    <canvas id="commissionChart" width="400" height="150"></canvas>
-                                </div>
-                                <div class="col-lg-9">
-                                    <canvas id="commissionFullChart" width="400" height="150"></canvas>
-                                </div>
-                            </div>
-                            <table>
-                                <tr>
-                                    <th>ขายได้ทั้งหมด (ชิ้น)</th>
-                                    <th>ยอดขายทั้งหมด</th>
-                                    <th>ยอด Commission</th>
-                                    <th>สถานะ</th>
-                                </tr>
-                                <?php
-                                global $wpdb;
-
-                                $affiliate_users = $wpdb->prefix . 'users';
-                                $affiliate_transactions = $wpdb->prefix . 'affiliate_transactions';
-                                $order_stats_table = $wpdb->prefix . 'wc_order_stats';
-
-                                $chart_labels = [];
-                                $chart_data = [];
-
-                                $full_chart_labels = [];
-                                $full_chart_data = [];
-
-                                $transactions = $wpdb->get_results($wpdb->prepare("
-                                SELECT 
-                                    t.paid,
-                                    COUNT(CASE WHEN t.type = 'view' THEN 1 END) AS total_views,
-                                    COUNT(CASE WHEN t.type = 'sale' THEN 1 END) AS total_sales_count,
-                                    SUM(CASE 
-                                        WHEN t.type = 'sale' AND os.total_sales IS NOT NULL 
-                                        THEN os.total_sales 
-                                        ELSE 0 
-                                    END) AS total_revenue,
-                                    SUM(CASE 
-                                        WHEN t.type = 'sale' AND os.total_sales IS NOT NULL 
-                                        THEN os.total_sales * (t.commission_percentage / 100)
-                                        ELSE 0 
-                                    END) AS total_earns
-                                FROM {$affiliate_users} AS u
-                                LEFT JOIN {$affiliate_transactions} AS t
-                                    ON u.refCode = t.refCode
-                                LEFT JOIN {$order_stats_table} AS os 
-                                    ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed')
-                                WHERE u.ID = %d 
-                                GROUP BY u.ID, u.display_name, u.user_email, u.refCode, t.paid
-                                ORDER BY t.ID DESC", $user_id));
-
-                                $transactions_full = $wpdb->get_results($wpdb->prepare("
-                                SELECT 
-                                    t.created_at,
-                                    os.total_sales
-                                FROM {$affiliate_users} AS u
-                                LEFT JOIN {$affiliate_transactions} AS t
-                                    ON u.refCode = t.refCode
-                                LEFT JOIN {$order_stats_table} AS os 
-                                    ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed')
-                                WHERE u.ID = %d 
-                                ORDER BY t.ID DESC", $user_id));
-
-                                foreach ($transactions as $tx) {
-                                    $chart_labels[] = ($tx->paid == 1) ? 'จ่ายแล้ว' : 'รอชำระ';
-                                    $chart_data[] = $tx->total_earns;
-                                    ?>
-                                    <tr>
-                                        <td><?= $tx->total_sales_count; ?> รายการ</td>
-                                        <td><?= number_format($tx->total_revenue, 2); ?> บาท</td>
-                                        <td><strong><?= number_format($tx->total_earns, 2); ?> บาท</strong></td>
-                                        <td><?php if($tx->paid == 0) {echo "<span style='color: red;'>รอชำระค่าตอบแทน</span>";} else { echo "<span style='color: green;'>ชำระค่าตอบแทนแล้ว</span>"; } ?></td>
-                                    </tr>
-                                    <?php
-                                }
-
-                                foreach ($transactions_full as $tx) {
-                                    $full_chart_labels[] = $tx->created_at;
-                                    $full_chart_data[] = $tx->total_sales;
-                                }
-                                ?>
-                            </table>
-                            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                            <script>
-                                document.addEventListener("DOMContentLoaded", function() {
-                                    const ctx = document.getElementById('commissionChart').getContext('2d');
-                                    const ctx_full = document.getElementById('commissionFullChart').getContext('2d');
-                                    if (!ctx || !ctx_full) {
-                                        console.error("ไม่พบ Canvas ID!");
-                                        return;
-                                    }
-                                    const myChart = new Chart(ctx, {
-                                        type: 'pie',
-                                        data: {
-                                            labels: <?php echo json_encode($chart_labels); ?>,
-                                            datasets: [{
-                                                label: 'ยอดเงิน (บาท)',
-                                                data: <?php echo !empty($chart_data) ? json_encode($chart_data) : '[]'; ?>,
-                                                backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)'],
-                                            }]
-                                        },
-                                    });
-                                    const myFullChart = new Chart(ctx_full, {
-                                        type: 'line',
-                                        data: {
-                                            labels: <?php echo json_encode($full_chart_labels); ?>,
-                                            datasets: [{
-                                                label: 'ยอดขาย (บาท)',
-                                                data: <?php echo !empty($full_chart_data) ? json_encode($full_chart_data) : '[]'; ?>,
-                                                backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)'],
-                                                borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
-                                                borderWidth: 1
-                                            }]
-                                        },
-                                        options: {
-                                            scales: { y: { beginAtZero: true } }
-                                        }
-                                    });
-                                })
-                            </script>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="accordion" id="affiliate_settings">
-                <div class="card">
-                    <div class="card-header"><button class="btn btn-link" data-toggle="collapse" data-target="#affiliateSettingsAccordion" aria-expanded="true" aria-controls="affiliateSettingsAccordion">ตั้งค่าระบบพันธมิตร</button></h5></div>
-                    <div id="affiliateSettingsAccordion" class="collapse show" data-parent="#affiliate_settings">
-                        <div class="card-body" style="padding: 20px; background: #fff; border-radius: 12px;">
-                            <div class="row">
-                                <div class="col-lg">
-                                    <p>รหัสแนะนำของคุณคือ: <strong><?= $esc_ref = esc_html($ref_code) ?></strong></p>
-                                    <p>ลิงก์สำหรับแนะนำ:<br>
-                                        <code style="display:block; padding:10px; background:#f0f0f0;"><?= home_url('/?ref=' . $esc_ref) ?></code>
-                                    </p>
-                                    <p>*เมื่อมีคนเข้าชมผ่านลิงก์นี้และซื้อสินค้า ระบบจะคิดค่า Commission จากการซื้อทันที คุณสามารถนำ  <strong>?ref=<?= $esc_ref = esc_html($ref_code) ?></strong> ไปวางหลังลิงค์จากเว็บไซต์ได้ทุกลิงค์เพื่อติดตามการซื้อ</p>
-                                </div>
-                                <div class="col-lg">
-                                    <?php
-                                    global $wpdb;
-                                    $user_id = get_current_user_id();
-                                    $table_info = $wpdb->prefix . 'users_affiliate_info';
-        
-                                    // --- ส่วนประมวลผลการบันทึก ---
-                                    if (isset($_POST['save_affiliate_info'])) {
-                                        $account_number = sanitize_text_field($_POST['aff_account_number']);
-                                        $bank_name = sanitize_text_field($_POST['aff_bank_name']);
-        
-                                        // เช็คก่อนว่ามีข้อมูลของ User คนนี้ในตารางหรือยัง
-                                        $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_info WHERE user_id = %d", $user_id));
-        
-                                        if ($exists) {
-                                            // มีอยู่แล้วให้ Update
-                                            $wpdb->update(
-                                                $table_info,
-                                                array(
-                                                    'bank_account_number' => $account_number,
-                                                    'bank_name' => $bank_name,
-                                                    'updated_at' => current_time('mysql')
-                                                ),
-                                                array('user_id' => $user_id),
-                                                array('%s', '%s', '%s'),
-                                                array('%d')
-                                            );
-                                        } else {
-                                            // ยังไม่มีให้ Insert
-                                            $wpdb->insert(
-                                                $table_info,
-                                                array(
-                                                    'user_id' => $user_id,
-                                                    'bank_account_number' => $account_number,
-                                                    'bank_name' => $bank_name,
-                                                    'updated_at' => current_time('mysql')
-                                                ),
-                                                array('%d', '%s', '%s', '%s')
-                                            );
-                                        }
-                                        echo '<div class="woocommerce-message">บันทึกข้อมูลบัญชีรับเงินเรียบร้อยแล้ว</div>';
-                                    }
-        
-                                    // --- ดึงข้อมูลปัจจุบันมาแสดงในฟอร์ม ---
-                                    $user_info = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_info WHERE user_id = %d", $user_id));
-                                    ?>
-                                    <form action="" method="post">
-                                        <div class="form-row" style="margin-bottom: 15px;">
-                                            <label>หมายเลขบัญชีธนาคาร:</label>
-                                            <input type="text" name="aff_account_number" value="<?= esc_attr($user_info->bank_account_number ?? ''); ?>"
-                                                placeholder="ระบุเลขบัญชี" required style="width: 100%;" />
-                                        </div>
-        
-                                        <div class="form-row" style="margin-bottom: 15px;">
-                                            <label>ธนาคาร:</label>
-                                            <select name="aff_bank_name" style="width: 100%;">
-                                                <?php
-                                                $banks = ["ธนาคารกรุงเทพ", "ธนาคารกสิกรไทย", "ธนาคารไทยพาณิชย์", "ธนาคารกรุงไทย", "ธนาคารกรุงศรีอยุธยา", "ธนาคารทหารไทยธนชาต", "ธนาคารยูโอบี", "ธนาคารออมสิน"];
-                                                foreach ($banks as $bank):
-                                                    ?>
-                                                    <option value="<?= $bank ?>" <?php selected($user_info->bank_name ?? '', $bank); ?>><?= $bank ?></option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </div>
-                                        <button type="submit" name="save_affiliate_info" class="button">บันทึกข้อมูลบัญชี</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    <?php
-        } else {
-            ?>
-            <h2>คุณยังไม่ได้สมัครเป็นตัวแทนแนะนำสินค้า สมัครเพื่อรับลิงก์พิเศษและเริ่มสะสมยอดขายได้ทันที!</h2>
-            <form method="post">
-                <?php wp_nonce_field('aff_reg'); ?>
-                <button type="submit" name="register_affiliate" class="button">สมัครเป็นพันธมิตรตอนนี้</button>
-            </form>
-    <?php
-        }
-    } else {
-    ?>
-        <h2>ปิดใช้งานชั่วคราว</h2>
-    <?php
-    }
+    return $url;
 }
 
 //User Setting
@@ -1412,5 +1201,31 @@ function inject_affliate_share_buttons() {
         }
     </style>
     <?php
+    }
+}
+
+// เพิ่ม Rewrite Rule สำหรับ /affiliate/dashboard
+add_action('init', 'affiliate_dashboard_rewrite_rule');
+function affiliate_dashboard_rewrite_rule() {
+    add_rewrite_rule('^affiliate/dashboard/?$', 'index.php?is_affiliate_dashboard=1', 'top');
+}
+
+add_filter('query_vars', 'affiliate_dashboard_query_vars');
+function affiliate_dashboard_query_vars($vars) {
+    $vars[] = 'is_affiliate_dashboard';
+    return $vars;
+}
+
+add_action('template_redirect', 'affiliate_dashboard_template_redirect');
+function affiliate_dashboard_template_redirect() {
+    if (get_query_var('is_affiliate_dashboard')) {
+        status_header(200);
+
+        $template_path = plugin_dir_path(__FILE__) . '/pages/member/dashboard.php';
+
+        if (file_exists($template_path)) {
+            require_once $template_path;
+            exit;
+        }
     }
 }
