@@ -31,7 +31,15 @@ $notice_type    = 'success';
 if (isset($_POST['register_affiliate'])) {
     if (check_admin_referer('aff_reg')) {
         
-        // เช็คว่ามีการเลือกไฟล์มาอย่างน้อย 1 ไฟล์หรือไม่
+        // 1. ตรวจสอบ User ID (รับค่ากรณีผู้ใช้ล็อกอินอยู่)
+        $user_id = get_current_user_id();
+        if (!$user_id) {
+            $notice_message = 'กรุณาเข้าสู่ระบบก่อนทำการสมัคร';
+            $notice_type    = 'danger';
+            return;
+        }
+
+        // 2. เช็คว่ามีการเลือกไฟล์มาอย่างน้อย 1 ไฟล์หรือไม่
         if (!empty($_FILES['aff_identity_doc']['name'][0])) {
             require_once(ABSPATH . 'wp-admin/includes/file.php');
             
@@ -40,11 +48,17 @@ if (isset($_POST['register_affiliate'])) {
             $has_upload_error = false;
             $error_msg        = '';
 
+            // กำหนดเฉพาะ MIME Types ที่อนุญาต (เพื่อความปลอดภัย)
+            $mimes = array(
+                'jpg|jpeg|jpe' => 'image/jpeg',
+                'png'          => 'image/png',
+                'pdf'          => 'application/pdf'
+            );
+
             // วนลูปประมวลผลไฟล์ทีละไฟล์
             foreach ($files['name'] as $key => $value) {
                 if (!empty($files['name'][$key])) {
                     
-                    // จัดโครงสร้างไฟล์สำหรับ wp_handle_upload
                     $file = array(
                         'name'     => $files['name'][$key],
                         'type'     => $files['type'][$key],
@@ -53,11 +67,15 @@ if (isset($_POST['register_affiliate'])) {
                         'size'     => $files['size'][$key]
                     );
 
-                    $upload_overrides = array('test_form' => false);
-                    $movefile         = wp_handle_upload($file, $upload_overrides);
+                    $upload_overrides = array(
+                        'test_form' => false,
+                        'mimes'     => $mimes // กรองประเภทไฟล์
+                    );
+
+                    $movefile = wp_handle_upload($file, $upload_overrides);
 
                     if ($movefile && !isset($movefile['error'])) {
-                        $uploaded_urls[] = $movefile['url']; // เก็บ URL ใส่ Array
+                        $uploaded_urls[] = $movefile['url'];
                     } else {
                         $has_upload_error = true;
                         $error_msg        = $movefile['error'];
@@ -66,33 +84,60 @@ if (isset($_POST['register_affiliate'])) {
                 }
             }
 
-            // ถ้าอัปโหลดสำเร็จครบถ้วน
+            // 3. ถ้าอัปโหลดสำเร็จครบถ้วน
             if (!$has_upload_error && !empty($uploaded_urls)) {
-                
-                // บันทึก Array ของ URL ทั้งหมดลงใน usermeta (WordPress จะ serialize ให้อัตโนมัติ)
+                // บันทึก URL เอกสารลงใน usermeta
                 update_user_meta($user_id, 'affiliate_identity_doc', $uploaded_urls);
 
-                // สร้าง refCode และอัปเดตลงตาราง users
-                $new_ref = strtoupper(substr(md5($user_id . time()), 0, 8));
-                $updated = $wpdb->update(
-                    "{$wpdb->prefix}users",
-                    array('refCode' => $new_ref),
-                    array('ID' => $user_id),
-                    array('%s'),
-                    array('%d')
+                $social_data = array(
+                    'user_id'              => $user_id,
+                    'full_name'      => sanitize_text_field($_POST['full_name'] ?? ''),
+                    'phone_number'      => sanitize_text_field($_POST['phone_number'] ?? ''),
+                    'social_media_01'      => sanitize_text_field($_POST['social_media_01'] ?? ''),
+                    'social_media_01_type' => sanitize_text_field($_POST['social_media_01_type'] ?? ''),
+                    'social_media_02'      => sanitize_text_field($_POST['social_media_02'] ?? ''),
+                    'social_media_02_type' => sanitize_text_field($_POST['social_media_02_type'] ?? ''),
+                    'social_media_03'      => sanitize_text_field($_POST['social_media_03'] ?? ''),
+                    'social_media_03_type' => sanitize_text_field($_POST['social_media_03_type'] ?? ''),
+                    'social_media_04'      => sanitize_text_field($_POST['social_media_04'] ?? ''),
+                    'social_media_04_type' => sanitize_text_field($_POST['social_media_04_type'] ?? ''),
                 );
 
-                if ($updated !== false) {
-                    $ref_code       = $new_ref;
-                    $notice_message = 'ยินดีด้วย! ส่งหลักฐานและสมัครเป็นตัวแทนพันธมิตรสำเร็จแล้ว';
-                    $notice_type    = 'success';
+                $inserted = $wpdb->insert(
+                    $wpdb->prefix . 'users_affiliate_info',
+                    $social_data,
+                    array('%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')
+                );
+
+                if ($inserted !== false) {
+                    // สร้าง refCode และอัปเดตลงตาราง users (ทำเพียงครั้งเดียว)
+                    $new_ref = strtoupper(substr(md5($user_id . time() . wp_rand()), 0, 8));
+                    
+                    $updated = $wpdb->update(
+                        "{$wpdb->prefix}users",
+                        array('refCode' => $new_ref),
+                        array('ID' => $user_id),
+                        array('%s'),
+                        array('%d')
+                    );
+
+                    if ($updated !== false) {
+                        $ref_code       = $new_ref;
+                        $notice_message = 'ยินดีด้วย! ส่งหลักฐานและสมัครเป็นตัวแทนพันธมิตรสำเร็จแล้ว';
+                        $notice_type    = 'success';
+                    } else {
+                        $notice_message = 'บันทึกข้อมูลเรียบร้อย แต่ไม่สามารถสร้าง Ref Code ได้';
+                        $notice_type    = 'warning';
+                    }
+                } else {
+                    $notice_message = 'เกิดข้อผิดพลาดในการบันทึกข้อมูลลงฐานข้อมูล';
+                    $notice_type    = 'danger';
                 }
 
             } else {
                 $notice_message = 'เกิดข้อผิดพลาดในการอัปโหลดไฟล์: ' . esc_html($error_msg);
                 $notice_type    = 'danger';
             }
-
         } else {
             $notice_message = 'กรุณาแนบไฟล์รูปหลักฐานยืนยันตัวตนอย่างน้อย 1 ไฟล์';
             $notice_type    = 'danger';
@@ -371,11 +416,68 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                         <!-- ส่วนอัปโหลดหลักฐาน -->
                         <div class="mb-4 text-start">
                             <label for="aff_identity_doc" class="form-label fw-bold">
+                                <i class="fa-solid fa-file text-primary me-1"></i> ข้อมูลเกี่ยวกับผู้สมัคร</span>
+                            </label>
+
+                            <div class="form-group mb-4">
+                                <label for="full_name">ชื่อ-นามสกุล:</label>
+                                <input type="text" name="full_name" id="full_name" class="form-control">
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <label for="phone_number">เบอร์โทรศัพท์:</label>
+                                <input type="text" name="phone_number" id="phone_number" class="form-control">
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <label for="social_media">ช่องทางที่ใช้เผยแพร่:</label>
+                                <p class="text-muted small">วางลิงค์โปรไฟล์ Social Media ของท่าน ที่จะใช้เป็นช่องทางในการเผยแพร่สินค้า</p>
+                                <div class="d-flex gap-2">
+                                    <select name="social_media_01_type" id="social_media_01_type" class="form-select" style="width: 250px;">
+                                        <option value="facebook/ig">Facebook / Instagram</option>
+                                        <option value="tiktok">TikTok</option>
+                                        <option value="youtube">YouTube</option>
+                                        <option value="other">อื่น ๆ </option>
+                                    </select>
+                                    <input type="text" name="social_media_01" id="social_media_01" class="form-control">
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <select name="social_media_02_type" id="social_media_02_type" class="form-select" style="width: 250px;">
+                                       <option value="facebook/ig">Facebook / Instagram</option>
+                                        <option value="tiktok">TikTok</option>
+                                        <option value="youtube">YouTube</option>
+                                        <option value="other">อื่น ๆ </option>
+                                    </select>
+                                    <input type="text" name="social_media_02" id="social_media_02" class="form-control">
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <select name="social_media_03_type" id="social_media_03_type" class="form-select" style="width: 250px;">
+                                       <option value="facebook/ig">Facebook / Instagram</option>
+                                        <option value="tiktok">TikTok</option>
+                                        <option value="youtube">YouTube</option>
+                                        <option value="other">อื่น ๆ </option>
+                                    </select>
+                                    <input type="text" name="social_media_03" id="social_media_03" class="form-control">
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <select name="social_media_04_type" id="social_media_04_type" class="form-select" style="width: 250px;">
+                                        <option value="facebook/ig">Facebook / Instagram</option>
+                                        <option value="tiktok">TikTok</option>
+                                        <option value="youtube">YouTube</option>
+                                        <option value="other">อื่น ๆ </option>
+                                    </select>
+                                    <input type="text" name="social_media_04" id="social_media_04" class="form-control">
+                                </div>
+                            </div>
+
+                            <label for="aff_identity_doc" class="form-label fw-bold">
                                 <i class="fa-solid fa-file-arrow-up text-primary me-1"></i> อัปโหลดเอกสารยืนยันตัวตน (สำเนาบัตรประชาชน และ รูปถ่ายคู่บัตรประชาชน) <span class="text-danger">*</span>
                             </label>
                             <!-- รูปที่ 1: บัตรประชาชน -->
+                            <label for="aff_identity_doc_card">บัตรประชาชน:</label>
                             <input type="file" name="aff_identity_doc[]" class="form-control mb-2" accept="image/*" required>
                             <!-- รูปที่ 2: รูปถ่ายคู่กับบัตร -->
+                            <label for="aff_identity_doc_selfie">รูปถ่ายคู่บัตรประชาชน:</label>
                             <input type="file" name="aff_identity_doc[]" class="form-control" accept="image/*" required>
                             <div class="form-text small text-muted">
                                 รองรับไฟล์รูปภาพ (JPG, PNG) หรือ PDF ขนาดไม่เกิน 5MB
