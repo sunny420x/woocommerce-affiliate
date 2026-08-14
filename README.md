@@ -1,9 +1,17 @@
-<img width="1709" height="758" alt="image" src="https://github.com/user-attachments/assets/a9925adb-cabc-4aea-b92a-ff4fc1ad3979" />
-
-# ระบบ Affiliate สำหรับ WooCommerce #
+# ระบบ Affiliate สำหรับ WooCommerce
 
 ระบบ Affiliate นี้จะใช้ตาราง wp_users เดิมที่อยู่ในระบบ โดยจะมีการเพิ่มคอลัมน์ refCode เข้าไปในตาราง wp_users เดิมของ Wordpress เพื่อรองรับระบบ Affiliate
 
-# การติดตั้ง #
+## คุณสมบัติ
+- แบ่งอัตรา Commission ตามหมวดหมู่สินค้า
+- "ระบบยิ่งขายยิ่งได้" เพิ่มอัตราคอมมิชชั่นเมื่อถึงยอดที่กำหนด
+- ผู้ใช้ Affiliate ต้องยืนยันตัวตนก่อนจะสามารถเริ่มขาย (การรักษาภาพลักษณ์ของแบรนด์)
+- ลิงค์ Affiliate ติดตามผล 30 วัน ตามมาตรฐานของระบบ Affiliate สากล
+
+## การติดตั้ง
 
 สามารถติดตั้งปลั้กอินนี้ได้โดยการดาวน์โหลดไฟล์นี้จาก Github หน้านี้ และอัพโหลดลงในหน้า /wp-admin/plugin-install.php หลังจากอัพโหลด และเปิดใช้งาน (Activate) ระบบจะทำการสร้างตารางและคอลัมน์ใหม่โดยอัตโนมัติ
+
+## Dashboard แยกสำหรับ Affiliate
+
+<img width="1918" height="658" alt="image" src="https://github.com/user-attachments/assets/5ad1da56-565e-4d27-bd6e-18d89ba0fc54" />
