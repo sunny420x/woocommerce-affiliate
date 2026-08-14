@@ -171,7 +171,7 @@ if ($ref_code) {
             END) AS total_revenue,
             SUM(CASE 
                 WHEN t.type = 'sale' AND os.total_sales IS NOT NULL AND (os.status = 'completed' OR os.status = 'wc-completed')
-                THEN os.total_sales * (t.commission_percentage / 100)
+                THEN (os.total_sales - os.shipping_total) * (t.commission_percentage / 100)
                 ELSE 0 
             END) AS total_earns 
         FROM {$affiliate_users} AS u

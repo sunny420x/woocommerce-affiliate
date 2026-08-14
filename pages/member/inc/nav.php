@@ -30,7 +30,7 @@ if (!defined('ABSPATH')) {
             <a class="nav-link" data-bs-toggle="tab" href="#policy" role="tab">
                 <i class="fa-solid fa-file-contract me-2"></i> นโยบายและเงื่อนไข
             </a>
-
+            <hr>
             <a class="nav-link" style="cursor: pointer;" href="/">
                 <i class="fa-solid fa-store me-2"></i> กลับไปหน้าร้านค้า
             </a>

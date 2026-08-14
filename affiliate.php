@@ -2,7 +2,6 @@
 /**
  * Plugin Name: World Chemical Affiliate Marketing
  * Description: ระบบ Affiliate Marketing สำหรับ World Chemical
- * Version: 1.0
  * Author: Jirakit Pawnsakunrungrot
  * Author URI: https://www.linkedin.com/in/sunny-jirakit
  * Plugin URI: https://github.com/sunny420x/woocommerce-affiliate
