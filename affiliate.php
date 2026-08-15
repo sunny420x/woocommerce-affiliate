@@ -340,10 +340,30 @@ function get_all_users_table() {
         </div>
     </div>
     <div class="wrap">
+        <?php
+        if(isset($_GET['status'])) {
+        ?>
+        <div class="notice notice-<?=$_GET['status']?> is-dismissible">
+            <?php
+            if($_GET['status'] == 'success') {
+            ?>
+                <p>บันทึกข้อมูลแล้ว</p>
+            <?php
+            } else {
+            ?>
+                <p>เกิดข้อผิดพลาด</p>
+            <?php
+            }
+            ?>
+        </div>
+        <?php
+        }
+        ?>
         <div style="display: flex;">
             <div class="leftside">
                 <h1>WooCommerce Affiliate System</h1>
                 <a href="admin.php?page=affiliate&option=affiliate_users" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_users") { echo "class='active'"; } ?>>🤝 พันธมิตรในระบบ</a>
+                <a href="admin.php?page=affiliate&option=pages_content" <?php if(isset($_GET['option']) && $_GET['option'] == "pages_content") { echo "class='active'"; } ?>>📝 เนื้อหาที่แสดงในระบบ</a>
                 <a href="admin.php?page=affiliate&option=affiliate_commission_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_commission_settings") { echo "class='active'"; } ?>>📦 Commission ตามประเภทสินค้า</a>
                 <a href="admin.php?page=affiliate&option=affiliate_tiers_commission_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_tiers_commission_settings") { echo "class='active'"; } ?>>🪜 Commission แบบขั้นบันใด</a>
                 <a href="admin.php?page=affiliate&option=affiliate" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate") { echo "class='active'"; } ?>>💰 สรุปยอดของพันธมิตร</a>
@@ -494,6 +514,45 @@ function get_all_users_table() {
                     </table>
                 </div>
                 <?php
+                } elseif(isset($_GET['option']) && $_GET['option'] == "pages_content") {
+                ?>
+                <h1>📝 เนื้อหา (Contents)</h1>
+                <div style="padding: 0 25px 25px 25px;">
+                    <form action="options.php" method="post">
+                        <?php
+                        settings_fields('affiliate_content_settings_group');
+                        ?>
+                        <h3 for="affiliate_condition"><strong>เงื่อนไขการจ่ายค่าตอบแทน:</strong></h3>
+                        <p>เงื่อนไขการจ่ายค่าตอบแทน เช่น จ่ายค่าตอบแทนเมื่อยอดรวม 500 บาท หรือ จ่ายค่าตอบแทนทุก ๆ วันที่ 5 ของเดือน เป็นต้น</p>
+                        <?php
+                        wp_editor( get_option('affiliate_condition', ''), 'affiliate_condition', array(
+                            'textarea_name' => 'affiliate_condition', // The 'name' attribute for the form submission
+                            'textarea_rows' => 15,                      // Number of visible rows
+                            'media_buttons' => true,                   // Show "Add Media" buttons
+                        ));
+                        ?>
+                        <br>
+                        <h3 for="affiliate_support_page"><strong>เนื้อหาในหน้าช่วยเหลือของพันธมิตร:</strong></h3>
+                        <p>เนื้อหา HTML นี้จะแสดงในหน้าช่วยเหลือของพันธมิตร ควรประกอบด้วย คำถามที่พบบ่อย ช่องทางการติดต่อ และอื่น ๆ</p>
+                        <?php
+                        wp_editor( get_option('affiliate_support_page', ''), 'affiliate_support_page', array(
+                            'textarea_name' => 'affiliate_support_page', // The 'name' attribute for the form submission
+                            'textarea_rows' => 15,                      // Number of visible rows
+                            'media_buttons' => true,                   // Show "Add Media" buttons
+                        ));
+                        ?>
+                        <h3 for="affiliate_support_page"><strong>คุณสมบัติและเงื่อนไขของผู้สมัคร:</strong></h3>
+                        <?php
+                        wp_editor( get_option('affiliate_requirements_and_conditions', ''), 'affiliate_requirements_and_conditions', array(
+                            'textarea_name' => 'affiliate_requirements_and_conditions', // The 'name' attribute for the form submission
+                            'textarea_rows' => 15,                      // Number of visible rows
+                            'media_buttons' => true,                   // Show "Add Media" buttons
+                        ));
+                        ?>
+                        <?php submit_button('บันทึกการเปลี่ยนแปลง'); ?>
+                    </form>
+                </div>
+                <?php
                 } elseif(isset($_GET['option']) && $_GET['option'] == "affiliate_settings") {
                 ?>
                 <h1>🤝🏻 WooCommerce | Affiliate Program</h1>
@@ -509,7 +568,7 @@ function get_all_users_table() {
                             <option value="no" <?php if(esc_attr(get_option('affiliate_enable', 'yes')) == 'no') { echo "selected"; } ?>>ปิดใช้งาน</option>
                         </select>
                         <br>
-                        <br>
+                        <h2>เอกสาร (Documents)</h2>
                         <label for="affiliate_logo"><strong>ลิงค์รูปภาพ Logo บริษัท (สำหรับออกรายงาน):</strong></label><br>
                         <div class="image-upload-wrapper">
                             <input type="text" name="affiliate_logo" id="affiliate_logo" style="width: 400px;" value="<?php echo esc_attr(get_option('affiliate_logo', ''))?>"/>
@@ -525,14 +584,11 @@ function get_all_users_table() {
                             </div>
                         </div>
                         <br>
-                        <br>
+                        <h2>ค่าเริ่มต้น (Default Variables)</h2>
                         <label for="affiliate_commission"><strong>% Commission เริ่มต้น:</strong> </label><input type="number" name="affiliate_commission"
                             value="<?= esc_attr(get_option('affiliate_commission', 10)); ?>" /> %
                         <p>* การอัพเดท % Commission จะไม่มีผลย้อนหลังกับข้อมูลการขายเดิมในระบบ แต่จะมีผลกับข้อมูลการขายใหม่ที่จะถูกเพิ่มเข้ามาหลังจากอัพเดท</p>
 
-                        <label for="affiliate_condition"><strong>เงื่อนไขการจ่ายค่าตอบแทน:</strong></label>
-                        <p>เงื่อนไขการจ่ายค่าตอบแทน เช่น จ่ายค่าตอบแทนเมื่อยอดรวม 500 บาท หรือ จ่ายค่าตอบแทนทุก ๆ วันที่ 5 ของเดือน เป็นต้น</p>
-                        <textarea name="affiliate_condition" id="affiliate_condition" style="width: 100%; height: 200px;"><?=get_option('affiliate_condition')?></textarea>
                         <?php submit_button('บันทึกการเปลี่ยนแปลง'); ?>
                     </form>
                     <script type="text/javascript">
@@ -665,14 +721,14 @@ function get_all_users_table() {
                             if(isset($_GET['user_id'])) {
                                 $user_id = sanitize_text_field($_GET['user_id']);
                                 $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}users_affiliate_info SET verified = 1 WHERE user_id = %d", $user_id));
-                                wp_redirect( "/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=$user_id" );
+                                wp_redirect( "/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=$user_id&status=success" );
                             }
                         }
                         if($_GET['action'] == "unverify") {
                             if(isset($_GET['user_id'])) {
                                 $user_id = sanitize_text_field($_GET['user_id']);
                                 $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}users_affiliate_info SET verified = 0 WHERE user_id = %d", $user_id));
-                                wp_redirect( "/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=$user_id" );
+                                wp_redirect( "/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=$user_id&status=success" );
                             }
                         }
 
@@ -770,6 +826,7 @@ function get_all_users_table() {
                         <thead>
                             <th>#</th>
                             <th>Username</th>
+                            <th>สถานะ</th>
                             <th>refCode</th>
                             <th>จัดการ</th>
                         </thead>
@@ -785,6 +842,7 @@ function get_all_users_table() {
                             <tr>
                                 <td><?=$user->ID?></td>
                                 <td><?=$user->display_name?></td>
+                                <td><?php if($user->verified == 1) {?><span class="badge success">ยืนยันตัวตนแล้ว</span><?php } else {?><span class="badge danger">ยังไม่ได้ยืนยันตัวตน</span><?php } ?></td>
                                 <td><?=$user->refCode?></td>
                                 <td>
                                     <button class="button button-outline-primary" onclick="window.location.href='/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=<?=$user->ID?>'">ดูโปรไฟล์</button>
@@ -960,7 +1018,10 @@ function affiliate_settings_init()
     register_setting('affiliate_settings_group', 'affiliate_commission');
     register_setting('affiliate_settings_group', 'affiliate_enable');
     register_setting('affiliate_settings_group', 'affiliate_logo');
-    register_setting('affiliate_settings_group', 'affiliate_condition');
+
+    register_setting('affiliate_content_settings_group', 'affiliate_condition');
+    register_setting('affiliate_content_settings_group', 'affiliate_support_page');
+    register_setting('affiliate_content_settings_group', 'affiliate_requirements_and_conditions' );
 
     // Tiered commission settings (thresholds and extra %)
     register_setting('affiliate_tiers_settings_group', 'affiliate_tier_threshold_1');

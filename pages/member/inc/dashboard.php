@@ -2,6 +2,7 @@
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
+$transactions_latest = getTransaction($user_id, "LIMIT 5");
 ?>
 <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-4">
@@ -83,8 +84,8 @@ if (!defined('ABSPATH')) {
                 </tr>
             </thead>
             <tbody>
-                <?php if (!empty($transactions)) : ?>
-                    <?php foreach ($transactions as $tx) : ?>
+                <?php if (!empty($transactions_latest)) : ?>
+                    <?php foreach ($transactions_latest as $tx) : ?>
                         <tr>
                             <td>
                                 <strong>#<?= esc_html($tx->order_id); ?></strong> 

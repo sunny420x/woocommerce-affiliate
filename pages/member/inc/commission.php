@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <div class="card card-custom p-4" id="commission">
-    <h5 class="fw-bold mb-3"><i class="fa-solid fa-table me-2"></i>ตารางอัตราคอมมิชชั่น (Commission Table)</h5>
+    <h5 class="fw-bold mb-3"><i class="fa-solid fa-table text-primary me-2"></i>ตารางอัตราคอมมิชชั่น (Commission Table)</h5>
     <table class="table">
         <thead>
             <th>หมวดหมู่สินค้า</th>

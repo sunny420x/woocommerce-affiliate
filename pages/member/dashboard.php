@@ -196,7 +196,9 @@ $total_revenue_sum  = 0;
 $total_sales_cnt    = 0;
 $transactions       = [];
 
-if ($ref_code) {
+function getTransaction($user_id, $limit = '') {
+    global $wpdb;
+
     $affiliate_users        = $wpdb->prefix . 'users';
     $affiliate_transactions = $wpdb->prefix . 'affiliate_transactions';
     $order_stats_table      = $wpdb->prefix . 'wc_order_stats';
@@ -220,14 +222,18 @@ if ($ref_code) {
                 ELSE 0 
             END) AS total_earns 
         FROM {$affiliate_users} AS u
-        LEFT JOIN {$affiliate_transactions} AS t
+        JOIN {$affiliate_transactions} AS t
             ON u.refCode = t.refCode
-        LEFT JOIN {$order_stats_table} AS os 
+        JOIN {$order_stats_table} AS os 
             ON t.order_id = os.order_id
         WHERE u.ID = %d 
         GROUP BY u.ID, u.display_name, u.user_email, u.refCode, t.paid, t.order_id, os.status
-        ORDER BY t.order_id DESC", $user_id));
+        ORDER BY t.order_id DESC ".$limit, $user_id));
 
+    return $transactions;
+}
+
+if ($ref_code) {
     $transactions_full = $wpdb->get_results($wpdb->prepare("
         SELECT 
             t.created_at,
@@ -387,7 +393,6 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
             <?php endif; ?>
 
             <?php if (!$is_affiliate_enabled) : ?>
-                <!-- CASE 1: ระบบปิดใช้งาน -->
                 <div class="card card-custom p-5 text-center my-5">
                     <div class="text-warning mb-3">
                         <i class="fa-solid fa-triangle-exclamation fa-4x"></i>
@@ -398,113 +403,129 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
 
                 
                 <?php elseif (!$ref_code) : ?>
-                    <!-- CASE 2: ยังไม่ได้สมัคร Affiliate -->
-                    <div class="card card-custom p-4 p-md-5 my-4">
-                        <div class="text-center mb-4">
-                        <div class="text-primary mb-3">
-                            <i class="fa-solid fa-id-card fa-3x"></i>
+                    <div class="tab-content">
+                        <div class="tab-pane show active fade" id="register" role="tabpanel">
+                            <div class="card card-custom p-4 p-md-5 my-4">
+                                <div class="text-center mb-4">
+                                    <div class="text-primary mb-3">
+                                        <i class="fa-solid fa-id-card fa-3x"></i>
+                                    </div>
+                                    <h3 class="fw-bold mb-2">สมัครเป็นตัวแทนแนะนำสินค้า</h3>
+                                    <p class="text-muted col-lg-8 mx-auto mb-0">
+                                        ร่วมเป็นส่วนหนึ่งกับเรา รับลิงก์พิเศษสำหรับนำไปแชร์ และรับค่าคอมมิชชั่นทันทีเมื่อมีการสั่งซื้อผ่านลิงก์ของคุณ!
+                                    </p>
+                                </div>
+                                <form method="post" enctype="multipart/form-data" class="col-lg-8 mx-auto">
+                                    <?php wp_nonce_field('aff_reg'); ?>
+                                    <!-- ส่วนอัปโหลดหลักฐาน -->
+                                    <div class="mb-4 text-start">
+                                        <label for="aff_identity_doc" class="form-label fw-bold">
+                                            <i class="fa-solid fa-file text-primary me-1"></i> ข้อมูลเกี่ยวกับผู้สมัคร</span>
+                                        </label>
+            
+                                        <div class="form-group mb-4">
+                                            <label for="full_name">ชื่อ-นามสกุล:</label>
+                                            <input type="text" name="full_name" id="full_name" class="form-control">
+                                        </div>
+            
+                                        <div class="form-group mb-4">
+                                            <label for="phone_number">เบอร์โทรศัพท์:</label>
+                                            <input type="text" name="phone_number" id="phone_number" class="form-control">
+                                        </div>
+            
+                                        <div class="form-group mb-4">
+                                            <label for="social_media">ช่องทางที่ใช้เผยแพร่:</label>
+                                            <p class="text-muted small">วางลิงค์โปรไฟล์ Social Media ของท่าน ที่จะใช้เป็นช่องทางในการเผยแพร่สินค้า</p>
+                                            <div class="d-flex gap-2">
+                                                <select name="social_media_01_type" id="social_media_01_type" class="form-select" style="width: 250px;">
+                                                    <option value="facebook/ig">Facebook / Instagram</option>
+                                                    <option value="tiktok">TikTok</option>
+                                                    <option value="youtube">YouTube</option>
+                                                    <option value="other">อื่น ๆ </option>
+                                                </select>
+                                                <input type="text" name="social_media_01" id="social_media_01" class="form-control">
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <select name="social_media_02_type" id="social_media_02_type" class="form-select" style="width: 250px;">
+                                                <option value="facebook/ig">Facebook / Instagram</option>
+                                                    <option value="tiktok">TikTok</option>
+                                                    <option value="youtube">YouTube</option>
+                                                    <option value="other">อื่น ๆ </option>
+                                                </select>
+                                                <input type="text" name="social_media_02" id="social_media_02" class="form-control">
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <select name="social_media_03_type" id="social_media_03_type" class="form-select" style="width: 250px;">
+                                                <option value="facebook/ig">Facebook / Instagram</option>
+                                                    <option value="tiktok">TikTok</option>
+                                                    <option value="youtube">YouTube</option>
+                                                    <option value="other">อื่น ๆ </option>
+                                                </select>
+                                                <input type="text" name="social_media_03" id="social_media_03" class="form-control">
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <select name="social_media_04_type" id="social_media_04_type" class="form-select" style="width: 250px;">
+                                                    <option value="facebook/ig">Facebook / Instagram</option>
+                                                    <option value="tiktok">TikTok</option>
+                                                    <option value="youtube">YouTube</option>
+                                                    <option value="other">อื่น ๆ </option>
+                                                </select>
+                                                <input type="text" name="social_media_04" id="social_media_04" class="form-control">
+                                            </div>
+                                        </div>
+            
+                                        <label for="aff_identity_doc" class="form-label fw-bold">
+                                            <i class="fa-solid fa-file-arrow-up text-primary me-1"></i> อัปโหลดเอกสารยืนยันตัวตน (สำเนาบัตรประชาชน และ รูปถ่ายคู่บัตรประชาชน) <span class="text-danger">*</span>
+                                        </label>
+                                        <!-- รูปที่ 1: บัตรประชาชน -->
+                                        <label for="aff_identity_doc_card">บัตรประชาชน:</label>
+                                        <input type="file" name="aff_identity_doc[]" class="form-control mb-2" accept="image/*" required>
+                                        <!-- รูปที่ 2: รูปถ่ายคู่กับบัตร -->
+                                        <label for="aff_identity_doc_selfie">รูปถ่ายคู่บัตรประชาชน:</label>
+                                        <input type="file" name="aff_identity_doc[]" class="form-control" accept="image/*" required>
+                                        <div class="form-text small text-muted">
+                                            รองรับไฟล์รูปภาพ (JPG, PNG) หรือ PDF ขนาดไม่เกิน 5MB
+                                        </div>
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="submit" name="register_affiliate" class="btn btn-primary btn-lg px-5 shadow-sm w-100 w-sm-auto">
+                                            <i class="fa-solid fa-user-plus me-2"></i> สมัครเป็นพันธมิตรตอนนี้
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-                        <h3 class="fw-bold mb-2">สมัครเป็นตัวแทนแนะนำสินค้า</h3>
-                        <p class="text-muted col-lg-8 mx-auto mb-0">
-                            ร่วมเป็นส่วนหนึ่งกับเรา รับลิงก์พิเศษสำหรับนำไปแชร์ และรับค่าคอมมิชชั่นทันทีเมื่อมีการสั่งซื้อผ่านลิงก์ของคุณ!
-                        </p>
+                        <div class="tab-pane fade" id="requirements" role="tabpanel">
+                            <?php
+                            if (file_exists(__DIR__ . '/inc/requirements.php')) {
+                                include __DIR__ . '/inc/requirements.php';
+                            }
+                            ?>
+                        </div>
                     </div>
-                    
-                    <form method="post" enctype="multipart/form-data" class="col-lg-8 mx-auto">
-                        <?php wp_nonce_field('aff_reg'); ?>
-                        
-                        <!-- ส่วนอัปโหลดหลักฐาน -->
-                        <div class="mb-4 text-start">
-                            <label for="aff_identity_doc" class="form-label fw-bold">
-                                <i class="fa-solid fa-file text-primary me-1"></i> ข้อมูลเกี่ยวกับผู้สมัคร</span>
-                            </label>
-
-                            <div class="form-group mb-4">
-                                <label for="full_name">ชื่อ-นามสกุล:</label>
-                                <input type="text" name="full_name" id="full_name" class="form-control">
-                            </div>
-
-                            <div class="form-group mb-4">
-                                <label for="phone_number">เบอร์โทรศัพท์:</label>
-                                <input type="text" name="phone_number" id="phone_number" class="form-control">
-                            </div>
-
-                            <div class="form-group mb-4">
-                                <label for="social_media">ช่องทางที่ใช้เผยแพร่:</label>
-                                <p class="text-muted small">วางลิงค์โปรไฟล์ Social Media ของท่าน ที่จะใช้เป็นช่องทางในการเผยแพร่สินค้า</p>
-                                <div class="d-flex gap-2">
-                                    <select name="social_media_01_type" id="social_media_01_type" class="form-select" style="width: 250px;">
-                                        <option value="facebook/ig">Facebook / Instagram</option>
-                                        <option value="tiktok">TikTok</option>
-                                        <option value="youtube">YouTube</option>
-                                        <option value="other">อื่น ๆ </option>
-                                    </select>
-                                    <input type="text" name="social_media_01" id="social_media_01" class="form-control">
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <select name="social_media_02_type" id="social_media_02_type" class="form-select" style="width: 250px;">
-                                       <option value="facebook/ig">Facebook / Instagram</option>
-                                        <option value="tiktok">TikTok</option>
-                                        <option value="youtube">YouTube</option>
-                                        <option value="other">อื่น ๆ </option>
-                                    </select>
-                                    <input type="text" name="social_media_02" id="social_media_02" class="form-control">
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <select name="social_media_03_type" id="social_media_03_type" class="form-select" style="width: 250px;">
-                                       <option value="facebook/ig">Facebook / Instagram</option>
-                                        <option value="tiktok">TikTok</option>
-                                        <option value="youtube">YouTube</option>
-                                        <option value="other">อื่น ๆ </option>
-                                    </select>
-                                    <input type="text" name="social_media_03" id="social_media_03" class="form-control">
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <select name="social_media_04_type" id="social_media_04_type" class="form-select" style="width: 250px;">
-                                        <option value="facebook/ig">Facebook / Instagram</option>
-                                        <option value="tiktok">TikTok</option>
-                                        <option value="youtube">YouTube</option>
-                                        <option value="other">อื่น ๆ </option>
-                                    </select>
-                                    <input type="text" name="social_media_04" id="social_media_04" class="form-control">
-                                </div>
-                            </div>
-
-                            <label for="aff_identity_doc" class="form-label fw-bold">
-                                <i class="fa-solid fa-file-arrow-up text-primary me-1"></i> อัปโหลดเอกสารยืนยันตัวตน (สำเนาบัตรประชาชน และ รูปถ่ายคู่บัตรประชาชน) <span class="text-danger">*</span>
-                            </label>
-                            <!-- รูปที่ 1: บัตรประชาชน -->
-                            <label for="aff_identity_doc_card">บัตรประชาชน:</label>
-                            <input type="file" name="aff_identity_doc[]" class="form-control mb-2" accept="image/*" required>
-                            <!-- รูปที่ 2: รูปถ่ายคู่กับบัตร -->
-                            <label for="aff_identity_doc_selfie">รูปถ่ายคู่บัตรประชาชน:</label>
-                            <input type="file" name="aff_identity_doc[]" class="form-control" accept="image/*" required>
-                            <div class="form-text small text-muted">
-                                รองรับไฟล์รูปภาพ (JPG, PNG) หรือ PDF ขนาดไม่เกิน 5MB
-                            </div>
-                        </div>
-
-                        <div class="text-center">
-                            <button type="submit" name="register_affiliate" class="btn btn-primary btn-lg px-5 shadow-sm w-100 w-sm-auto">
-                                <i class="fa-solid fa-user-plus me-2"></i> สมัครเป็นพันธมิตรตอนนี้
-                            </button>
-                        </div>
-                    </form>
                 </div>
             
             <?php elseif (!$verified) : ?>
-                <!-- CASE 1: ระบบปิดใช้งาน -->
-                <div class="card card-custom p-5 text-center my-5">
-                    <div class="text-success mb-3">
-                        <i class="fa-solid fa-square-check fa-4x"></i>
+            <div class="tab-content">
+                <div class="tab-pane show active fade" id="register" role="tabpanel">
+                    <div class="card card-custom p-5 text-center my-5">
+                        <div class="text-success mb-3">
+                            <i class="fa-solid fa-square-check fa-4x"></i>
+                        </div>
+                        <h3 class="fw-bold">คุณได้สมัครและส่งเอกสารแล้ว !</h3>
+                        <p class="text-muted mb-0">ทางเราได้รับเอกสารแล้ว และจะดำเนินการตรวจสอบและยืนยันตัวตนของท่านโดยเร็วที่สุด</p>
                     </div>
-                    <h3 class="fw-bold">คุณได้สมัครและส่งเอกสารแล้ว !</h3>
-                    <p class="text-muted mb-0">ทางเราได้รับเอกสารแล้ว และจะดำเนินการตรวจสอบและยืนยันตัวตนของท่านโดยเร็วที่สุด</p>
                 </div>
+                <div class="tab-pane fade" id="requirements" role="tabpanel">
+                    <?php
+                    if (file_exists(__DIR__ . '/inc/requirements.php')) {
+                        include __DIR__ . '/inc/requirements.php';
+                    }
+                    ?>
+                </div>
+            </div>
 
             <?php else : ?>
-                <!-- CASE 3: เป็นสมาชิกแล้ว แสดง Dashboard รายงานผล -->
-
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
                         <?php
@@ -534,7 +555,20 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                         }
                         ?>
                     </div>
-
+                    <div class="tab-pane fade" id="help" role="tabpanel">
+                        <?php
+                        if (file_exists(__DIR__ . '/inc/help.php')) {
+                            include __DIR__ . '/inc/help.php';
+                        }
+                        ?>
+                    </div>
+                    <div class="tab-pane fade" id="orders" role="tabpanel">
+                        <?php
+                        if (file_exists(__DIR__ . '/inc/orders.php')) {
+                            include __DIR__ . '/inc/orders.php';
+                        }
+                        ?>
+                    </div>
                 </div>
 
             <?php endif; ?>

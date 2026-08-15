@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <div class="card card-custom p-4" id="policy">
-    <h5 class="fw-bold mb-3"><i class="fa-solid fa-file-contract me-2"></i>นโยบายและเงื่อนไขโปรแกรมตัวแทนแนะนำสินค้า (Affiliate Program Policy)</h5>
+    <h5 class="fw-bold mb-3"><i class="fa-solid fa-file-contract text-primary me-2"></i>นโยบายและเงื่อนไขโปรแกรมตัวแทนแนะนำสินค้า (Affiliate Program Policy)</h5>
     <p>ยินดีต้อนรับสู่โปรแกรมตัวแทนแนะนำสินค้า (Affiliate Program) ข้อตกลงนี้จัดทำขึ้นเพื่อกำหนดเงื่อนไขและหลักเกณฑ์การตอบแทนสำหรับสมาชิกพันธมิตรทุกท่าน เมื่อท่านลงทะเบียนและใช้งานระบบ จะถือว่าท่านได้อ่าน เข้าใจ และยอมรับข้อตกลงทั้งหมดดังต่อไปนี้</p>
     <h5>1. อัตราค่าคอมมิชชั่นตามหมวดหมู่สินค้า (Commission Rates)</h5>
     <p>ค่าคอมมิชชั่นจะคำนวณจาก ยอดขายสุทธิของสินค้า (ไม่รวมค่าจัดส่ง และหลังหักส่วนลด/คูปองแล้ว)
