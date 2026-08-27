@@ -204,41 +204,26 @@ function getTransaction($user_id, $limit = '') {
     $order_stats_table      = $wpdb->prefix . 'wc_order_stats';
 
     $transactions = $wpdb->get_results($wpdb->prepare("
-        SELECT 
-            t.paid,
-            os.status,
-            t.order_id,
-            t.commission_percentage,
-            COUNT(CASE WHEN t.type = 'view' THEN 1 END) AS total_views,
-            COUNT(CASE WHEN t.type = 'sale' THEN 1 END) AS total_sales_count,
-            SUM(CASE 
-                WHEN t.type = 'sale' AND os.total_sales IS NOT NULL AND (os.status = 'completed' OR os.status = 'wc-completed')
-                THEN os.total_sales 
-                ELSE 0 
-            END) AS total_revenue,
-            SUM(CASE 
-                WHEN t.type = 'sale' AND os.total_sales IS NOT NULL AND (os.status = 'completed' OR os.status = 'wc-completed')
-                THEN (os.total_sales - os.shipping_total) * (t.commission_percentage / 100)
-                ELSE 0 
-            END) AS total_earns 
-        FROM {$affiliate_users} AS u
-        JOIN {$affiliate_transactions} AS t
-            ON u.refCode = t.refCode
-        JOIN {$order_stats_table} AS os 
-            ON t.order_id = os.order_id
-        WHERE u.ID = %d 
-        GROUP BY u.ID, u.display_name, u.user_email, u.refCode, t.paid, t.order_id, os.status
-        ORDER BY t.order_id DESC ".$limit, $user_id));
+    SELECT t.product_id, t.commission_percentage, t.paid, t.order_id, t.refCode, os.status 
+    FROM {$affiliate_transactions} as t 
+    JOIN {$affiliate_users} as u ON u.refCode = t.refCode 
+    LEFT JOIN {$order_stats_table} AS os 
+    ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed')
+    WHERE u.ID = %d GROUP BY t.product_id, t.commission_percentage 
+    ORDER BY t.id DESC {$limit}", $user_id));
 
     return $transactions;
 }
 
 if ($ref_code) {
+    $transactions = getTransaction($user_id);
+
     $transactions_full = $wpdb->get_results($wpdb->prepare("
         SELECT 
             t.created_at,
             os.total_sales,
-            os.status
+            os.status,
+            os.order_id 
         FROM {$affiliate_users} AS u
         LEFT JOIN {$affiliate_transactions} AS t
             ON u.refCode = t.refCode
@@ -247,11 +232,16 @@ if ($ref_code) {
         WHERE u.ID = %d 
         ORDER BY t.order_id DESC", $user_id));
 
+    $current_order_id = 0;
+
     foreach ($transactions as $tx) {
         $chart_labels[]    = ($tx->paid == 1) ? 'จ่ายแล้ว' : 'รอชำระ';
         $chart_data[]      = (float)$tx->total_earns;
         $total_earns_sum   += (float)$tx->total_earns;
-        $total_revenue_sum += (float)$tx->total_revenue;
+        if($tx->order_id != $current_order_id) {
+            $total_revenue_sum += (float)$tx->total_revenue;
+            $current_order_id = $tx->order_id;
+        }
         $total_sales_cnt   += (int)$tx->total_sales_count;
     }
 
@@ -263,6 +253,16 @@ if ($ref_code) {
     }
 }
 
+function getOrderById($id) {
+    $order_id = absint($id);
+
+    if (!$order_id || !function_exists('wc_get_order')) {
+        return null;
+    }
+
+    $order = wc_get_order($order_id);
+    return $order ?: null;
+}
 
 // Helper
 function getOrderStatusInThai($status) {
@@ -297,7 +297,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบพันธมิตร - Affiliate Dashboard</title>
-
+    <link rel="icon" href="https://www.worldchemical.co.th/wp-content/uploads/2022/06/cropped-faviconnn-Custom-192x192.png" sizes="192x192" />
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome Icons -->
@@ -526,50 +526,58 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
             </div>
 
             <?php else : ?>
-                <div class="tab-content">
-                    <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
-                        <?php
-                        if (file_exists(__DIR__ . '/inc/dashboard.php')) {
-                            include __DIR__ . '/inc/dashboard.php';
-                        }
-                        ?>
+                <?php if (isset($_GET['order_id']) && !empty($_GET['order_id'])) : ?>
+                    <?php
+                    if (file_exists(__DIR__ . '/inc/view_order.php')) {
+                        include __DIR__ . '/inc/view_order.php';
+                    }
+                    ?>
+                <?php else : ?>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+                            <?php
+                            if (file_exists(__DIR__ . '/inc/dashboard.php')) {
+                                include __DIR__ . '/inc/dashboard.php';
+                            }
+                            ?>
+                        </div>
+                        <div class="tab-pane fade" id="commission" role="tabpanel">
+                            <?php
+                            if (file_exists(__DIR__ . '/inc/commission.php')) {
+                                include __DIR__ . '/inc/commission.php';
+                            }
+                            ?>
+                        </div>
+                        <div class="tab-pane fade" id="settings" role="tabpanel">
+                            <?php
+                            if (file_exists(__DIR__ . '/inc/bank_setting.php')) {
+                                include __DIR__ . '/inc/bank_setting.php';
+                            }
+                            ?>
+                        </div>
+                        <div class="tab-pane fade" id="policy" role="tabpanel">
+                            <?php
+                            if (file_exists(__DIR__ . '/inc/policy.php')) {
+                                include __DIR__ . '/inc/policy.php';
+                            }
+                            ?>
+                        </div>
+                        <div class="tab-pane fade" id="help" role="tabpanel">
+                            <?php
+                            if (file_exists(__DIR__ . '/inc/help.php')) {
+                                include __DIR__ . '/inc/help.php';
+                            }
+                            ?>
+                        </div>
+                        <div class="tab-pane fade" id="orders" role="tabpanel">
+                            <?php
+                            if (file_exists(__DIR__ . '/inc/orders.php')) {
+                                include __DIR__ . '/inc/orders.php';
+                            }
+                            ?>
+                        </div>
                     </div>
-                    <div class="tab-pane fade" id="commission" role="tabpanel">
-                        <?php
-                        if (file_exists(__DIR__ . '/inc/commission.php')) {
-                            include __DIR__ . '/inc/commission.php';
-                        }
-                        ?>
-                    </div>
-                    <div class="tab-pane fade" id="settings" role="tabpanel">
-                        <?php
-                        if (file_exists(__DIR__ . '/inc/bank_setting.php')) {
-                            include __DIR__ . '/inc/bank_setting.php';
-                        }
-                        ?>
-                    </div>
-                    <div class="tab-pane fade" id="policy" role="tabpanel">
-                        <?php
-                        if (file_exists(__DIR__ . '/inc/policy.php')) {
-                            include __DIR__ . '/inc/policy.php';
-                        }
-                        ?>
-                    </div>
-                    <div class="tab-pane fade" id="help" role="tabpanel">
-                        <?php
-                        if (file_exists(__DIR__ . '/inc/help.php')) {
-                            include __DIR__ . '/inc/help.php';
-                        }
-                        ?>
-                    </div>
-                    <div class="tab-pane fade" id="orders" role="tabpanel">
-                        <?php
-                        if (file_exists(__DIR__ . '/inc/orders.php')) {
-                            include __DIR__ . '/inc/orders.php';
-                        }
-                        ?>
-                    </div>
-                </div>
+                <?php endif; ?>
 
             <?php endif; ?>
 

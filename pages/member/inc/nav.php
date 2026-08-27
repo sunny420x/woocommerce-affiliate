@@ -14,36 +14,45 @@ if (!defined('ABSPATH')) {
             <?php
             if(!$verified) {
             ?>
-                <a class="nav-link active" data-bs-toggle="tab" href="#register" role="tab">
+                <a class="nav-link active" data-bs-toggle="tab" href="/affiliate/dashboard/#register" role="tab">
                     <i class="fa-solid fa-right-to-bracket me-2"></i> สมัครสมาชิก
                 </a>
-                <a class="nav-link" data-bs-toggle="tab" href="#requirements" role="tab">
+                <a class="nav-link" data-bs-toggle="tab" href="/affiliate/dashboard/#requirements" role="tab">
                     <i class="fa-solid fa-circle-exclamation me-2"></i> คุณสมบัติและเงื่อนไข
                 </a>
             <?php
             } else {
             ?>
-                <a class="nav-link active" data-bs-toggle="tab" href="#dashboard" role="tab">
+                <?php
+                if(isset($_GET['order_id'])) {
+                ?>
+                <a class="nav-link" href="/affiliate/dashboard/">
+                    <i class="fa-solid fa-arrow-left me-2"></i>กลับไปหน้าแรก
+                </a>
+                <?php
+                } else {
+                ?>
+                <a class="nav-link active" data-bs-toggle="tab" href="/affiliate/dashboard/#dashboard" role="tab">
                     <i class="fa-solid fa-chart-pie me-2"></i>แผงควบคุม
                 </a>
 
-                <a class="nav-link" data-bs-toggle="tab" href="#orders" role="tab">
+                <a class="nav-link" data-bs-toggle="tab" href="/affiliate/dashboard/#orders" role="tab">
                     <i class="fa-solid fa-list-check me-2"></i>ประวัติการสั่งซื้อ
                 </a>
 
-                <a class="nav-link" data-bs-toggle="tab" href="#commission" role="tab">
+                <a class="nav-link" data-bs-toggle="tab" href="/affiliate/dashboard/#commission" role="tab">
                     <i class="fa-solid fa-table me-2"></i>อัตราคอมมิชชั่น
                 </a>
 
-                <a class="nav-link" data-bs-toggle="tab" href="#settings" role="tab">
+                <a class="nav-link" data-bs-toggle="tab" href="/affiliate/dashboard/#settings" role="tab">
                     <i class="fa-solid fa-building-columns me-2"></i>ตั้งค่าบัญชี
                 </a>
 
-                <a class="nav-link" data-bs-toggle="tab" href="#policy" role="tab">
+                <a class="nav-link" data-bs-toggle="tab" href="/affiliate/dashboard/#policy" role="tab">
                     <i class="fa-solid fa-file-contract me-2"></i>นโยบายและเงื่อนไข
                 </a>
 
-                <a class="nav-link" data-bs-toggle="tab" href="#help" role="tab">
+                <a class="nav-link" data-bs-toggle="tab" href="/affiliate/dashboard/#help" role="tab">
                     <i class="fa-regular fa-circle-question me-2"></i>ช่วยเหลือ
                 </a>
                 <hr>
@@ -51,6 +60,7 @@ if (!defined('ABSPATH')) {
                     <i class="fa-solid fa-store me-2"></i>กลับไปหน้าร้านค้า
                 </a>
             <?php
+                }
             }
             ?>
         </div>

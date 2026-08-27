@@ -5,7 +5,7 @@
  * Author: Jirakit Pawnsakunrungrot
  * Author URI: https://www.linkedin.com/in/sunny-jirakit
  * Plugin URI: https://github.com/sunny420x/woocommerce-affiliate
- */
+*/
 
 //Deny access from URL.
 if (!defined('ABSPATH'))
@@ -129,10 +129,8 @@ function handle_mark_as_paid()
 
 
 class Affiliate {
-    
     public $wpdb;
     public $tables = [];
-
     public function __construct() {
         global $wpdb;
         $this->wpdb = $wpdb;
@@ -144,40 +142,58 @@ class Affiliate {
     }
 
     public function getAffiliate($query_option = '') {
-        $query = "
-            SELECT 
-                u.ID,
-                u.display_name,
-                u.user_email,
-                u.refCode,
-                COUNT(CASE WHEN t.type = 'view' THEN 1 END) AS total_views,
-                COUNT(CASE WHEN t.type = 'sale' THEN 1 END) AS total_sales_count,
-                SUM(CASE 
-                    WHEN t.type = 'sale' AND os.total_sales IS NOT NULL 
-                    THEN os.total_sales 
-                    ELSE 0 
-                END) AS total_revenue,
-                SUM(CASE 
-                    WHEN t.type = 'sale' AND os.total_sales IS NOT NULL 
-                    THEN os.total_sales * (t.commission_percentage / 100)
-                    ELSE 0 
-                END) AS total_earns
-            FROM {$this->tables['users']} AS u
-            LEFT JOIN {$this->tables['transactions']} AS t
-                ON u.refCode = t.refCode
-            LEFT JOIN {$this->tables['order_stats']} AS os 
-                ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed') 
-            {$query_option} 
-            GROUP BY u.ID, u.display_name, u.user_email, u.refCode
-            ORDER BY u.ID DESC
-        ";
+        $query = "SELECT u.ID, t.product_id, t.commission_percentage, t.paid, t.order_id, t.refCode, os.status, u.user_email, u.display_name 
+        FROM {$this->tables['transactions']} as t 
+        JOIN {$this->tables['users']} as u ON u.refCode = t.refCode 
+        LEFT JOIN {$this->tables['order_stats']} AS os 
+        ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed')
+        {$query_option}
+        GROUP BY t.product_id, t.commission_percentage 
+        ORDER BY t.id DESC";
 
-        return $this->wpdb->get_results($query);
+        $results = $this->wpdb->get_results($query);
+
+        $transactions = [];
+        foreach ($results as $item) {
+            $product = wc_get_product($item->product_id);
+            $order = wc_get_order($item->order_id);
+            $quantity = 0;
+
+            if ($order) {
+                foreach ($order->get_items() as $item_id => $order_item) {
+                    if ($order_item->get_product_id() == $item->product_id || $order_item->get_variation_id() == $item->product_id) {
+                        $quantity += $order_item->get_quantity();
+                    }
+                }
+            }
+
+            $product_price = (float) $product->get_price() * $quantity;
+            $commission_value = ((float) $item->commission_percentage / 100) * $product_price;
+
+            if (!isset($transactions[$item->order_id])) {
+                $transactions[$item->order_id] = (object) [
+                    "ID" => $item->ID,
+                    "display_name" => $item->display_name,
+                    "user_email" => $item->user_email,
+                    "order_id" => $item->order_id,
+                    "quantity" => 0,
+                    "status" => $item->status,
+                    "total_sold_sum" => 0,
+                    "total_earns_sum" => 0,
+                    "commission_percentage" => $item->commission_percentage,
+                    "paid" => $item->paid,
+                ];
+            }
+
+            $transactions[$item->order_id]->quantity += $quantity;
+            $transactions[$item->order_id]->total_sold_sum += $product_price;
+            $transactions[$item->order_id]->total_earns_sum += $commission_value;
+        }
+        return $transactions;
     }
 
     public function getAffiliateByRefCode($refCode) {
-        $query = $this->wpdb->prepare("
-            SELECT 
+        $query = $this->wpdb->prepare("SELECT 
                 u.ID,
                 u.display_name,
                 u.user_email,
@@ -199,8 +215,7 @@ class Affiliate {
     }
 
     public function getAffiliateChart($query_option = '') {
-        $query = "
-            SELECT 
+        $query = "SELECT 
                 t.created_at,
                 COUNT(CASE WHEN t.type = 'sale' THEN 1 END) AS total_sales_count,
                 SUM(CASE 
@@ -238,23 +253,21 @@ function get_all_users_table() {
 
         $waiting_for_payments = $affiliate->getAffiliate("WHERE u.refCode IS NOT NULL AND u.refCode != '' AND t.paid = 0 AND t.created_at BETWEEN '{$from}' AND '{$to}' ");
         $success_payments = $affiliate->getAffiliate("WHERE u.refCode IS NOT NULL AND u.refCode != '' AND t.paid = 1 AND t.created_at BETWEEN '{$from}' AND '{$to}' ");
-        $affiliate_chart = $affiliate->getAffiliateChart("WHERE t.created_at BETWEEN '{$from}' AND '{$to}' ");
+        $affiliate_chart = $affiliate->getAffiliate("WHERE t.created_at BETWEEN '{$from}' AND '{$to}' ");
     } else {
         $waiting_for_payments = $affiliate->getAffiliate("WHERE u.refCode IS NOT NULL AND u.refCode != '' AND t.paid = 0 ");
         $success_payments = $affiliate->getAffiliate("WHERE u.refCode IS NOT NULL AND u.refCode != '' AND t.paid = 1 ");
-        $affiliate_chart = $affiliate->getAffiliateChart();
+        $affiliate_chart = $affiliate->getAffiliate();
     }
 
     $labels = [];
     $revenue_data = [];
 
     foreach ($affiliate_chart as $row) {
-        // จัดรูปแบบวันที่ให้สวยงาม (เช่น 07 May)
         $date_label = date('d M', strtotime($row->created_at));
         
         $labels[] = $date_label;
-        $sale_count_data[] = (int)$row->total_sales_count;
-        $revenue_data[] = (float)$row->total_revenue;
+        $revenue_data[] = (float)$row->total_sold_sum;
     }
     ?>
     <style>
@@ -441,29 +454,28 @@ function get_all_users_table() {
                         </thead>
                         <tbody>
                             <?php
-                            if (!empty($waiting_for_payments)) {
+                            if (!empty($waiting_for_payments)) {        
                                 foreach ($waiting_for_payments as $row) {
-            
                                     $user_bank_info =  $wpdb->get_results($wpdb->prepare("SELECT bank_account_number, bank_name FROM {$wpdb->prefix}users_affiliate_info WHERE user_id = %d LIMIT 1", $row->ID));
             
                                     $mark_as_paid_action_url = wp_nonce_url(
                                         admin_url('admin.php?page=affiliate&action=mark_paid&refCode=' . $row->refCode),
                                         'mark_paid_nonce'
                                     );
-                                    ?>
-                                    <tr>
-                                        <td><?= esc_html($row->display_name) ?></td>
-                                        <td><?= esc_html($row->user_email) ?></td>
-                                        <td><?= esc_html($row->total_sales_count) ?></td>
-                                        <td><?= esc_html($row->total_revenue) ?> บาท </td>
-                                        <td><strong><?= esc_html(number_format($row->total_earns, 2)) ?> บาท</strong></td>
-                                        <td><?=esc_html($user_bank_info[0]->bank_account_number)?> <?=esc_html($user_bank_info[0]->bank_name)?></td>
-                                        <td>
-                                            <button type='button' class='button'
-                                                onclick="window.location.href='<?= $mark_as_paid_action_url ?>'">ทำสถานะว่าจ่ายแล้ว</button>
-                                        </td>
-                                    </tr>
-                                    <?php
+                                ?>
+                                <tr>
+                                    <td><?= esc_html($row->display_name) ?></td>
+                                    <td><?= esc_html($row->user_email) ?></td>
+                                    <td><?= esc_html($row->quantity) ?></td>
+                                    <td><?= esc_html($row->total_sold_sum) ?> บาท </td>
+                                    <td><strong><?= number_format($row->total_earns_sum, 2) ?> บาท</strong></td>
+                                    <td><?=esc_html($user_bank_info[0]->bank_account_number)?> <?=esc_html($user_bank_info[0]->bank_name)?></td>
+                                    <td>
+                                        <button type='button' class='button'
+                                            onclick="window.location.href='<?= $mark_as_paid_action_url ?>'">ทำสถานะว่าจ่ายแล้ว</button>
+                                    </td>
+                                </tr>
+                                <?php
                                 }
                             } else {
                                 ?>
@@ -487,9 +499,9 @@ function get_all_users_table() {
                                     <tr>
                                         <td><?= esc_html($row->display_name) ?></td>
                                         <td><?= esc_html($row->user_email) ?></td>
-                                        <td><?= esc_html($row->total_sales_count) ?></td>
-                                        <td><?= esc_html($row->total_revenue) ?> บาท </td>
-                                        <td><strong><?= esc_html(number_format($row->total_earns, 2)) ?> บาท</strong></td>
+                                        <td><?= esc_html($row->quantity) ?></td>
+                                        <td><?= esc_html($row->total_sold_sum) ?> บาท </td>
+                                        <td><strong><?= esc_html(number_format($row->total_earn_sum, 2)) ?> บาท</strong></td>
                                         <td><?=esc_html($user_bank_info[0]->bank_account_number)?> <?=esc_html($user_bank_info[0]->bank_name)?></td>
                                         <td>
                                             <button type='button' class='button button-primary'
