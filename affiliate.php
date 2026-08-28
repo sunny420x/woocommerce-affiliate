@@ -7,6 +7,7 @@
  * Plugin URI: https://github.com/sunny420x/woocommerce-affiliate
  * GitHub Plugin URI: https://github.com/sunny420x/woocommerce-affiliate
  * Primary Branch: master
+ * Version: 1.0.0
 */
 
 //Deny access from URL.
