@@ -208,8 +208,9 @@ function getTransaction($user_id, $limit = '') {
     FROM {$affiliate_transactions} as t 
     JOIN {$affiliate_users} as u ON u.refCode = t.refCode 
     LEFT JOIN {$order_stats_table} AS os 
-    ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed')
-    WHERE u.ID = %d GROUP BY t.product_id, t.commission_percentage 
+    ON t.order_id = os.order_id
+    WHERE u.ID = %d
+    GROUP BY t.product_id, t.commission_percentage, t.paid, t.order_id, t.refCode, os.status
     ORDER BY t.id DESC {$limit}", $user_id));
 
     return $transactions;
@@ -272,8 +273,7 @@ function getOrderById($id) {
 
 // Helper
 function getOrderStatusInThai($status) {
-    // ป้องกันปัญหาเผื่อระบบส่งค่าแบบมีช่องว่าง หรือตัดคำว่า wc- ออกหากจำเป็น
-    $status = trim($status);
+    $status = strtolower(trim($status));
 
     switch ($status) {
         case 'wc-processing':
