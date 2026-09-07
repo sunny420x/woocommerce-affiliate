@@ -28,7 +28,7 @@ if (!defined('ABSPATH')) {
                     //Loop data and push to transactions array.
                     $transactions = [];
 
-                    foreach ($transactions_latest as $item) {
+                    foreach ($transactions_orders_full as $item) {
                         $product = wc_get_product($item->product_id);
                         $quantity = 0;
                         $order = wc_get_order($item->order_id);
