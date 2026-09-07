@@ -216,6 +216,12 @@ function getTransaction($user_id, $limit = '') {
 }
 
 if ($ref_code) {
+    global $wpdb;
+
+    $affiliate_users        = $wpdb->prefix . 'users';
+    $affiliate_transactions = $wpdb->prefix . 'affiliate_transactions';
+    $order_stats_table      = $wpdb->prefix . 'wc_order_stats';
+
     $transactions = getTransaction($user_id);
 
     $transactions_full = $wpdb->get_results($wpdb->prepare("
