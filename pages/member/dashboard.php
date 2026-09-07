@@ -498,6 +498,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                         <label for="aff_identity_doc" class="form-label fw-bold">
                                             <i class="fa-solid fa-file-arrow-up text-primary me-1"></i> อัปโหลดเอกสารยืนยันตัวตน (สำเนาบัตรประชาชน และ รูปถ่ายคู่บัตรประชาชน) <span class="text-danger">*</span>
                                         </label>
+                                        <br>
                                         <!-- รูปที่ 1: บัตรประชาชน -->
                                         <label for="aff_identity_doc_card">บัตรประชาชน:</label>
                                         <input type="file" name="aff_identity_doc[]" class="form-control mb-2" accept="image/*" required>
