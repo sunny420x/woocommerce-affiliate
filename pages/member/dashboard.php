@@ -272,28 +272,43 @@ function getOrderById($id) {
 
 // Helper
 function getOrderStatusInThai($status) {
-    if($status == "wc-processing") {
-        return "<div class='badge bg-primary'>กำลังดำเนินการ</div>";
-    }
-    if($status == "wc-completed") {
-        return "<div class='badge bg-success'>เสร็จสมบูรณ์</div>";
-    }
-    if($status == "wc-cancelled") {
-        return "<div class='badge bg-danger'>ถูกยกเลิก</div>";
-    }
-    if($status == "wc-refunded") {
-        return "<div class='badge bg-danger'>ถูกคืนเงิน</div>";
-    }
-    if($status == "wc-failed") {
-        return "<div class='badge bg-danger'>ชำระเงินไม่สำเร็จ</div>";
-    }
-    if($status == "wc-on-hold") {
-        return "<div class='badge bg-warning'>รอชำระเงิน</div>";
-    }
-    if($status == "wc-pending") {
-        return "<div class='badge bg-primary'>รอดำเนินการ</div>";
+    // ป้องกันปัญหาเผื่อระบบส่งค่าแบบมีช่องว่าง หรือตัดคำว่า wc- ออกหากจำเป็น
+    $status = trim($status);
+
+    switch ($status) {
+        case 'wc-processing':
+        case 'processing':
+            return "<div class='badge bg-info text-dark'>กำลังดำเนินการ</div>";
+            
+        case 'wc-completed':
+        case 'completed':
+            return "<div class='badge bg-success'>เสร็จสมบูรณ์</div>";
+            
+        case 'wc-cancelled':
+        case 'cancelled':
+            return "<div class='badge bg-secondary'>ถูกยกเลิก</div>";
+            
+        case 'wc-refunded':
+        case 'refunded':
+            return "<div class='badge bg-danger'>ถูกคืนเงิน</div>";
+            
+        case 'wc-failed':
+        case 'failed':
+            return "<div class='badge bg-danger'>ชำระเงินไม่สำเร็จ</div>";
+            
+        case 'wc-on-hold':
+        case 'on-hold':
+            return "<div class='badge bg-warning text-dark'>รอตรวจสอบการชำระเงิน</div>";
+            
+        case 'wc-pending':
+        case 'pending':
+            return "<div class='badge bg-dark'>รอชำระเงิน</div>";
+            
+        default:
+            return "<div class='badge bg-light text-dark'>" . esc_html($status) . "</div>";
     }
 }
+
 
 $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'yes');
 ?>
