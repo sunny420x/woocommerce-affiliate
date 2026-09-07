@@ -1065,6 +1065,22 @@ function addTransaction($ref, $type, $product_id, $order_id = null)
     global $wpdb;
     $affiliate_transactions = $wpdb->prefix . 'affiliate_transactions';
 
+    if ($order_id) {
+        $transaction_exists = $wpdb->get_var($wpdb->prepare(
+            "SELECT id FROM {$affiliate_transactions}
+            WHERE refCode = %s AND type = %s AND product_id = %d AND order_id = %d
+            LIMIT 1",
+            $ref,
+            $type,
+            $product_id,
+            $order_id
+        ));
+
+        if ($transaction_exists) {
+            return false;
+        }
+    }
+
     $terms = get_the_terms($product_id, 'product_cat');
     
     $default_commission = (float) get_option('affiliate_commission', 10);
@@ -1210,8 +1226,6 @@ function affiliate_track_conversion($order_id, $posted_data, $order)
             // เราส่ง $order_id ไปด้วยเพื่อให้ตรวจสอบย้อนหลังได้
             addTransaction($ref, 'sale', $product_id, $order_id);
 
-            // (Optional) ลบ Cookie ทิ้งทันทีที่ขายได้ เพื่อป้องกันการนับยอดซ้ำหากเขากดสั่งอีกรอบโดยไม่ผ่านลิงก์เดิม
-            setcookie($cookie_name, '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN);
         }
     }
 }
