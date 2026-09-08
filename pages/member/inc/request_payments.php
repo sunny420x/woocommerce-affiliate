@@ -13,7 +13,7 @@ if($ref_code) {
 }
 
 foreach ($transactions as $item) {
-    if ($item->status == "wc-completed" || $item->status == "completed" && $item->paid == 0) {
+    if (($item->status == "wc-completed" || $item->status == "completed") && $item->paid == 0) {
         $order_ids[] = $item->order_id;
     }
 }
@@ -25,7 +25,7 @@ if(isset($_GET['action']) && $_GET['action'] === 'confirm') {
 
     $check_existing_request = $wpdb->get_row(
         $wpdb->prepare(
-            "SELECT order_id FROM $affiliate_request_payments_table WHERE user_id = %d AND order_id IN (%s)",
+            "SELECT order_id FROM $affiliate_request_payments_table WHERE user_id = %d AND order_id = %s",
             $user_id, implode(',', $order_ids)
         )
     );
