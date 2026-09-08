@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
             <label class="form-label fw-medium">ธนาคาร:</label>
             <select name="aff_bank_name" class="form-select">
                 <?php
-                $banks = ["ธนาคารกรุงเทพ", "ธนาคารกสิกรไทย", "ธนาคารไทยพาณิชย์", "ธนาคารกรุงไทย", "ธนาคารกรุงศรีอยุธยา", "ธนาคารทหารไทยธนชาต", "ธนาคารยูโอบี", "ธนาคารออมสิน"];
+                $banks = ["ธนาคารกรุงเทพ", "ธนาคารกสิกรไทย", "ธนาคารไทยพาณิชย์", "ธนาคารกรุงไทย", "ธนาคารกรุงศรีอยุธยา", "ธนาคารทหารไทยธนชาต"];
                 foreach ($banks as $bank):
                     $selected = selected($user_affiliate_info->bank_name ?? '', $bank, false);
                     echo "<option value='{$bank}' {$selected}>{$bank}</option>";
