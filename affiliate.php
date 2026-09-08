@@ -994,7 +994,7 @@ function get_all_users_table() {
                                     <td><?= $withdrawal->amount ?> บาท</td>
                                     <td><?= $withdrawal->order_id ?></td>
                                     <td>
-                                        <a href="admin.php?page=affiliate&option=affiliate_withdrawals&id=<?= $withdrawal->ID ?>" class="button button-primary">ดำเนินการ</a>
+                                        <a href="admin.php?page=affiliate&option=affiliate_withdrawals&id=<?= $withdrawal->id ?>" class="button button-primary">ดำเนินการ</a>
                                     </td>
                                 </tr>
                                 <?php
