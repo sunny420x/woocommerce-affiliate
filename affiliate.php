@@ -461,6 +461,22 @@ function get_all_users_table() {
                 </div>
                 <?php
                 } elseif(isset($_GET['option']) && $_GET['option'] == "reports") {
+                    global $wpdb;
+                    $affiliate_report_table = $wpdb->prefix . 'affiliate_transactions';
+                    $users_table = $wpdb->prefix . 'users';
+
+                    $query = "SELECT u.ID as user_id, t.created_at, u.display_name, SUM(os.total_sales * (t.commission_percentage / 100)) AS total_amount
+                        FROM $affiliate_report_table AS t
+                        JOIN $users_table AS u ON u.refCode = t.refCode 
+                        LEFT JOIN {$wpdb->prefix}wc_order_stats AS os ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed') WHERE t.paid = 1 ";
+
+                    if (isset($_GET['start']) && isset($_GET['end'])) {
+                        $start = sanitize_text_field($_GET['start']);
+                        $end = sanitize_text_field($_GET['end']);
+                        $query .= " AND t.created_at BETWEEN '$start' AND '$end'";
+                    }
+
+                    $affiliate_report = $wpdb->query($query);
                 ?>
                 <h1>📋 ออกรายงานสรุป</h1>
                 <div style="padding: 25px 25px 25px 25px;">
@@ -470,24 +486,6 @@ function get_all_users_table() {
                         <button type="submit" class="button button-primary">กรอง</button>
                     </form>
                     <br>
-                    <?php
-                    global $wpdb;
-                    $affiliate_report_table = $wpdb->prefix . 'affiliate_transactions';
-                    $users_table = $wpdb->prefix . 'users';
-
-                    $query = "SELECT t.created_at, u.display_name, SUM(os.total_sales * (t.commission_percentage / 100)) AS total_amount
-                        FROM $affiliate_report_table AS t
-                        JOIN $users_table AS u ON u.refCode = t.refCode 
-                        LEFT JOIN {$wpdb->prefix}wc_order_stats AS os ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed') WHERE u.refCode IS NOT NULL AND u.refCode != '' ";
-
-                    if (isset($_GET['start']) && isset($_GET['end'])) {
-                        $start = sanitize_text_field($_GET['start']);
-                        $end = sanitize_text_field($_GET['end']);
-                        $query .= " AND t.created_at BETWEEN '$start' AND '$end'";
-                    }
-
-                    $affiliate_report = $wpdb->query($query);
-                    ?>
                     <table class="widefat fixed striped">
                         <thead>
                             <tr>
@@ -502,7 +500,7 @@ function get_all_users_table() {
                             ?>
                             <tr>
                                 <td><?= $row->created_at ?></td>
-                                <td><?= $row->display_name ?></td>
+                                <td><a href="admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=<?= $row->user_id ?>"><?= $row->display_name ?></a></td>
                                 <td class="text-end"><?= number_format($row->total_amount, 2) ?> บาท</td>
                             </tr>
                             <?php
