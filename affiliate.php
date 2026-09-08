@@ -95,9 +95,19 @@ function my_plugin_install() {
         PRIMARY KEY  (id)
     ) $charset_collate;";
 
+    $create_request_payments_table_query = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}affiliate_request_payments (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        user_id INT(11) NOT NULL,
+        amount INT(11) NOT NULL,
+        order_id varchar(200) NOT NULL,
+        created_at datetime NOT NULL,
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
     dbDelta( $create_info_table_query );
     dbDelta( $create_transaction_table_query );
+    dbDelta( $create_request_payments_table_query );
 
     // เช็คว่ามีคอลัมน์ refCode หรือยัง เพื่อป้องกัน Error ตอนรันซ้ำ
     $row = $wpdb->get_results("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
