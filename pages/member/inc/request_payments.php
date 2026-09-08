@@ -34,22 +34,35 @@ if (!defined('ABSPATH')) {
                     }
                 }
 
+                //Request payment confirmation and insert into the database.
                 if(isset($_GET['action']) && $_GET['action'] === 'confirm') {
                     global $wpdb;
-                    $table_name = $wpdb->prefix . 'affiliate_request_payments';
-                    $wpdb->insert(
-                        $table_name,
-                        [
-                            'user_id' => $user_id,
-                            'amount' => $total_unpaid_sum,
-                            'order_id' => implode(',', $order_ids),
-                            'status' => 0,
-                            'created_at' => current_time('mysql'),
-                        ]
+                    $affiliate_request_payments_table = $wpdb->prefix . 'affiliate_request_payments';
+
+                    $check_existing_request = $wpdb->get_row(
+                        $wpdb->prepare(
+                            "SELECT order_id FROM $affiliate_request_payments_table WHERE user_id = %d AND order_id IN (%s)",
+                            $user_id, implode(',', $order_ids)
+                        )
                     );
 
-                    $notice_message = 'ส่งคำขอถอนเงินเรียบร้อยแล้ว กรุณารอการตรวจสอบจากผู้ดูแลระบบ';
-                    $notice_type    = 'success';
+                    if(!$check_existing_request) {
+                        $wpdb->insert(
+                            $affiliate_request_payments_table,
+                            [
+                                'user_id' => $user_id,
+                                'amount' => $total_unpaid_sum,
+                                'order_id' => implode(',', $order_ids),
+                                'created_at' => current_time('mysql'),
+                            ]
+                        );
+                        $notice_message = 'ส่งคำขอถอนเงินเรียบร้อยแล้ว กรุณารอการตรวจสอบจากผู้ดูแลระบบ';
+                        $notice_type    = 'success';
+                    } else {
+                        $notice_message = 'คุณได้ส่งคำขอถอนเงินสำหรับคำสั่งซื้อนี้แล้ว กรุณารอการตรวจสอบจากผู้ดูแลระบบ';
+                        $notice_type    = 'warning';   
+                    }
+
                 }
 
                 if (!empty($transactions)) {
