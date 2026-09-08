@@ -941,10 +941,10 @@ function get_all_users_table() {
                         }
                     ?>
                     <h1>รายละเอียดคำขอถอนเงิน หมายเลข #<?= $withdrawal->ID ?></h1>
-                    <div style="padding: 25px 25px 25px 25px;">
+                    <div style="padding: 0px 25px 25px 25px;">
                         <p><strong>ชื่อผู้ใช้งาน:</strong> <?= $withdrawal->display_name ?></p>
                         <p><strong>อีเมล:</strong> <?= $withdrawal->user_email ?></p>
-                        <p><strong>จำนวนเงิน:</strong> <?= $withdrawal->amount ?> บาท</p>
+                        <p><strong>จำนวนเงิน:</strong> <strong><?= $withdrawal->amount ?> บาท</strong></p>
                         <h2>หมายเลขคำสั่งซื้อ:</h2>
                         <table class="widefat fixed striped">
                             <thead>
