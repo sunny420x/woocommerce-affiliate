@@ -43,6 +43,7 @@ if (!empty($referral_origin)) {
 }
 
 $affiliate_rows = getTransactionByOrderId($order_id);
+$order_items = $order->get_items();
 ?>
 <div class="card card-custom p-4 mb-4" id="order-detail">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-2">
@@ -79,32 +80,35 @@ $affiliate_rows = getTransactionByOrderId($order_id);
                             $total_earns_sum = 0;
                             foreach ($affiliate_rows as $item) {
                                 $product = wc_get_product($item->product_id);
-    
-                                $quantity = 0;
-    
-                                $order = wc_get_order( $order_id );
-    
-                                if ( $order ) {
-                                    foreach ( $order->get_items() as $item_id => $order_item ) {
-                                        if ($order_item->get_product_id() == $item->product_id || $order_item->get_variation_id() == $item->product_id ) {
-                                            $quantity += $order_item->get_quantity();
-                                        }
+                                $order_item = null;
+                                foreach ($order_items as $current_order_item) {
+                                    if ($current_order_item->get_product_id() == $item->product_id || $current_order_item->get_variation_id() == $item->product_id) {
+                                        $order_item = $current_order_item;
+                                        break;
                                     }
                                 }
-    
-                                $commission_value = ((float) $item->commission_percentage / 100) * (float) $product->get_price();
-                                $total_sold_sum += (float) $product->get_price();
+
+                                $quantity = 0;
+                                if ($order_item) {
+                                    $quantity = $order_item->get_quantity();
+                                }
+
+                                $product_name = $product ? $product->get_title() : ($order_item ? $order_item->get_name() : 'สินค้า');
+                                $product_price = $product ? (float) $product->get_price() : ($order_item ? (float) $order_item->get_total() / max(1, $quantity) : 0);
+                                $product_image = $product ? $product->get_image(array(48, 48)) : '';
+                                $commission_value = ((float) $item->commission_percentage / 100) * $product_price;
+                                $total_sold_sum += $product_price * $quantity;
                                 $total_earns_sum += $commission_value;
                             ?>
                                 <tr>
                                     <td>
-                                        <?=$product->get_image(array( 48, 48 )) ?? "" ?>
+                                        <?=$product_image ?>
                                     </td>
                                     <td>
-                                        <?=$product->get_title() ?? "" ?>
+                                        <?=esc_html($product_name) ?>
                                     </td>
                                     <td class="text-start"><?=number_format($quantity)?></td>
-                                    <td class="text-center"><?=$product->get_price()?> บาท</td>
+                                    <td class="text-center"><?=number_format($product_price, 2)?> บาท</td>
                                     <td class="text-center"><?= esc_html($item->commission_percentage); ?>%</td>
                                     <td class="text-end text-success fw-bold"><?= number_format($commission_value, 2); ?> บาท</td>
                                 </tr>
