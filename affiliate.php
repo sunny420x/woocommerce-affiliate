@@ -1244,7 +1244,13 @@ function addTransaction($ref, $type, $product_id, $order_id = null)
         }
     }
 
-    $terms = get_the_terms($product_id, 'product_cat');
+    $term_product_id = $product_id;
+    $transaction_product = wc_get_product($product_id);
+    if ($transaction_product && $transaction_product->is_type('variation')) {
+        $term_product_id = $transaction_product->get_parent_id();
+    }
+
+    $terms = get_the_terms($term_product_id, 'product_cat');
     
     $default_commission = (float) get_option('affiliate_commission', 10);
     $max_commission = 0;
@@ -1297,7 +1303,7 @@ function addTransaction($ref, $type, $product_id, $order_id = null)
     }
 
     // 4. บันทึกลง Database
-    $wpdb->insert(
+    return $wpdb->insert(
         $affiliate_transactions,
         [
             'refCode'               => $ref,
@@ -1346,7 +1352,10 @@ function affiliate_track_conversion($order_id, $posted_data, $order)
 
     // วนลูปสินค้าใน Order ทั้งหมด
     foreach ($order->get_items() as $item_id => $item) {
-        $product_id = $item->get_product_id();
+        $product_id = absint($item->get_variation_id() ?: $item->get_product_id());
+        if (!$product_id) {
+            continue;
+        }
         $cookie_name = 'aff_global_ref';
 
         // เช็คว่าคนซื้อมี Cookie 'aff_global_ref' ของสินค้าชิ้นนี้ไหม

@@ -44,6 +44,26 @@ if (!empty($referral_origin)) {
 
 $affiliate_rows = getTransactionByOrderId($order_id);
 $order_items = $order->get_items();
+$display_rows = array();
+
+foreach ($order_items as $order_item) {
+    $product_id = $order_item->get_product_id();
+    $variation_id = $order_item->get_variation_id();
+    $transaction = null;
+
+    foreach ($affiliate_rows as $affiliate_row) {
+        if ((int) $affiliate_row->product_id === (int) $product_id || (int) $affiliate_row->product_id === (int) $variation_id) {
+            $transaction = $affiliate_row;
+            break;
+        }
+    }
+
+    $display_rows[] = array(
+        'order_item' => $order_item,
+        'product' => wc_get_product($variation_id ?: $product_id),
+        'transaction' => $transaction,
+    );
+}
 ?>
 <div class="card card-custom p-4 mb-4" id="order-detail">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-2">
@@ -76,27 +96,20 @@ $order_items = $order->get_items();
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($affiliate_rows)) {
+                        <?php if (!empty($display_rows)) {
                             $total_earns_sum = 0;
-                            foreach ($affiliate_rows as $item) {
-                                $product = wc_get_product($item->product_id);
-                                $order_item = null;
-                                foreach ($order_items as $current_order_item) {
-                                    if ($current_order_item->get_product_id() == $item->product_id || $current_order_item->get_variation_id() == $item->product_id) {
-                                        $order_item = $current_order_item;
-                                        break;
-                                    }
-                                }
-
-                                $quantity = 0;
-                                if ($order_item) {
-                                    $quantity = $order_item->get_quantity();
-                                }
+                            $total_sold_sum = 0;
+                            foreach ($display_rows as $display_row) {
+                                $order_item = $display_row['order_item'];
+                                $product = $display_row['product'];
+                                $item = $display_row['transaction'];
+                                $quantity = $order_item->get_quantity();
 
                                 $product_name = $product ? $product->get_title() : ($order_item ? $order_item->get_name() : 'สินค้า');
-                                $product_price = $product ? (float) $product->get_price() : ($order_item ? (float) $order_item->get_total() / max(1, $quantity) : 0);
+                                $product_price = (float) $order_item->get_total() / max(1, $quantity);
                                 $product_image = $product ? $product->get_image(array(48, 48)) : '';
-                                $commission_value = ((float) $item->commission_percentage / 100) * $product_price;
+                                $commission_percentage = $item ? (float) $item->commission_percentage : 0;
+                                $commission_value = ($commission_percentage / 100) * $product_price * $quantity;
                                 $total_sold_sum += $product_price * $quantity;
                                 $total_earns_sum += $commission_value;
                             ?>
@@ -109,7 +122,7 @@ $order_items = $order->get_items();
                                     </td>
                                     <td class="text-start"><?=number_format($quantity)?></td>
                                     <td class="text-center"><?=number_format($product_price, 2)?> บาท</td>
-                                    <td class="text-center"><?= esc_html($item->commission_percentage); ?>%</td>
+                                        <td class="text-center"><?= esc_html($commission_percentage); ?>%</td>
                                     <td class="text-end text-success fw-bold"><?= number_format($commission_value, 2); ?> บาท</td>
                                 </tr>
                             <?php } ?>
