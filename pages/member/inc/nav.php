@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) {
             } else {
             ?>
                 <?php
-                if(isset($_GET['order_id'])) {
+                if(isset($_GET['order_id']) || isset($_GET['request_payments'])) {
                 ?>
                 <a class="nav-link" href="/affiliate/dashboard/">
                     <i class="fa-solid fa-arrow-left me-2"></i>กลับไปหน้าแรก
