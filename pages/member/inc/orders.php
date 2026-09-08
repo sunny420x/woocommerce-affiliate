@@ -28,6 +28,8 @@ if (!defined('ABSPATH')) {
                     //Loop data and push to transactions array.
                     $transactions = [];
 
+                    $total_sum = 0;
+
                     foreach ($transactions_orders_full as $item) {
                         $product = wc_get_product($item->product_id);
                         $quantity = 0;
@@ -62,8 +64,14 @@ if (!defined('ABSPATH')) {
                         $transactions[$item->order_id]->quantity += $quantity;
                         $transactions[$item->order_id]->total_sold_sum += $product_price;
                         $transactions[$item->order_id]->total_earns_sum += $commission_value;
+                        $total_sum += $item->total_earns_sum;
                     }
-
+                    ?>
+                    <tr>
+                        <td colspan="5">รวมยอด Commission</td>
+                        <td><?= number_format($total_sum, 2); ?> บาท</td>
+                    </tr>
+                    <?php
                     // Rendering table.
                     if (!empty($transactions)) {
                         foreach ($transactions as $item) {
