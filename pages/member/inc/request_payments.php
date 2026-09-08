@@ -62,17 +62,17 @@ if (!defined('ABSPATH')) {
                 } else {
                     ?>
                     <tr>
-                        <td colspan="6" class="text-center text-muted py-4">ยังไม่มีรายการสั่งซื้อในขณะนี้</td>
+                        <td colspan="5" class="text-center text-muted py-4">ยังไม่มีรายการสั่งซื้อในขณะนี้</td>
                     </tr>
                 <?php
                 }
                 ?>
                 <tr>
-                    <td colspan="5" class="fw-bold text-end">รวมยอด Commission</td>
+                    <td colspan="4" class="fw-bold text-end">รวมยอด Commission</td>
                     <td class="fw-bold text-center"><?= number_format($total_unpaid_sum, 2); ?> บาท</td>
                 </tr>
             </tbody>
-            <button class="btn btn-primary w-100" onclick="window.location.href='/affiliate/dashboard/?request_payments=<?=$user_id?>&action=confirm'">ยันยันการส่งคำขอถอนเงิน</button>
         </table>
+        <button class="btn btn-primary w-100" onclick="window.location.href='/affiliate/dashboard/?request_payments=<?=$user_id?>&action=confirm'">ยันยันการส่งคำขอถอนเงิน</button>
     </div>
 </div>
