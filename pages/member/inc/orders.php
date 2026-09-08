@@ -20,6 +20,8 @@ if (!defined('ABSPATH')) {
             <tbody>
                 <?php
                 $transactions_orders_full = getTransaction($user_id, "");
+                
+                $total_sum = 0;
 
                 if (!empty($transactions_orders_full)) {
                     $transactions = [];
@@ -27,8 +29,6 @@ if (!defined('ABSPATH')) {
 
                     //Loop data and push to transactions array.
                     $transactions = [];
-
-                    $total_sum = 0;
 
                     foreach ($transactions_orders_full as $item) {
                         $product = wc_get_product($item->product_id);
@@ -64,7 +64,7 @@ if (!defined('ABSPATH')) {
                         $transactions[$item->order_id]->quantity += $quantity;
                         $transactions[$item->order_id]->total_sold_sum += $product_price;
                         $transactions[$item->order_id]->total_earns_sum += $commission_value;
-                        $total_sum += $item->total_earns_sum;
+                        $total_sum += $commission_value;
                     }
                     ?>
                     <tr>
