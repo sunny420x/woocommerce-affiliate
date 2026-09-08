@@ -47,6 +47,9 @@ if (!defined('ABSPATH')) {
                             'created_at' => current_time('mysql'),
                         ]
                     );
+
+                    $notice_message = 'ส่งคำขอถอนเงินเรียบร้อยแล้ว กรุณารอการตรวจสอบจากผู้ดูแลระบบ';
+                    $notice_type    = 'success';
                 }
 
                 if (!empty($transactions)) {
