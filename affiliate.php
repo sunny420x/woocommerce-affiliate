@@ -924,9 +924,53 @@ function get_all_users_table() {
                 <?php
                 } elseif(isset($_GET['option']) && $_GET['option'] == "affiliate_withdrawals") {
                     global $wpdb;
-                    $affiliate_withdrawals = $wpdb->get_results("SELECT u.display_name, u.user_email, w.amount, w.order_id, w.created_at
+                    $affiliate_withdrawals = $wpdb->get_results("SELECT w.id, u.display_name, u.user_email, w.amount, w.order_id, w.created_at
                     FROM {$wpdb->prefix}affiliate_request_payments as w
                     LEFT JOIN {$wpdb->prefix}users as u ON u.ID = w.user_id");
+
+                    if(isset($_GET['id']) && is_numeric($_GET['id'])) {
+                        $withdrawal_id = intval($_GET['id']);
+                        $withdrawal = $wpdb->get_row($wpdb->prepare("SELECT w.id, u.display_name, u.user_email, w.amount, w.order_id, w.created_at
+                        FROM {$wpdb->prefix}affiliate_request_payments as w
+                        LEFT JOIN {$wpdb->prefix}users as u ON u.ID = w.user_id
+                        WHERE w.id = %d", $withdrawal_id));
+
+                        if(!$withdrawal) {
+                            echo '<div class="wrap"><div class="notice notice-error"><p>ไม่พบคำขอถอนเงินนี้</p></div></div>';
+                            return;
+                        }
+                    ?>
+                    <h1>รายละเอียดคำขอถอนเงิน หมายเลข #<?= $withdrawal->ID ?></h1>
+                    <p><strong>ชื่อผู้ใช้งาน:</strong> <?= $withdrawal->display_name ?></p>
+                    <p><strong>อีเมล:</strong> <?= $withdrawal->user_email ?></p>
+                    <p><strong>จำนวนเงิน:</strong> <?= $withdrawal->amount ?> บาท</p>
+                    <h2>หมายเลขคำสั่งซื้อ:</h2>
+                    <table class="widefat fixed striped">
+                        <thead>
+                            <tr>
+                                <th>หมายเลขคำสั่งซื้อ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $all_order_ids = explode(',', $withdrawal->order_id);
+                            foreach ($all_order_ids as $item) {
+                            ?>
+                            <tr>
+                                <td><a href="/wp-admin/post.php?post=<?= $item ?>&action=edit" target="_blank">#<?= $item ?></a></td>
+                            </tr>
+                            <?php
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                    <p><strong>ส่งคำขอเมื่อ:</strong> <?= $withdrawal->created_at ?></p>
+                    
+                    <h2>จัดการคำขอ</h2>
+                    <button class="button button-primary" onclick="window.location.href='admin.php?page=affiliate&option=affiliate_withdrawals&id=<?= $withdrawal_id ?>&action=approve'">อนุมัติ</button>
+                    <button class="button button-primary" onclick="window.location.href='admin.php?page=affiliate&option=affiliate_withdrawals&id=<?= $withdrawal_id ?>&action=reject'">ปฏิเสธ</button>
+                    <?php
+                    }
                 ?>
                 <h1>คำขอถอนเงิน</h1>
                 <div style="padding: 25px 25px 25px 25px;">
@@ -937,6 +981,7 @@ function get_all_users_table() {
                                 <th>ชื่อผู้ใช้งาน</th>
                                 <th>จำนวนเงิน</th>
                                 <th>หมายเลขคำสั่งซื้อ</th>
+                                <th>จัดการ</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -948,6 +993,9 @@ function get_all_users_table() {
                                     <td><?= $withdrawal->display_name ?></td>
                                     <td><?= $withdrawal->amount ?> บาท</td>
                                     <td><?= $withdrawal->order_id ?></td>
+                                    <td>
+                                        <a href="admin.php?page=affiliate&option=affiliate_withdrawals&id=<?= $withdrawal->ID ?>" class="button button-primary">ดำเนินการ</a>
+                                    </td>
                                 </tr>
                                 <?php
                             }
