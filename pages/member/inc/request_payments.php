@@ -30,22 +30,27 @@ if(isset($_GET['action']) && $_GET['action'] === 'confirm') {
         )
     );
 
-    if(!$check_existing_request) {
-        $wpdb->insert(
+    if($check_existing_request) {
+        $wpdb->delete(
             $affiliate_request_payments_table,
             [
                 'user_id' => $user_id,
-                'amount' => $total_unpaid_sum,
-                'order_id' => implode(',', $order_ids),
-                'created_at' => current_time('mysql'),
+                'order_id' => $check_existing_request->order_id
             ]
         );
-        $notice_message = 'ส่งคำขอถอนเงินเรียบร้อยแล้ว กรุณารอการตรวจสอบจากผู้ดูแลระบบ';
-        $notice_type    = 'success';
-    } else {
-        $notice_message = 'คุณได้ส่งคำขอถอนเงินสำหรับคำสั่งซื้อนี้แล้ว กรุณารอการตรวจสอบจากผู้ดูแลระบบ';
-        $notice_type    = 'warning';   
     }
+
+    $wpdb->insert(
+        $affiliate_request_payments_table,
+        [
+            'user_id' => $user_id,
+            'amount' => $total_unpaid_sum,
+            'order_id' => implode(',', $order_ids),
+            'created_at' => current_time('mysql'),
+        ]
+    );
+    $notice_message = 'ส่งคำขอถอนเงินเรียบร้อยแล้ว กรุณารอการตรวจสอบจากผู้ดูแลระบบ';
+    $notice_type    = 'success';
 }
 ?>
 <div class="card card-custom p-4" id="orders">
