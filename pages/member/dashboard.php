@@ -219,7 +219,8 @@ function getTransaction($user_id, $limit = '') {
 
 function getTransactionOrderInfo($transactions_full = []) {
     $transactions = [];
-    $total_sum = 0;
+    $total_paid_sum = 0;
+    $total_unpaid_sum = 0;
 
     foreach ($transactions_full as $item) {
         $product = wc_get_product($item->product_id);
@@ -255,10 +256,15 @@ function getTransactionOrderInfo($transactions_full = []) {
         $transactions[$item->order_id]->quantity += $quantity;
         $transactions[$item->order_id]->total_sold_sum += $product_price;
         $transactions[$item->order_id]->total_earns_sum += $commission_value;
-        $total_sum += $commission_value;
+
+        if ($item->paid != 1) {
+            $total_unpaid_sum += $commission_value;
+        } else {
+            $total_paid_sum += $commission_value;
+        }
     }
     
-    return [$transactions, $total_sum];
+    return [$transactions, $total_paid_sum, $total_unpaid_sum];
 }
 
 if ($ref_code) {

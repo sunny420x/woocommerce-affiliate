@@ -20,12 +20,14 @@ if (!defined('ABSPATH')) {
             <tbody>
                 <?php
                 $transactions = [];
-                $total_sum = 0;
+                $total_paid_sum = 0;
+                $total_unpaid_sum = 0;
 
                 if($ref_code) {
-                    [ $transactions, $total_sum] = getTransactionOrderInfo(getTransaction($user_id, ""));
+                    [ $transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo(getTransaction($user_id, ""));
                 } else {
-                    $total_sum = 0;
+                    $total_paid_sum = 0;
+                    $total_unpaid_sum = 0;
                 }
                 if (!empty($transactions)) {
                     foreach ($transactions as $item) {
@@ -77,7 +79,7 @@ if (!defined('ABSPATH')) {
                 ?>
                 <tr>
                     <td colspan="5" class="fw-bold text-end">รวมยอด Commission</td>
-                    <td class="fw-bold text-center"><?= number_format($total_sum, 2); ?> บาท</td>
+                    <td class="fw-bold text-center"><?= number_format($total_unpaid_sum, 2); ?> บาท</td>
                 </tr>
             </tbody>
         </table>
