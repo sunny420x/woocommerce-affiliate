@@ -2,6 +2,51 @@
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
+$transactions = [];
+$total_unpaid_sum = 0;
+$order_ids = [];
+
+if($ref_code) {
+    [ $transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo(getTransaction($user_id, ""));
+} else {
+    $total_unpaid_sum = 0;
+}
+
+foreach ($transactions as $item) {
+    if ($item->status == "wc-completed" || $item->status == "completed") {
+        $order_ids[] = $item->order_id;
+    }
+}
+
+//Request payment confirmation and insert into the database.
+if(isset($_GET['action']) && $_GET['action'] === 'confirm') {
+    global $wpdb;
+    $affiliate_request_payments_table = $wpdb->prefix . 'affiliate_request_payments';
+
+    $check_existing_request = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT order_id FROM $affiliate_request_payments_table WHERE user_id = %d AND order_id IN (%s)",
+            $user_id, implode(',', $order_ids)
+        )
+    );
+
+    if(!$check_existing_request) {
+        $wpdb->insert(
+            $affiliate_request_payments_table,
+            [
+                'user_id' => $user_id,
+                'amount' => $total_unpaid_sum,
+                'order_id' => implode(',', $order_ids),
+                'created_at' => current_time('mysql'),
+            ]
+        );
+        $notice_message = 'ส่งคำขอถอนเงินเรียบร้อยแล้ว กรุณารอการตรวจสอบจากผู้ดูแลระบบ';
+        $notice_type    = 'success';
+    } else {
+        $notice_message = 'คุณได้ส่งคำขอถอนเงินสำหรับคำสั่งซื้อนี้แล้ว กรุณารอการตรวจสอบจากผู้ดูแลระบบ';
+        $notice_type    = 'warning';   
+    }
+}
 ?>
 <div class="card card-custom p-4" id="orders">
     <h5 class="fw-bold mb-3"><i class="fa-solid fa-list-check text-primary me-2"></i>ส่งคำขอถอนเงิน</h5>
@@ -18,53 +63,6 @@ if (!defined('ABSPATH')) {
             </thead>
             <tbody>
                 <?php
-                $transactions = [];
-                $total_unpaid_sum = 0;
-                $order_ids = [];
-
-                if($ref_code) {
-                    [ $transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo(getTransaction($user_id, ""));
-                } else {
-                    $total_unpaid_sum = 0;
-                }
-
-                foreach ($transactions as $item) {
-                    if ($item->status == "wc-completed" || $item->status == "completed") {
-                        $order_ids[] = $item->order_id;
-                    }
-                }
-
-                //Request payment confirmation and insert into the database.
-                if(isset($_GET['action']) && $_GET['action'] === 'confirm') {
-                    global $wpdb;
-                    $affiliate_request_payments_table = $wpdb->prefix . 'affiliate_request_payments';
-
-                    $check_existing_request = $wpdb->get_row(
-                        $wpdb->prepare(
-                            "SELECT order_id FROM $affiliate_request_payments_table WHERE user_id = %d AND order_id IN (%s)",
-                            $user_id, implode(',', $order_ids)
-                        )
-                    );
-
-                    if(!$check_existing_request) {
-                        $wpdb->insert(
-                            $affiliate_request_payments_table,
-                            [
-                                'user_id' => $user_id,
-                                'amount' => $total_unpaid_sum,
-                                'order_id' => implode(',', $order_ids),
-                                'created_at' => current_time('mysql'),
-                            ]
-                        );
-                        $notice_message = 'ส่งคำขอถอนเงินเรียบร้อยแล้ว กรุณารอการตรวจสอบจากผู้ดูแลระบบ';
-                        $notice_type    = 'success';
-                    } else {
-                        $notice_message = 'คุณได้ส่งคำขอถอนเงินสำหรับคำสั่งซื้อนี้แล้ว กรุณารอการตรวจสอบจากผู้ดูแลระบบ';
-                        $notice_type    = 'warning';   
-                    }
-
-                }
-
                 if (!empty($transactions)) {
                     foreach ($transactions as $item) {
                         if (($item->status == "wc-completed" || $item->status == "completed") && $item->paid == 0) {
