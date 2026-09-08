@@ -929,6 +929,32 @@ function get_all_users_table() {
                     LEFT JOIN {$wpdb->prefix}users as u ON u.ID = w.user_id");
 
                     if(isset($_GET['id']) && is_numeric($_GET['id'])) {
+
+                        //Approve Withdrawal
+                        if(isset($_GET['action']) && $_GET['action'] == "approve") {
+                            $withdrawal_id = intval($_GET['id']);
+                            $order_ids = $wpdb->get_var($wpdb->prepare("SELECT order_id FROM {$wpdb->prefix}affiliate_request_payments WHERE id = %d", $withdrawal_id));
+                            $order_ids_array = explode(',', $order_ids);
+
+                            foreach ($order_ids_array as $order_id) {
+                                $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}affiliate_transactions SET paid = 1 WHERE order_id = %d", $order_id));
+                            }
+
+                            wp_redirect( "/wp-admin/admin.php?page=affiliate&option=affiliate_withdrawals&id=$withdrawal_id&status=success" );
+                        }
+                        //Disapprove Withdrawal
+                        if(isset($_GET['action']) && $_GET['action'] == "reject") {
+                            $withdrawal_id = intval($_GET['id']);
+                            $order_ids = $wpdb->get_var($wpdb->prepare("SELECT order_id FROM {$wpdb->prefix}affiliate_request_payments WHERE id = %d", $withdrawal_id));
+                            $order_ids_array = explode(',', $order_ids);
+
+                            foreach ($order_ids_array as $order_id) {
+                                $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}affiliate_transactions SET paid = 0 WHERE order_id = %d", $order_id));
+                            }
+
+                            wp_redirect( "/wp-admin/admin.php?page=affiliate&option=affiliate_withdrawals&id=$withdrawal_id&status=success" );
+                        }
+
                         $withdrawal_id = intval($_GET['id']);
                         $withdrawal = $wpdb->get_row($wpdb->prepare("SELECT w.id, u.display_name, u.user_email, w.amount, w.order_id, w.created_at
                         FROM {$wpdb->prefix}affiliate_request_payments as w
