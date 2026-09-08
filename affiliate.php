@@ -400,7 +400,7 @@ function get_all_users_table() {
                 <a href="admin.php?page=affiliate&option=affiliate_users" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_users") { echo "class='active'"; } ?>>🤝 พันธมิตรในระบบ</a>
                 <a href="admin.php?page=affiliate&option=affiliate_withdrawals" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_withdrawals") { echo "class='active'"; } ?>>💸 คำขอถอนเงิน</a>
                 <h1>รายงาน</h1>
-                <a href="admin.php?page=affiliate&option=affiliate" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate") { echo "class='active'"; } ?>>💰 สรุปยอดของพันธมิตร</a>
+                <a href="admin.php?page=affiliate&option=reports" <?php if(isset($_GET['option']) && $_GET['option'] == "reports") { echo "class='active'"; } ?>>📋 ออกรายงานสรุป</a>
                 <a href="admin.php?page=affiliate&option=statistic" <?php if(isset($_GET['option']) && $_GET['option'] == "statistic") { echo "class='active'"; } ?>>📊 สถิติการใช้งาน</a>
                 <h1>ตั้งค่าระบบ</h1>
                 <a href="admin.php?page=affiliate&option=affiliate_commission_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_commission_settings") { echo "class='active'"; } ?>>📦 Commission ตามประเภทสินค้า</a>
@@ -460,95 +460,13 @@ function get_all_users_table() {
                     </script>
                 </div>
                 <?php
-                } else if(isset($_GET['option']) && $_GET['option'] == "affiliate") {
+                } elseif(isset($_GET['option']) && $_GET['option'] == "reports") {
                 ?>
-                <h1>📊 สรุปยอดของพันธมิตร</h1>
+                <h1>📋 ออกรายงานสรุป</h1>
                 <div style="padding: 0 25px 25px 25px;">
-                    <h2>💸 ยอด Commission ของพันธมิตร</h2>
-                    <table class="widefat fixed striped">
-                        <thead>
-                            <tr>
-                                <th>ชื่อในระบบ</th>
-                                <th>Email</th>
-                                <th>ขายได้ (รายการ)</th>
-                                <th>ยอดขาย</th>
-                                <th>ยอด Commission ทั้งหมด</th>
-                                <th>บัญชีปลายทาง</th>
-                                <th>จัดการ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            if (!empty($waiting_for_payments)) {        
-                                foreach ($waiting_for_payments as $row) {
-                                    $user_bank_info =  $wpdb->get_results($wpdb->prepare("SELECT bank_account_number, bank_name FROM {$wpdb->prefix}users_affiliate_info WHERE user_id = %d LIMIT 1", $row->ID));
-            
-                                    $mark_as_paid_action_url = wp_nonce_url(
-                                        admin_url('admin.php?page=affiliate&action=mark_paid&refCode=' . $row->refCode),
-                                        'mark_paid_nonce'
-                                    );
-                                ?>
-                                <tr>
-                                    <td><?= esc_html($row->display_name) ?></td>
-                                    <td><?= esc_html($row->user_email) ?></td>
-                                    <td><?= esc_html($row->quantity) ?></td>
-                                    <td><?= esc_html($row->total_sold_sum) ?> บาท </td>
-                                    <td><strong><?= number_format($row->total_earns_sum, 2) ?> บาท</strong></td>
-                                    <td><?=esc_html($user_bank_info[0]->bank_account_number)?> <?=esc_html($user_bank_info[0]->bank_name)?></td>
-                                    <td>
-                                        <button type='button' class='button'
-                                            onclick="window.location.href='<?= $mark_as_paid_action_url ?>'">ทำสถานะว่าจ่ายแล้ว</button>
-                                    </td>
-                                </tr>
-                                <?php
-                                }
-                            } else {
-                                ?>
-                                <tr>
-                                    <td colspan="7">ไม่พบข้อมูล</td>
-                                </tr>
-                                <?php
-                            }
-            
-                            if (!empty($wpdb->last_error)) {
-                                echo '<div style="color:red;">SQL Error: ' . esc_html($wpdb->last_error) . '</div>';
-                            }
-                            ?>
-        
-                            <?php
-                            if (!empty($success_payments)) {
-                                foreach ($success_payments as $row) {
-            
-                                    $user_bank_info =  $wpdb->get_results($wpdb->prepare("SELECT bank_account_number, bank_name FROM {$wpdb->prefix}users_affiliate_info WHERE user_id = %d LIMIT 1", $row->ID));
-                                    ?>
-                                    <tr>
-                                        <td><?= esc_html($row->display_name) ?></td>
-                                        <td><?= esc_html($row->user_email) ?></td>
-                                        <td><?= esc_html($row->quantity) ?></td>
-                                        <td><?= esc_html($row->total_sold_sum) ?> บาท </td>
-                                        <td><strong><?= esc_html(number_format($row->total_earn_sum, 2)) ?> บาท</strong></td>
-                                        <td><?=esc_html($user_bank_info[0]->bank_account_number)?> <?=esc_html($user_bank_info[0]->bank_name)?></td>
-                                        <td>
-                                            <button type='button' class='button button-primary'
-                                                onclick="window.location.href='<?= admin_url('admin.php?page=affiliate_report&refCode='.$row->refCode); ?>'">ออกรายงาน</button>
-                                        </td>
-                                    </tr>
-                                    <?php
-                                }
-                            } else {
-                                ?>
-                                <tr>
-                                    <td colspan="7">ไม่พบข้อมูล</td>
-                                </tr>
-                                <?php
-                            }
-            
-                            if (!empty($wpdb->last_error)) {
-                                echo '<div style="color:red;">SQL Error: ' . esc_html($wpdb->last_error) . '</div>';
-                            }
-                            ?>
-                        </tbody>
-                    </table>
+                    เริ่ม: <input type="date" name="start" id="start" value="<?=$_GET['from'] ?? '' ?>">
+                    ถึง: <input type="date" name="end" id="end" value="<?=$_GET['to'] ?? '' ?>">
+                    <button type="submit" class="btn btn-primary">กรอง</button>
                 </div>
                 <?php
                 } elseif(isset($_GET['option']) && $_GET['option'] == "pages_content") {
