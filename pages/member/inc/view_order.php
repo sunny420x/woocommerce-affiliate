@@ -39,7 +39,7 @@ if (!empty($referral_origin)) {
     $referral_origin = $referral_url['host'] ?? $referral_origin;
     $referral_origin = preg_replace('/^www\./i', '', $referral_origin);
 } else {
-    $referral_origin = '—';
+    $referral_origin = 'Direct';
 }
 
 $affiliate_rows = getTransactionByOrderId($order_id);
