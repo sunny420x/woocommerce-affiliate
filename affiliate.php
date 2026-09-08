@@ -464,11 +464,12 @@ function get_all_users_table() {
                 ?>
                 <h1>📋 ออกรายงานสรุป</h1>
                 <div style="padding: 25px 25px 25px 25px;">
-                    <form action="" method="get">
+                    <form action="admin.php?page=affiliate&option=reports" method="get">
                         เริ่ม: <input type="date" name="start" id="start" value="<?=$_GET['from'] ?? '' ?>">
                         ถึง: <input type="date" name="end" id="end" value="<?=$_GET['to'] ?? '' ?>">
-                        <button type="submit" class="btn btn-primary">กรอง</button>
+                        <button type="submit" class="button button-primary">กรอง</button>
                     </form>
+                    <br>
                     <?php
                     global $wpdb;
                     $affiliate_report_table = $wpdb->prefix . 'affiliate_transactions';
@@ -476,12 +477,12 @@ function get_all_users_table() {
 
                     $query = "SELECT t.created_at, u.display_name, SUM(os.total_sales * (t.commission_percentage / 100)) AS total_amount
                         FROM $affiliate_report_table AS t
-                        JOIN $users_table AS u ON u.refCode = t.refCode
+                        JOIN $users_table AS u ON u.refCode = t.refCode 
                         LEFT JOIN {$wpdb->prefix}wc_order_stats AS os ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed')";
 
                     if (isset($_GET['start']) && isset($_GET['end'])) {
-                        $start = $_GET['start'];
-                        $end = $_GET['end'];
+                        $start = sanitize_text_field($_GET['start']);
+                        $end = sanitize_text_field($_GET['end']);
                         $query .= " AND t.created_at BETWEEN '$start' AND '$end'";
                     }
 
