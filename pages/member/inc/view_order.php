@@ -33,8 +33,12 @@ if (empty($customer_email)) {
     $customer_email = '—';
 }
 
-$referral_origin = $order->get_meta('_affiliate_refcode', true);
-if (empty($referral_origin)) {
+$referral_origin = $order->get_meta('_wc_order_attribution_referrer', true);
+if (!empty($referral_origin)) {
+    $referral_url = wp_parse_url($referral_origin);
+    $referral_origin = $referral_url['host'] ?? $referral_origin;
+    $referral_origin = preg_replace('/^www\./i', '', $referral_origin);
+} else {
     $referral_origin = '—';
 }
 
