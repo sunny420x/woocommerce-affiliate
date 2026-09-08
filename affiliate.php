@@ -478,7 +478,7 @@ function get_all_users_table() {
                     $query = "SELECT t.created_at, u.display_name, SUM(os.total_sales * (t.commission_percentage / 100)) AS total_amount
                         FROM $affiliate_report_table AS t
                         JOIN $users_table AS u ON u.refCode = t.refCode 
-                        LEFT JOIN {$wpdb->prefix}wc_order_stats AS os ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed')";
+                        LEFT JOIN {$wpdb->prefix}wc_order_stats AS os ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed') WHERE u.refCode IS NOT NULL AND u.refCode != '' ";
 
                     if (isset($_GET['start']) && isset($_GET['end'])) {
                         $start = sanitize_text_field($_GET['start']);
