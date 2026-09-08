@@ -183,6 +183,7 @@ if (isset($_POST['save_affiliate_info'])) {
 
 $user_affiliate_info = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_info WHERE user_id = %d", $user_id));
 $verified = $user_affiliate_info->verified;
+$suspended = $user_affiliate_info->suspended;
 
 // ==========================================
 // 3. Query ข้อมูลรายงานและสถิติ (เฉพาะเมื่อมี refCode)
@@ -536,6 +537,26 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                         </div>
                         <h3 class="fw-bold">คุณได้สมัครและส่งเอกสารแล้ว !</h3>
                         <p class="text-muted mb-0">ทางเราได้รับเอกสารแล้ว และจะดำเนินการตรวจสอบและยืนยันตัวตนของท่านโดยเร็วที่สุด</p>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="requirements" role="tabpanel">
+                    <?php
+                    if (file_exists(__DIR__ . '/inc/requirements.php')) {
+                        include __DIR__ . '/inc/requirements.php';
+                    }
+                    ?>
+                </div>
+            </div>
+
+            <?php elseif (!$suspended) : ?>
+            <div class="tab-content">
+                <div class="tab-pane show active fade" id="suspended" role="tabpanel">
+                    <div class="card card-custom p-5 text-center my-5">
+                        <div class="text-danger mb-3">
+                            <i class="fa-solid fa-triangle-exclamation fa-4x"></i>
+                        </div>
+                        <h3 class="fw-bold">บัญชี Affiliate ของคุณถูกระงับ !</h3>
+                        <p class="text-muted mb-0">ทางเราได้ตรวจสอบและพบว่าบัญชี Affiliate ของคุณทำผิดกฎระเบียบและเงื่อนไขการใช้งานของเรา คุณสามารถโต้แย้งได้โดยติดต่อทีมสนับสนุนของเรา</p>
                     </div>
                 </div>
                 <div class="tab-pane fade" id="requirements" role="tabpanel">

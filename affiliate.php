@@ -59,21 +59,30 @@ function my_plugin_install() {
     // $charset_collate = $wpdb->get_charset_collate();
     $charset_collate = "DEFAULT CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci";
     
-    $new_table = $wpdb->prefix . 'users_affiliate_info';
-    $new_table_transaction = $wpdb->prefix . 'affiliate_transactions';
+    $users_affiliate_info = $wpdb->prefix . 'users_affiliate_info';
+    $affiliate_transactions = $wpdb->prefix . 'affiliate_transactions';
     $user_table = $wpdb->prefix . 'users';
 
-    $create_table_query = "CREATE TABLE IF NOT EXISTS $new_table (
+    $create_info_table_query = "CREATE TABLE IF NOT EXISTS $users_affiliate_info (
         id int(11) NOT NULL AUTO_INCREMENT,
         user_id int(11) NOT NULL,
         bank_account_number varchar(20) NOT NULL,
         bank_name varchar(50) NOT NULL,
-        verified int(1) DEFAULT 0,
+        verified INT(1) NOT NULL DEFAULT 0,
+        suspended INT(1) NOT NULL DEFAULT 0,
+        social_media_01 varchar(200) DEFAULT NULL,
+        social_media_02 varchar(200) DEFAULT NULL,
+        social_media_03 varchar(200) DEFAULT NULL,
+        social_media_04 varchar(200) DEFAULT NULL,
+        social_media_01_type varchar(50) DEFAULT NULL,
+        social_media_02_type varchar(50) DEFAULT NULL,
+        social_media_03_type varchar(50) DEFAULT NULL,
+        social_media_04_type varchar(50) DEFAULT NULL,
         updated_at datetime NOT NULL,
         PRIMARY KEY  (id)
     ) $charset_collate;";
 
-    $create__transaction_table_query = "CREATE TABLE IF NOT EXISTS $new_table_transaction (
+    $create_transaction_table_query = "CREATE TABLE IF NOT EXISTS $affiliate_transactions (
         id int(12) NOT NULL AUTO_INCREMENT,
         refCode varchar(50) NOT NULL,
         product_id int(12) NOT NULL,
@@ -87,8 +96,8 @@ function my_plugin_install() {
     ) $charset_collate;";
 
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-    dbDelta( $create_table_query );
-    dbDelta( $create__transaction_table_query );
+    dbDelta( $create_info_table_query );
+    dbDelta( $create_transaction_table_query );
 
     // เช็คว่ามีคอลัมน์ refCode หรือยัง เพื่อป้องกัน Error ตอนรันซ้ำ
     $row = $wpdb->get_results("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
@@ -747,12 +756,28 @@ function get_all_users_table() {
                             }
                         }
 
+                        if($_GET['action'] == "suspend") {
+                            if(isset($_GET['user_id'])) {
+                                $user_id = sanitize_text_field($_GET['user_id']);
+                                $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}users_affiliate_info SET suspended = 1 WHERE user_id = %d", $user_id));
+                                wp_redirect( "/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=$user_id&status=success" );
+                            }
+                        }
+                        if($_GET['action'] == "unsuspend") {
+                            if(isset($_GET['user_id'])) {
+                                $user_id = sanitize_text_field($_GET['user_id']);
+                                $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}users_affiliate_info SET suspended = 0 WHERE user_id = %d", $user_id));
+                                wp_redirect( "/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=$user_id&status=success" );
+                            }
+                        }
+
+
                         // แสดง Profile ของ User Affiliate
                         if($_GET['action'] == "profile") {
                             if(isset($_GET['user_id'])) {
                                 $user_id = sanitize_text_field($_GET['user_id']);
                                 $profile = $wpdb->get_row(
-                                    $wpdb->prepare("SELECT a.verified, a.bank_name, a.bank_account_number, u.ID, u.display_name, u.user_email, u.refCode, a.full_name, a.phone_number,
+                                    $wpdb->prepare("SELECT a.verified, a.suspended, a.bank_name, a.bank_account_number, u.ID, u.display_name, u.user_email, u.refCode, a.full_name, a.phone_number,
                                     a.social_media_01, a.social_media_02, a.social_media_03, a.social_media_04, 
                                     a.social_media_01_type, a.social_media_02_type, a.social_media_03_type, a.social_media_04_type
                                     FROM {$wpdb->prefix}users as u 
@@ -767,7 +792,13 @@ function get_all_users_table() {
                            <tbody>
                                 <tr>
                                     <th><strong>ชื่อที่แสดงในระบบ:</strong></th>
-                                    <td><?=$profile->display_name?></td>
+                                    <td><?=$profile->display_name?>
+                                    <?php
+                                    if($profile->suspended) {
+                                    ?>
+                                    <span style="color: red;">(บัญชีถูกระงับการใช้งาน)</span>
+                                    <?php } ?>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th><strong>ชื่อ-นามสกุล:</strong></th>
@@ -779,11 +810,19 @@ function get_all_users_table() {
                                 </tr>
                                 <tr>
                                     <th><strong>สถานะ:</strong> <?php if($profile->verified == 1) {?><span class="badge success">ยืนยันตัวตนแล้ว</span><?php } else {?><span class="badge danger">ยังไม่ได้ยืนยันตัวตน</span><?php } ?></th>
-                                    <td><?php 
+                                    <td>
+                                    <?php 
                                     if($profile->verified == 1) {?>
-                                    <button class="button button-outline-primary button-small" onclick="window.location.href='/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=unverify&user_id=<?=$user_id?>'">ระงับบัญชี</button>
+                                    <button class="button button-outline-primary button-small" onclick="window.location.href='/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=unverify&user_id=<?=$user_id?>'">ยกเลิกการยืนยัน</button>
                                     <?php } else { ?>
                                     <button class="button button-outline-primary button-small" onclick="window.location.href='/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=verify&user_id=<?=$user_id?>'">ยืนยันตัวตน</button>
+                                    <?php } ?>
+
+                                    <?php 
+                                    if($profile->suspended == 1) {?>
+                                    <button class="button button-outline-primary button-small" onclick="window.location.href='/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=unsuspend&user_id=<?=$user_id?>'">ยกเลิกการระงับ</button>
+                                    <?php } else { ?>
+                                    <button class="button button-outline-primary button-small" onclick="window.location.href='/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=suspend&user_id=<?=$user_id?>'">ระงับบัญชี</button>
                                     <?php } ?>
                                     </td>
                                 </tr>
