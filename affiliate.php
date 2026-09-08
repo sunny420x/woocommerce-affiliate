@@ -465,15 +465,15 @@ function get_all_users_table() {
                     $affiliate_report_table = $wpdb->prefix . 'affiliate_transactions';
                     $users_table = $wpdb->prefix . 'users';
 
-                    $query = "SELECT u.ID as user_id, t.created_at, u.display_name, SUM(os.total_sales * (t.commission_percentage / 100)) AS total_amount
+                    $query = "SELECT u.ID as user_id, t.created_at, u.display_name, SUM(os.total_sales * (t.commission_percentage / 100)) AS total_amount, t.paid 
                         FROM $affiliate_report_table AS t
                         JOIN $users_table AS u ON u.refCode = t.refCode 
-                        LEFT JOIN {$wpdb->prefix}wc_order_stats AS os ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed') WHERE t.paid = 1 ";
+                        LEFT JOIN {$wpdb->prefix}wc_order_stats AS os ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed') ";
 
                     if (isset($_GET['start']) && isset($_GET['end'])) {
                         $start = sanitize_text_field($_GET['start']);
                         $end = sanitize_text_field($_GET['end']);
-                        $query .= " AND t.created_at BETWEEN '$start' AND '$end'";
+                        $query .= "WHERE t.created_at BETWEEN '$start' AND '$end'";
                     }
 
                     $affiliate_report = $wpdb->query($query);
