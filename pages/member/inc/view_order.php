@@ -33,6 +33,11 @@ if (empty($customer_email)) {
     $customer_email = '—';
 }
 
+$referral_origin = $order->get_meta('_affiliate_refcode', true);
+if (empty($referral_origin)) {
+    $referral_origin = '—';
+}
+
 $affiliate_rows = getTransactionByOrderId($order_id);
 ?>
 <div class="card card-custom p-4 mb-4" id="order-detail">
@@ -42,7 +47,8 @@ $affiliate_rows = getTransactionByOrderId($order_id);
             <div class="text-muted small">
                 วันที่สั่งซื้อ: <?= esc_html(date_i18n('d/m/Y H:i', strtotime($order->get_date_created() ?? "-"))); ?><br>
                 ชื่อลูกค้า: <?= esc_html($customer_name); ?><br>
-                อีเมล์: <?= esc_html($customer_email); ?>
+                อีเมล์: <?= esc_html($customer_email); ?><br>
+                Origin (Referral): <?= esc_html($referral_origin); ?>
             </div>
         </div>
         <div>
