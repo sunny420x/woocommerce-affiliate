@@ -13,7 +13,7 @@ if($ref_code) {
 }
 
 foreach ($transactions as $item) {
-    if ($item->status == "wc-completed" || $item->status == "completed") {
+    if ($item->status == "wc-completed" || $item->status == "completed" && $item->paid == 0) {
         $order_ids[] = $item->order_id;
     }
 }
@@ -35,7 +35,7 @@ if(isset($_GET['action']) && $_GET['action'] === 'confirm') {
             $affiliate_request_payments_table,
             [
                 'user_id' => $user_id,
-                'order_id' => $order_ids
+                'order_id' => $check_existing_request->order_id
             ]
         );
     }
