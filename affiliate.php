@@ -941,35 +941,38 @@ function get_all_users_table() {
                         }
                     ?>
                     <h1>รายละเอียดคำขอถอนเงิน หมายเลข #<?= $withdrawal->ID ?></h1>
-                    <p><strong>ชื่อผู้ใช้งาน:</strong> <?= $withdrawal->display_name ?></p>
-                    <p><strong>อีเมล:</strong> <?= $withdrawal->user_email ?></p>
-                    <p><strong>จำนวนเงิน:</strong> <?= $withdrawal->amount ?> บาท</p>
-                    <h2>หมายเลขคำสั่งซื้อ:</h2>
-                    <table class="widefat fixed striped">
-                        <thead>
-                            <tr>
-                                <th>หมายเลขคำสั่งซื้อ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            $all_order_ids = explode(',', $withdrawal->order_id);
-                            foreach ($all_order_ids as $item) {
-                            ?>
-                            <tr>
-                                <td><a href="/wp-admin/post.php?post=<?= $item ?>&action=edit" target="_blank">#<?= $item ?></a></td>
-                            </tr>
-                            <?php
-                            }
-                            ?>
-                        </tbody>
-                    </table>
-                    <p><strong>ส่งคำขอเมื่อ:</strong> <?= $withdrawal->created_at ?></p>
-                    
-                    <h2>จัดการคำขอ</h2>
-                    <button class="button button-primary" onclick="window.location.href='admin.php?page=affiliate&option=affiliate_withdrawals&id=<?= $withdrawal_id ?>&action=approve'">อนุมัติ</button>
-                    <button class="button button-primary" onclick="window.location.href='admin.php?page=affiliate&option=affiliate_withdrawals&id=<?= $withdrawal_id ?>&action=reject'">ปฏิเสธ</button>
+                    <div style="padding: 25px 25px 25px 25px;">
+                        <p><strong>ชื่อผู้ใช้งาน:</strong> <?= $withdrawal->display_name ?></p>
+                        <p><strong>อีเมล:</strong> <?= $withdrawal->user_email ?></p>
+                        <p><strong>จำนวนเงิน:</strong> <?= $withdrawal->amount ?> บาท</p>
+                        <h2>หมายเลขคำสั่งซื้อ:</h2>
+                        <table class="widefat fixed striped">
+                            <thead>
+                                <tr>
+                                    <th>หมายเลขคำสั่งซื้อ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $all_order_ids = explode(',', $withdrawal->order_id);
+                                foreach ($all_order_ids as $item) {
+                                ?>
+                                <tr>
+                                    <td><a href="/wp-admin/post.php?post=<?= $item ?>&action=edit" target="_blank">#<?= $item ?></a></td>
+                                </tr>
+                                <?php
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                        <p><strong>ส่งคำขอเมื่อ:</strong> <?= $withdrawal->created_at ?></p>
+                        
+                        <h2>จัดการคำขอ</h2>
+                        <button class="button button-primary" onclick="window.location.href='admin.php?page=affiliate&option=affiliate_withdrawals&id=<?= $withdrawal_id ?>&action=approve'">อนุมัติ</button>
+                        <button class="button button-primary" onclick="window.location.href='admin.php?page=affiliate&option=affiliate_withdrawals&id=<?= $withdrawal_id ?>&action=reject'">ปฏิเสธ</button>
+                    </div>
                     <?php
+                        return;
                     }
                 ?>
                 <h1>คำขอถอนเงิน</h1>
