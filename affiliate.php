@@ -463,10 +463,52 @@ function get_all_users_table() {
                 } elseif(isset($_GET['option']) && $_GET['option'] == "reports") {
                 ?>
                 <h1>📋 ออกรายงานสรุป</h1>
-                <div style="padding: 0 25px 25px 25px;">
-                    เริ่ม: <input type="date" name="start" id="start" value="<?=$_GET['from'] ?? '' ?>">
-                    ถึง: <input type="date" name="end" id="end" value="<?=$_GET['to'] ?? '' ?>">
-                    <button type="submit" class="btn btn-primary">กรอง</button>
+                <div style="padding: 25px 25px 25px 25px;">
+                    <form action="" method="get">
+                        เริ่ม: <input type="date" name="start" id="start" value="<?=$_GET['from'] ?? '' ?>">
+                        ถึง: <input type="date" name="end" id="end" value="<?=$_GET['to'] ?? '' ?>">
+                        <button type="submit" class="btn btn-primary">กรอง</button>
+                    </form>
+                    <?php
+                    global $wpdb;
+                    $affiliate_report_table = $wpdb->prefix . 'affiliate_transactions';
+                    $users_table = $wpdb->prefix . 'users';
+
+                    $query = "SELECT t.created_at, u.display_name, SUM(os.total_sales * (t.commission_percentage / 100)) AS total_amount
+                        FROM $affiliate_report_table AS t
+                        JOIN $users_table AS u ON u.refCode = t.refCode
+                        LEFT JOIN {$wpdb->prefix}wc_order_stats AS os ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed')";
+
+                    if (isset($_GET['start']) && isset($_GET['end'])) {
+                        $start = $_GET['start'];
+                        $end = $_GET['end'];
+                        $query .= " AND t.created_at BETWEEN '$start' AND '$end'";
+                    }
+
+                    $affiliate_report = $wpdb->query($query);
+                    ?>
+                    <table class="widefat fixed striped">
+                        <thead>
+                            <tr>
+                                <th>วันที่</th>
+                                <th>ชื่อผู้ใช้งาน</th>
+                                <th class="text-end">ยอดเงินรวม</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            foreach ($affiliate_report as $row) {
+                            ?>
+                            <tr>
+                                <td><?= $row->created_at ?></td>
+                                <td><?= $row->display_name ?></td>
+                                <td class="text-end"><?= number_format($row->total_amount, 2) ?> บาท</td>
+                            </tr>
+                            <?php
+                            }
+                            ?>
+                        </tbody>
+                    </table>
                 </div>
                 <?php
                 } elseif(isset($_GET['option']) && $_GET['option'] == "pages_content") {
