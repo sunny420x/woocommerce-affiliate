@@ -117,7 +117,7 @@ if (!defined('ABSPATH')) {
                     ?>
                     <tr>
                         <td colspan="5" class="fw-bold text-end">รวมยอด Commission</td>
-                        <td class="fw-bold text-center"><?= number_format($total_sum, 2); ?> บาท</td>
+                        <td class="fw-bold"><?= number_format($total_sum, 2); ?> บาท</td>
                     </tr>
                     <?php
                 }
