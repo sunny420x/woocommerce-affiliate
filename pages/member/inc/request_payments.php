@@ -20,15 +20,38 @@ if (!defined('ABSPATH')) {
                 <?php
                 $transactions = [];
                 $total_unpaid_sum = 0;
+                $order_ids = [];
 
                 if($ref_code) {
                     [ $transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo(getTransaction($user_id, ""));
                 } else {
                     $total_unpaid_sum = 0;
                 }
+
+                foreach ($transactions as $item) {
+                    if ($item->status == "wc-completed" || $item->status == "completed") {
+                        $order_ids[] = $item->order_id;
+                    }
+                }
+
+                if(isset($_GET['action']) && $_GET['action'] === 'confirm') {
+                    global $wpdb;
+                    $table_name = $wpdb->prefix . 'affiliate_request_payments';
+                    $wpdb->insert(
+                        $table_name,
+                        [
+                            'user_id' => $user_id,
+                            'amount' => $total_unpaid_sum,
+                            'order_id' => implode(',', $order_ids),
+                            'status' => 0,
+                            'created_at' => current_time('mysql'),
+                        ]
+                    );
+                }
+
                 if (!empty($transactions)) {
                     foreach ($transactions as $item) {
-                        if ($item->paid == 0) {
+                        if (($item->status == "wc-completed" || $item->status == "completed") && $item->paid == 0) {
                         ?>
                         <tr>
                             <td>

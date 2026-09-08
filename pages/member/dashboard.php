@@ -258,7 +258,9 @@ function getTransactionOrderInfo($transactions_full = []) {
         $transactions[$item->order_id]->total_earns_sum += $commission_value;
 
         if ($item->paid != 1) {
-            $total_unpaid_sum += $commission_value;
+            if($transactions[$item->order_id]->status == "wc-completed" || $transactions[$item->order_id]->status == "completed") {
+                $total_unpaid_sum += $commission_value;
+            }
         } else {
             $total_paid_sum += $commission_value;
         }
