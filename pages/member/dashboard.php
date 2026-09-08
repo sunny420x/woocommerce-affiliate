@@ -548,7 +548,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                 </div>
             </div>
 
-            <?php elseif (!$suspended) : ?>
+            <?php elseif ($suspended) : ?>
             <div class="tab-content">
                 <div class="tab-pane show active fade" id="suspended" role="tabpanel">
                     <div class="card card-custom p-5 text-center my-5">
