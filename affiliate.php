@@ -398,11 +398,14 @@ function get_all_users_table() {
             <div class="leftside">
                 <h1>WooCommerce Affiliate System</h1>
                 <a href="admin.php?page=affiliate&option=affiliate_users" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_users") { echo "class='active'"; } ?>>🤝 พันธมิตรในระบบ</a>
-                <a href="admin.php?page=affiliate&option=pages_content" <?php if(isset($_GET['option']) && $_GET['option'] == "pages_content") { echo "class='active'"; } ?>>📝 เนื้อหาที่แสดงในระบบ</a>
-                <a href="admin.php?page=affiliate&option=affiliate_commission_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_commission_settings") { echo "class='active'"; } ?>>📦 Commission ตามประเภทสินค้า</a>
-                <a href="admin.php?page=affiliate&option=affiliate_tiers_commission_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_tiers_commission_settings") { echo "class='active'"; } ?>>🪜 Commission แบบขั้นบันใด</a>
+                <a href="admin.php?page=affiliate&option=affiliate_withdrawals" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_withdrawals") { echo "class='active'"; } ?>>💸 คำขอถอนเงิน</a>
+                <h1>รายงาน</h1>
                 <a href="admin.php?page=affiliate&option=affiliate" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate") { echo "class='active'"; } ?>>💰 สรุปยอดของพันธมิตร</a>
                 <a href="admin.php?page=affiliate&option=statistic" <?php if(isset($_GET['option']) && $_GET['option'] == "statistic") { echo "class='active'"; } ?>>📊 สถิติการใช้งาน</a>
+                <h1>ตั้งค่าระบบ</h1>
+                <a href="admin.php?page=affiliate&option=affiliate_commission_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_commission_settings") { echo "class='active'"; } ?>>📦 Commission ตามประเภทสินค้า</a>
+                <a href="admin.php?page=affiliate&option=affiliate_tiers_commission_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_tiers_commission_settings") { echo "class='active'"; } ?>>🪜 Commission แบบขั้นบันใด</a>
+                <a href="admin.php?page=affiliate&option=pages_content" <?php if(isset($_GET['option']) && $_GET['option'] == "pages_content") { echo "class='active'"; } ?>>📝 เนื้อหาที่แสดงในระบบ</a>
                 <a href="admin.php?page=affiliate&option=affiliate_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_settings") { echo "class='active'"; } ?>>⚙️ ตั้งค่าระบบ</a>
             </div>
             <div class="container">
@@ -913,6 +916,40 @@ function get_all_users_table() {
                                 </td>
                             </tr>
                             <?php
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+                <?php
+                } elseif(isset($_GET['option']) && $_GET['option'] == "affiliate_withdrawals") {
+                    global $wpdb;
+                    $affiliate_withdrawals = $wpdb->get_results("SELECT u.display_name, u.user_email, w.amount, w.order_id, w.created_at
+                    FROM {$wpdb->prefix}affiliate_request_payments as w
+                    LEFT JOIN {$wpdb->prefix}users as u ON u.ID = w.user_id");
+                ?>
+                <h1>คำขอถอนเงิน</h1>
+                <div style="padding: 25px 25px 25px 25px;">
+                    <table class="widefat fixed striped">
+                        <thead>
+                            <tr>
+                                <th>ส่งคำขอเมื่อ</th>
+                                <th>ชื่อผู้ใช้งาน</th>
+                                <th>จำนวนเงิน</th>
+                                <th>หมายเลขคำสั่งซื้อ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            foreach ($affiliate_withdrawals as $withdrawal) {
+                                ?>
+                                <tr>
+                                    <td><?= $withdrawal->created_at ?></td>
+                                    <td><?= $withdrawal->display_name ?></td>
+                                    <td><?= $withdrawal->amount ?> บาท</td>
+                                    <td><?= $withdrawal->order_id ?></td>
+                                </tr>
+                                <?php
                             }
                             ?>
                         </tbody>
