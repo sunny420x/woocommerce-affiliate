@@ -217,48 +217,58 @@ function getTransaction($user_id, $limit = '') {
     return $transactions;
 }
 
+function getTransactionOrderInfo($transactions_full = []) {
+    $transactions = [];
+    $total_sum = 0;
+
+    foreach ($transactions_full as $item) {
+        $product = wc_get_product($item->product_id);
+        $quantity = 0;
+        $order = wc_get_order($item->order_id);
+
+        if ($order) {
+            foreach ($order->get_items() as $item_id => $order_item) {
+                if ($order_item->get_product_id() == $item->product_id || $order_item->get_variation_id() == $item->product_id) {
+                    $quantity += $order_item->get_quantity();
+                }
+            }
+        }
+
+        // คำนวณราคาและคอมมิชชันของรายการนี้ (คูณด้วยจำนวนชิ้นที่ซื้อจริง)
+        $product_price = (float) $product->get_price() * $quantity;
+        $commission_value = ((float) $item->commission_percentage / 100) * $product_price;
+
+        // ตรวจสอบว่ามี Order ID นี้ในระบบหรือยัง ถ้ายังให้ตั้งค่าเริ่มต้น
+        if (!isset($transactions[$item->order_id])) {
+            $transactions[$item->order_id] = (object) [
+                "order_id" => $item->order_id,
+                "quantity" => 0,
+                "status" => $item->status,
+                "total_sold_sum" => 0,
+                "total_earns_sum" => 0,
+                "commission_percentage" => $item->commission_percentage,
+                "paid" => $item->paid,
+            ];
+        }
+
+        // บวกสะสมยอดขาย จำนวนชิ้น และคอมมิชชันเข้าไปใน Order ID นั้นๆ
+        $transactions[$item->order_id]->quantity += $quantity;
+        $transactions[$item->order_id]->total_sold_sum += $product_price;
+        $transactions[$item->order_id]->total_earns_sum += $commission_value;
+        $total_sum += $commission_value;
+    }
+    
+    return [$transactions, $total_sum];
+}
+
 if ($ref_code) {
-    global $wpdb;
+    $transactions = getTransaction($user_id, "");
+}
 
-    $affiliate_users        = $wpdb->prefix . 'users';
-    $affiliate_transactions = $wpdb->prefix . 'affiliate_transactions';
-    $order_stats_table      = $wpdb->prefix . 'wc_order_stats';
-
-    $transactions = getTransaction($user_id);
-
-    $transactions_full = $wpdb->get_results($wpdb->prepare("
-        SELECT 
-            t.created_at,
-            os.total_sales,
-            os.status,
-            os.order_id 
-        FROM {$affiliate_users} AS u
-        LEFT JOIN {$affiliate_transactions} AS t
-            ON u.refCode = t.refCode
-        LEFT JOIN {$order_stats_table} AS os 
-            ON t.order_id = os.order_id AND (os.status = 'completed' OR os.status = 'wc-completed')
-        WHERE u.ID = %d 
-        ORDER BY t.order_id DESC", $user_id));
-
-    $current_order_id = 0;
-
-    foreach ($transactions as $tx) {
-        $chart_labels[]    = ($tx->paid == 1) ? 'จ่ายแล้ว' : 'รอชำระ';
-        $chart_data[]      = (float)$tx->total_earns;
-        $total_earns_sum   += (float)$tx->total_earns;
-        if($tx->order_id != $current_order_id) {
-            $total_revenue_sum += (float)$tx->total_revenue;
-            $current_order_id = $tx->order_id;
-        }
-        $total_sales_cnt   += (int)$tx->total_sales_count;
-    }
-
-    foreach ($transactions_full as $tx) {
-        if (!empty($tx->created_at)) {
-            $full_chart_labels[] = date('d/m/Y', strtotime($tx->created_at));
-            $full_chart_data[]   = (float)$tx->total_sales;
-        }
-    }
+if($ref_code && !empty($transactions)) {
+    [ $transactions, $total_sum] = getTransactionOrderInfo($transactions);
+} else {
+    $total_sum = 0;
 }
 
 function getOrderById($id) {
