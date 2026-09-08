@@ -35,7 +35,7 @@ if(isset($_GET['action']) && $_GET['action'] === 'confirm') {
             $affiliate_request_payments_table,
             [
                 'user_id' => $user_id,
-                'order_id' => $check_existing_request->order_id
+                'order_id' => $order_ids
             ]
         );
     }
