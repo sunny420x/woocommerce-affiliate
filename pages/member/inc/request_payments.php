@@ -46,7 +46,6 @@ if (!defined('ABSPATH')) {
                                 }
                                 ?>
                             </td>
-                            <!-- แสดงผลยอดเงินสุทธิของออเดอร์นั้นๆ ได้ทันที ไม่ต้องคำนวณซ้ำในตาราง -->
                             <td><?= number_format($item->total_sold_sum) ?> บาท</td>
                             <td>
                                 <strong class="text-success"><?= number_format($item->total_earns_sum, 2); ?> บาท</strong>
@@ -73,6 +72,6 @@ if (!defined('ABSPATH')) {
                 </tr>
             </tbody>
         </table>
-        <button class="btn btn-primary w-100" onclick="window.location.href='/affiliate/dashboard/?request_payments=<?=$user_id?>&action=confirm'">ยันยันการส่งคำขอถอนเงิน</button>
+        <button class="btn btn-primary w-100" onclick="window.location.href='/affiliate/dashboard/?request_payments=<?=$user_id?>&action=confirm'">ยืนยันการส่งคำขอถอนเงิน</button>
     </div>
 </div>
