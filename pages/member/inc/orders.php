@@ -19,17 +19,14 @@ if (!defined('ABSPATH')) {
             </thead>
             <tbody>
                 <?php
-                $transactions_data = getTransaction($user_id, "");
                 $transactions = [];
                 $total_sum = 0;
 
-                if($ref_code && !empty($transactions)) {
-                    [ $transactions, $total_sum] = getTransactionOrderInfo($transactions_data);
+                if($ref_code) {
+                    [ $transactions, $total_sum] = getTransactionOrderInfo(getTransaction($user_id, ""));
                 } else {
                     $total_sum = 0;
                 }
-
-                // Rendering table.
                 if (!empty($transactions)) {
                     foreach ($transactions as $item) {
                         ?>
