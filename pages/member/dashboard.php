@@ -272,9 +272,10 @@ if ($ref_code) {
 }
 
 if($ref_code && !empty($transactions)) {
-    [ $transactions, $total_sum] = getTransactionOrderInfo($transactions);
+    [ $transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo($transactions);
 } else {
-    $total_sum = 0;
+    $total_paid_sum = 0;
+    $total_unpaid_sum = 0;
 }
 
 function getOrderById($id) {
@@ -589,6 +590,12 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                     <?php
                     if (file_exists(__DIR__ . '/inc/view_order.php')) {
                         include __DIR__ . '/inc/view_order.php';
+                    }
+                    ?>
+                <?php elseif (isset($_GET['request_payments']) && !empty($_GET['request_payments'])) : ?>
+                    <?php
+                    if (file_exists(__DIR__ . '/inc/request_payments.php')) {
+                        include __DIR__ . '/inc/request_payments.php';
                     }
                     ?>
                 <?php else : ?>

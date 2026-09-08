@@ -4,9 +4,7 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <div class="card card-custom p-4" id="orders">
-    <h5 class="fw-bold mb-3"><i class="fa-solid fa-list-check text-primary me-2"></i>ประวัติคำสั่งซื้อ
-        <button class="btn btn-primary btn-sm" onclick="window.location.href='/affiliate/dashboard/?request_payments=<?=$user_id?>'">ส่งคำขอถอนเงิน</button>
-    </h5>
+    <h5 class="fw-bold mb-3"><i class="fa-solid fa-list-check text-primary me-2"></i>ส่งคำขอถอนเงิน</h5>
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
@@ -15,24 +13,22 @@ if (!defined('ABSPATH')) {
                     <th class="text-center">สถานะออเดอร์</th>
                     <th>ยอดขายทั้งหมด</th>
                     <th>ยอด Commission</th>
-                    <th class="text-center">สถานะการจ่ายเงิน</th>
                     <th class="text-center">จัดการ</th>
                 </tr>
             </thead>
             <tbody>
                 <?php
                 $transactions = [];
-                $total_paid_sum = 0;
                 $total_unpaid_sum = 0;
 
                 if($ref_code) {
                     [ $transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo(getTransaction($user_id, ""));
                 } else {
-                    $total_paid_sum = 0;
                     $total_unpaid_sum = 0;
                 }
                 if (!empty($transactions)) {
                     foreach ($transactions as $item) {
+                        if ($item->paid == 0) {
                         ?>
                         <tr>
                             <td>
@@ -57,19 +53,11 @@ if (!defined('ABSPATH')) {
                                 <span class="small text-muted">(<?= $item->commission_percentage ?>%)</span>
                             </td>
                             <td class="text-center">
-                                <?php if ($item->paid == 0) { ?>
-                                    <span
-                                        class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3">รอชำระค่าตอบแทน</span>
-                                <?php } else { ?>
-                                    <span
-                                        class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3">ชำระค่าตอบแทนแล้ว</span>
-                                <?php } ?>
-                            </td>
-                            <td class="text-center">
                                 <button class="btn btn-outline-primary btn-sm" onclick="window.location.href='/affiliate/dashboard/?order_id=<?=$item->order_id?>'">รายละเอียดคำสั่งซื้อ</button>
                             </td>
                         </tr>
                     <?php
+                        }
                     }
                 } else {
                     ?>
@@ -84,6 +72,7 @@ if (!defined('ABSPATH')) {
                     <td class="fw-bold text-center"><?= number_format($total_unpaid_sum, 2); ?> บาท</td>
                 </tr>
             </tbody>
+            <button class="btn btn-primary w-100" onclick="window.location.href='/affiliate/dashboard/?request_payments=<?=$user_id?>&action=confirm'">ยันยันการส่งคำขอถอนเงิน</button>
         </table>
     </div>
 </div>
