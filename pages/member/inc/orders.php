@@ -66,12 +66,6 @@ if (!defined('ABSPATH')) {
                         $transactions[$item->order_id]->total_earns_sum += $commission_value;
                         $total_sum += $commission_value;
                     }
-                    ?>
-                    <tr>
-                        <td colspan="5">รวมยอด Commission</td>
-                        <td><?= number_format($total_sum, 2); ?> บาท</td>
-                    </tr>
-                    <?php
                     // Rendering table.
                     if (!empty($transactions)) {
                         foreach ($transactions as $item) {
@@ -120,6 +114,12 @@ if (!defined('ABSPATH')) {
                         </tr>
                     <?php
                     }
+                    ?>
+                    <tr>
+                        <td colspan="5" class="fw-bold text-end">รวมยอด Commission</td>
+                        <td class="fw-bold text-end"><?= number_format($total_sum, 2); ?> บาท</td>
+                    </tr>
+                    <?php
                 }
                 ?>
             </tbody>
