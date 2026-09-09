@@ -60,8 +60,7 @@ if (isset($_GET['action'], $_GET['start'], $_GET['end']) && $_GET['action'] === 
 ?>
 <h1>คำขอถอนเงิน</h1>
 <div style="padding: 25px 25px 25px 25px;">
-<label for="dateStart">วันที่:</label><input type="date" id="dateStart"> <label for="dateEnd">ถึง</label><input type="date" id="dateEnd">
-ิ<button class="button button-primary" onclick="applyReportFilter()">ออกรายงานตามวันที่ที่เลือก</button>
+<label for="dateStart">วันที่:</label><input type="date" id="dateStart"> <label for="dateEnd">ถึง</label> <input type="date" id="dateEnd"> <button class="button button-primary" onclick="applyReportFilter()">ออกรายงานตามวันที่ที่เลือก</button>
 <button class="button button-outline-primary" 
     onclick="window.location.href='<?= esc_url(admin_url('admin.php?page=affiliate&option=affiliate_withdrawals&action=get_reports&start=' . date('Y-m-01') . '&end=' . date('Y-m-t'))) ?>'">ออกรายงานค่า Commission ของเดือนนี้
 </button>
