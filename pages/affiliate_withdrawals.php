@@ -32,10 +32,10 @@ if (isset($_GET['action'], $_GET['start'], $_GET['end']) && $_GET['action'] === 
     <?php
     $total_commission_outcome = 0;
     foreach($affiliate_withdrawals as $row) {
-        $total_commission_outcome += getReport($row->id, 'view');
+        $total_commission_outcome += getReport($row->id, 'range');
     }
     ?>
-    <table>
+    <table class="widefat fixed striped">
         <thead>
             <tr>
                 <th>ยอดรวม</th>
