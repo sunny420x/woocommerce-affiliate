@@ -366,6 +366,11 @@ function get_all_users_table() {
                 padding: 0 20px;
             }
         }
+        @media print {
+            .no-print {
+                display: none;
+            }
+        }
     </style>
     <div class="white-label-zone no-print">
         <!-- <span style="padding: 40px 10px 40px 40px;float: left;font-size: 60px;">🤝</span> -->
@@ -401,7 +406,7 @@ function get_all_users_table() {
         <?php
         }
         ?>
-        <div style="display: flex;">
+        <div style="display: flex;" class="no-print">
             <div class="leftside">
                 <h1>WooCommerce Affiliate System</h1>
                 <a href="admin.php?page=affiliate&option=affiliate_users" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_users") { echo "class='active'"; } ?>>🤝 พันธมิตรในระบบ</a>
