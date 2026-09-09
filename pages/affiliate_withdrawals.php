@@ -31,16 +31,23 @@ if (isset($_GET['action'], $_GET['start'], $_GET['end']) && $_GET['action'] === 
     <div style="padding: 0px 25px 25px 25px;">
     <h2>ยอดคำขอถอนเงินทั้งหมดในช่วง <?=$start?> ถึง <?=$end?></h2>
     <?php
+    $total_income = 0;
     $total_commission_outcome = 0;
     foreach($affiliate_withdrawals as $row) {
-        $total_commission_outcome += getReport($row->id, 'range');
+        [$income, $outcome] = getReport($row->id, 'range');
+        $total_commission_outcome += $outcome;
+        $total_income += $income;
     }
     ?>
     <h2>สรุปยอดรวม Commission ตั้งแต่วันที่ <?=$start?> ถึง <?=$end?></h2>
     <table class="widefat fixed striped" style="margin-top: 20px;">
         <tbody>
             <tr>
-                <th><strong>รวม</strong></th>
+                <th><strong>รวมขายทั้งหมด</strong></th>
+                <td style="text-align: right;"><strong><?=number_format($total_income)?> บาท</strong></td>
+            </tr>
+            <tr>
+                <th><strong>รวมยอด Commission ที่จ่ายไป</strong></th>
                 <td style="text-align: right;"><strong><?=number_format($total_commission_outcome)?> บาท</strong></td>
             </tr>
         </tbody>

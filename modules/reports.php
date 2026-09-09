@@ -85,6 +85,7 @@ function getReport($id, $option = "view") {
             <tbody>
                 <?php
                 $all_order_ids = explode(',', $withdrawal->order_id);
+                $sum_income = 0;
                 $sum_commission = 0;
                 foreach ($all_order_ids as $order_id) {
                     $commission_info = $wpdb->get_results($wpdb->prepare("SELECT paid, commission_percentage, paid_at, product_id FROM {$wpdb->prefix}affiliate_transactions WHERE order_id = %d", $order_id));
@@ -133,6 +134,7 @@ function getReport($id, $option = "view") {
                     <td><?=number_format($total_commission, 2)?> บาท</td>
                 </tr>
                 <?php
+                    $sum_income += $total_subtotal;
                     $sum_commission += $total_commission;
                 }
                 ?>
@@ -155,6 +157,6 @@ function getReport($id, $option = "view") {
     <?php
     }
     if($option == "range") {
-        return $sum_commission;
+        return [ $sum_income, $sum_commission ];
     }
 }
