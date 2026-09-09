@@ -10,8 +10,6 @@ if (!is_user_logged_in()) {
     exit;
 }
 
-require_once( plugin_dir_path( __FILE__ ) . 'modules/line.php' );
-
 global $wpdb;
 $user_id      = get_current_user_id();
 $current_user = wp_get_current_user();
