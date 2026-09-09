@@ -15,6 +15,7 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
 ?>
 <h1>คำขอถอนเงิน</h1>
 <div style="padding: 25px 25px 25px 25px;">
+<button class="button button-primary button-small" onclick="window.location.href='admin.php?page=affiliate&option=affiliate_withdrawals&action=monthly_reports'">📋 ออกรายงานค่า Commission ของเดือนนี้</button>
 <table class="widefat fixed striped">
     <thead>
         <tr>

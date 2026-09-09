@@ -27,7 +27,7 @@ $affiliate_report = $wpdb->query($query);
 ?>
 <h1>📋 ออกรายงานสรุป</h1>
 <div style="padding: 25px 25px 25px 25px;">
-    <form action="admin.php?page=affiliate&option=reports" method="get">
+    <form action="" method="get">
         เริ่ม: <input type="date" name="start" id="start" value="<?=$_GET['from'] ?? '' ?>">
         ถึง: <input type="date" name="end" id="end" value="<?=$_GET['to'] ?? '' ?>">
         <button type="submit" class="button button-primary">กรอง</button>
