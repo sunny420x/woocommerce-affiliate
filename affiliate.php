@@ -370,8 +370,11 @@ function get_all_users_table() {
         <div style="padding: 20px 0;">
             <h1>WooCommerce Affiliate System</h1>
             <p>ระบบพันธมิตรสำหรับ WooCommerce รองรับการสร้างลิงค์พันธมิตร เงื่อนไขการให้ยอด Commission หลากหลาย การติดตามยอดขาย สร้างรายงาน ยืนยันตัวตน และการจ่ายค่าตอบแทนให้กับพันธมิตร</p>
-            <br>
+            <p>
             <strong>Github Repository:</strong> <a href="https://github.com/sunny420x/woocommerce-affiliate" target="_blank">https://github.com/sunny420x/woocommerce-affiliate</a>
+            <strong>Documentation:</strong> <a href="https://github.com/sunny420x/woocommerce-affiliate/wiki" target="_blank">https://github.com/sunny420x/woocommerce-affiliate/wiki</a>
+            <strong>Support:</strong> <a href="https://github.com/sunny420x/woocommerce-affiliate/issues" target="_blank">https://github.com/sunny420x/woocommerce-affiliate/issues</a>
+            <strong>Developer:</strong> <a href="https://sunny420x.com" target="_blank">https://sunny420x.com</a>
             </p>
         </div>
     </div>
