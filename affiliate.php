@@ -371,9 +371,9 @@ function get_all_users_table() {
             <h1>WooCommerce Affiliate System</h1>
             <p>ระบบพันธมิตรสำหรับ WooCommerce รองรับการสร้างลิงค์พันธมิตร เงื่อนไขการให้ยอด Commission หลากหลาย การติดตามยอดขาย สร้างรายงาน ยืนยันตัวตน และการจ่ายค่าตอบแทนให้กับพันธมิตร</p>
             <p>
-            <strong>Github Repository:</strong> <a href="https://github.com/sunny420x/woocommerce-affiliate" target="_blank">https://github.com/sunny420x/woocommerce-affiliate</a>
-            <strong>Documentation:</strong> <a href="https://github.com/sunny420x/woocommerce-affiliate/wiki" target="_blank">https://github.com/sunny420x/woocommerce-affiliate/wiki</a>
-            <strong>Support:</strong> <a href="https://github.com/sunny420x/woocommerce-affiliate/issues" target="_blank">https://github.com/sunny420x/woocommerce-affiliate/issues</a>
+            <strong>Github Repository:</strong> <a href="https://github.com/sunny420x/woocommerce-affiliate" target="_blank">https://github.com/sunny420x/woocommerce-affiliate</a><br>
+            <strong>Documentation:</strong> <a href="https://github.com/sunny420x/woocommerce-affiliate/wiki" target="_blank">https://github.com/sunny420x/woocommerce-affiliate/wiki</a><br>
+            <strong>Support:</strong> <a href="https://github.com/sunny420x/woocommerce-affiliate/issues" target="_blank">https://github.com/sunny420x/woocommerce-affiliate/issues</a><br>
             <strong>Developer:</strong> <a href="https://sunny420x.com" target="_blank">https://sunny420x.com</a>
             </p>
         </div>
