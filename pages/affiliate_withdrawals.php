@@ -110,12 +110,12 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
                 <td><?=$product_name; ?></td>
                 <td><?=number_format($subtotal, 2)?> บาท</td>
                 <td><?= $commission_percentage ?>%</td>
-                <td><?= number_format($subtotal * ($commission_info->commission_percentage / 100), 2) ?> บาท</td>
+                <td><?= number_format($subtotal * ($total_commission / 100), 2) ?> บาท</td>
                 <td><?php
-                if($commission_info->paid == 0) {
+                if($commission_info[0]->paid == 0) {
                     echo '<span class="badge pending">ยังไม่ได้จ่าย Commission</span>';
-                } elseif($commission_info->paid == 1) {
-                    echo '<span class="badge success">จ่ายแล้ว เมื่อ ' . $commission_info->paid_at . '</span>';
+                } elseif($commission_info[0]->paid == 1) {
+                    echo '<span class="badge success">จ่ายแล้ว เมื่อ ' . $commission_info[0]->paid_at . '</span>';
                 }
                 ?></td></td>
             </tr>
@@ -123,11 +123,11 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
                 }
             ?>
             <tr>
-                <td colspan="5">ยอดรวมทั้งหมด</td>
+                <td colspan="5"><strong>ยอดรวมทั้งหมด</strong></td>
                 <td><?=number_format($total_subtotal, 2)?> บาท</td>
             </tr>
             <tr>
-                <td colspan="5">ยอด Commission รวม</td>
+                <td colspan="5"><strong>ยอด Commission รวม</strong></td>
                 <td><?=number_format($total_commission, 2)?> บาท</td>
             </tr>
             <?php
