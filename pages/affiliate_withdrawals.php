@@ -72,6 +72,7 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
         <thead>
             <tr>
                 <th>หมายเลขคำสั่งซื้อ</th>
+                <th>สถานะ Commission</th>
             </tr>
         </thead>
         <tbody>
@@ -84,7 +85,7 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
                 <td><?php
                 $commission_status = $wpdb->get_row($wpdb->prepare("SELECT paid FROM {$wpdb->prefix}affiliate_transactions WHERE order_id = %d", $item));
                 if($commission_status->paid == 0) {
-                    echo '<span class="badge warning">ยังไม่ได้จ่าย Commission</span>';
+                    echo '<span class="badge pending">ยังไม่ได้จ่าย Commission</span>';
                 } elseif($commission_status->paid == 1) {
                     echo '<span class="badge success">จ่ายแล้ว</span>';
                 }
