@@ -53,7 +53,7 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
 
     $withdrawal_id = intval($_GET['id']);
     $withdrawal = $wpdb->get_row($wpdb->prepare("SELECT 
-    w.id, u.display_name, u.user_email, w.amount, w.order_id, w.created_at, a.bank_account_number, a.bank_name
+    w.id, u.display_name, u.user_email, u.ID as user_id, w.amount, w.order_id, w.created_at, a.bank_account_number, a.bank_name
     FROM {$wpdb->prefix}affiliate_request_payments as w
     LEFT JOIN {$wpdb->prefix}users as u ON u.ID = w.user_id
     LEFT JOIN {$wpdb->prefix}users_affiliate_info as a ON a.user_id = u.ID
@@ -66,10 +66,11 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
 ?>
 <h1>รายละเอียดคำขอถอนเงิน หมายเลข #<?= $withdrawal->id ?></h1>
 <div style="padding: 0px 25px 25px 25px;">
-    <p><strong>ชื่อผู้ใช้งาน:</strong> <?= $withdrawal->display_name ?></p>
+    <p><strong>ชื่อผู้ใช้งาน:</strong> <a href="admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=<?=$withdrawal->user_id?>" target="_blank"><?= $withdrawal->display_name ?></a></p>
     <p><strong>อีเมล:</strong> <?= $withdrawal->user_email ?></p>
     <p><strong>หมายเลขบัญชี:</strong> <?= $withdrawal->bank_account_number ?> - <?= $withdrawal->bank_name ?></p>
     <p><strong>จำนวนเงิน:</strong> <strong><?= $withdrawal->amount ?> บาท</strong></p>
+    <p><strong>ส่งคำขอเมื่อ:</strong> <?= $withdrawal->created_at ?></p>
     <h2>หมายเลขคำสั่งซื้อ:</h2>
     <table class="widefat fixed striped">
         <thead>
@@ -137,11 +138,10 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
             ?>
             <tr>
                 <th colspan="5"><strong>รวมยอด Commission ทุกคำสั่งซื้อ</strong></th>
-                <th><?=number_format($sum_commission, 2)?> บาท</th>
+                <th><strong><?=number_format($sum_commission, 2)?> บาท</strong></th>
             </tr>
         </tbody>
     </table>
-    <p><strong>ส่งคำขอเมื่อ:</strong> <?= $withdrawal->created_at ?></p>
     
     <h2>จัดการคำขอ</h2>
     <button class="button button-primary" onclick="window.location.href='admin.php?page=affiliate&option=affiliate_withdrawals&id=<?= $withdrawal_id ?>&action=approve'">อนุมัติ</button>
