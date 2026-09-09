@@ -592,8 +592,12 @@ function get_all_users_table() {
                         <h2>API Settings</h2>
                         <label for="LINE_recipient_id">LINE Recipient ID (User/Group/Room):</label>
                         <input type="text" name="LINE_recipient_id" value="<?= esc_attr(get_option('LINE_recipient_id')); ?>" />
+                        <br>
+                        <br>
                         <label for="LINE_channel_access_token">LINE Channel Access Token:</label>
                         <input type="text" name="LINE_channel_access_token" value="<?= esc_attr(get_option('LINE_channel_access_token')); ?>" />
+                        <br>
+                        <br>
                         <label for="LINE_channel_secret">LINE Channel Secret:</label>
                         <input type="text" name="LINE_channel_secret" value="<?= esc_attr(get_option('LINE_channel_secret')); ?>" />
 
