@@ -86,8 +86,10 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
             <?php
             $all_order_ids = explode(',', $withdrawal->order_id);
             foreach ($all_order_ids as $order_id) {
-                $commission_info = $wpdb->get_row($wpdb->prepare("SELECT paid, commission_percentage, paid_at FROM {$wpdb->prefix}affiliate_transactions WHERE order_id = %d", $order_id));
+                $commission_info = $wpdb->get_row($wpdb->prepare("SELECT paid, commission_percentage, paid_at, product_id FROM {$wpdb->prefix}affiliate_transactions WHERE order_id = %d", $order_id));
                 $order_detail = wc_get_order($order_id);
+                if (!$order_detail) continue;
+
                 $total_subtotal = 0;
                 foreach ( $order_detail->get_items() as $item_id => $item ) {
                     $product_name = $item->get_name();
@@ -95,12 +97,15 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
                     $quantity     = $item->get_quantity();
                     $subtotal     = $item->get_subtotal();
                     $total_subtotal +=  $subtotal * $quantity;
+                    $commission_percentage = ($commission_info && (int)$commission_info->product_id === (int)$product_id) 
+                    ? $commission_info->commission_percentage 
+                    : 0;
             ?>
             <tr>
                 <td><a href="/wp-admin/post.php?post=<?= $order_id ?>&action=edit" target="_blank">#<?= $order_id ?></a></td>
                 <td><?=$product_name; ?></td>
                 <td><?=number_format($total_subtotal, 2)?> บาท</td>
-                <td><?= $commission_info->commission_percentage ?>%</td>
+                <td><?= $commission_percentage ?>%</td>
                 <td><?= number_format($total_subtotal * ($commission_info->commission_percentage / 100), 2) ?> บาท</td>
                 <td><?php
                 if($commission_info->paid == 0) {
