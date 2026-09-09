@@ -92,7 +92,7 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
                 <td><a href="/wp-admin/post.php?post=<?= $order_id ?>&action=edit" target="_blank">#<?= $order_id ?></a></td>
                 <td><?=number_format($order_detail->get_total(), 2)?> บาท</td>
                 <td><?= $commission_info->commission_percentage ?>%</td>
-                <td><?= number_format($order_detail->get_total() * ($commission_info->commission_percentage / 100), 2) ?> บาท</td>
+                <td><?= number_format($order_detail->get_total() / $commission_info->commission_percentage * 100, 2) ?> บาท</td>
                 <td><?php
                 if($commission_info->paid == 0) {
                     echo '<span class="badge pending">ยังไม่ได้จ่าย Commission</span>';
