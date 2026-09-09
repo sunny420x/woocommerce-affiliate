@@ -106,9 +106,9 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
             <tr>
                 <td><a href="/wp-admin/post.php?post=<?= $order_id ?>&action=edit" target="_blank">#<?= $order_id ?></a></td>
                 <td><?=$product_name; ?></td>
-                <td><?=number_format($total_subtotal, 2)?> บาท</td>
+                <td><?=number_format($subtotal, 2)?> บาท</td>
                 <td><?= $commission_percentage ?>%</td>
-                <td><?= number_format($total_subtotal * ($commission_info->commission_percentage / 100), 2) ?> บาท</td>
+                <td><?= number_format($subtotal * ($commission_info->commission_percentage / 100), 2) ?> บาท</td>
                 <td><?php
                 if($commission_info->paid == 0) {
                     echo '<span class="badge pending">ยังไม่ได้จ่าย Commission</span>';
@@ -119,6 +119,12 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
             </tr>
             <?php
                 }
+            ?>
+            <tr>
+                <td colspan="5">ยอดรวม</td>
+                <td><?=number_format($total_subtotal, 2)?></td>
+            </tr>
+            <?php
             }
             ?>
         </tbody>
