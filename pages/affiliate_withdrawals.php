@@ -52,9 +52,11 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
     }
 
     $withdrawal_id = intval($_GET['id']);
-    $withdrawal = $wpdb->get_row($wpdb->prepare("SELECT w.id, u.display_name, u.user_email, w.amount, w.order_id, w.created_at
+    $withdrawal = $wpdb->get_row($wpdb->prepare("SELECT 
+    w.id, u.display_name, u.user_email, w.amount, w.order_id, w.created_at, a.bank_account_number, a.bank_name
     FROM {$wpdb->prefix}affiliate_request_payments as w
     LEFT JOIN {$wpdb->prefix}users as u ON u.ID = w.user_id
+    LEFT JOIN {$wpdb->prefix}users_affiliate_info as a ON a.user_id = u.ID
     WHERE w.id = %d", $withdrawal_id));
 
     if(!$withdrawal) {
@@ -66,6 +68,7 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
 <div style="padding: 0px 25px 25px 25px;">
     <p><strong>ชื่อผู้ใช้งาน:</strong> <?= $withdrawal->display_name ?></p>
     <p><strong>อีเมล:</strong> <?= $withdrawal->user_email ?></p>
+    <p><strong>หมายเลขบัญชี:</strong> <?= $withdrawal->bank_account_number ?> - <?= $withdrawal->bank_name ?></p>
     <p><strong>จำนวนเงิน:</strong> <strong><?= $withdrawal->amount ?> บาท</strong></p>
     <h2>หมายเลขคำสั่งซื้อ:</h2>
     <table class="widefat fixed striped">
