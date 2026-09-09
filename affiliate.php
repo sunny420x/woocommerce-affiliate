@@ -590,8 +590,8 @@ function get_all_users_table() {
                         <p>* การอัพเดท % Commission จะไม่มีผลย้อนหลังกับข้อมูลการขายเดิมในระบบ แต่จะมีผลกับข้อมูลการขายใหม่ที่จะถูกเพิ่มเข้ามาหลังจากอัพเดท</p>
 
                         <h2>API Settings</h2>
-                        <label for="LINE_channel_id">LINE Channel ID:</label>
-                        <input type="text" name="LINE_channel_id" value="<?= esc_attr(get_option('LINE_channel_id')); ?>" />
+                        <label for="LINE_recipient_id">LINE Recipient ID (User/Group/Room):</label>
+                        <input type="text" name="LINE_recipient_id" value="<?= esc_attr(get_option('LINE_recipient_id')); ?>" />
                         <label for="LINE_channel_access_token">LINE Channel Access Token:</label>
                         <input type="text" name="LINE_channel_access_token" value="<?= esc_attr(get_option('LINE_channel_access_token')); ?>" />
                         <label for="LINE_channel_secret">LINE Channel Secret:</label>
@@ -1175,7 +1175,7 @@ function affiliate_settings_init()
     register_setting('affiliate_settings_group', 'affiliate_commission');
     register_setting('affiliate_settings_group', 'affiliate_enable');
     register_setting('affiliate_settings_group', 'affiliate_logo');
-    register_setting('affiliate_settings_group', 'LINE_channel_id');
+    register_setting('affiliate_settings_group', 'LINE_recipient_id');
     register_setting('affiliate_settings_group', 'LINE_channel_secret');
     register_setting('affiliate_settings_group', 'LINE_channel_access_token');
 
@@ -1566,40 +1566,43 @@ function affiliate_dashboard_template_redirect() {
 
 function sendLineNotification($msg) {
     $access_token = trim((string) get_option('LINE_channel_access_token', ''));
-    $to = trim((string) get_option('LINE_channel_id', ''));
+    $to = trim((string) get_option('LINE_recipient_id', ''));
     $msg = trim((string) $msg);
 
     if ($access_token === '') {
         return new WP_Error('line_missing_access_token', 'LINE Channel Access Token is not configured.');
     }
 
-    if ($to === '') {
-        return new WP_Error('line_missing_recipient', 'A LINE recipient ID is required.');
-    }
-
     if ($msg === '') {
         return new WP_Error('line_missing_message', 'The LINE notification message cannot be empty.');
     }
 
+    $endpoint = $to === ''
+        ? 'https://api.line.me/v2/bot/message/broadcast'
+        : 'https://api.line.me/v2/bot/message/push';
+
+    $payload = array(
+        'messages' => array(
+            array(
+                'type' => 'text',
+                'text' => $msg,
+            ),
+        ),
+    );
+
+    if ($to !== '') {
+        $payload['to'] = $to;
+    }
+
     $response = wp_remote_post(
-        'https://api.line.me/v2/bot/message/push',
+        $endpoint,
         array(
             'timeout' => 15,
             'headers' => array(
                 'Authorization' => 'Bearer ' . $access_token,
                 'Content-Type'  => 'application/json',
             ),
-            'body' => wp_json_encode(
-                array(
-                    'to' => $to,
-                    'messages' => array(
-                        array(
-                            'type' => 'text',
-                            'text' => $msg,
-                        ),
-                    ),
-                )
-            ),
+            'body' => wp_json_encode($payload),
         )
     );
 
