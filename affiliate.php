@@ -918,7 +918,8 @@ function get_all_users_table() {
                             }
 
                             $line_notification = sendLineNotification(
-                                'ยืนยันการถอนเงินใหม่แล้ว จำนวน ' . $wpdb->get_var($wpdb->prepare("SELECT amount FROM {$wpdb->prefix}affiliate_request_payments WHERE id = %d", $withdrawal_id)) . ' บาท'
+                                'ยืนยันการถอนเงินใหม่แล้ว จำนวน ' . number_format($wpdb->get_var($wpdb->prepare("SELECT amount FROM {$wpdb->prefix}affiliate_request_payments WHERE id = %d", $withdrawal_id)), 2) . ' บาท 
+                                จากบัญชีของ: ' . $wpdb->get_var($wpdb->prepare("SELECT display_name FROM {$wpdb->prefix}users WHERE ID = (SELECT user_id FROM {$wpdb->prefix}affiliate_request_payments WHERE id = %d)", $withdrawal_id))
                             );
 
                             if (is_wp_error($line_notification)) {
@@ -935,6 +936,15 @@ function get_all_users_table() {
 
                             foreach ($order_ids_array as $order_id) {
                                 $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}affiliate_transactions SET paid = 0 WHERE order_id = %d", $order_id));
+                            }
+
+                            $line_notification = sendLineNotification(
+                                'ปฎิเสธการถอนเงิน จำนวน ' . number_format($wpdb->get_var($wpdb->prepare("SELECT amount FROM {$wpdb->prefix}affiliate_request_payments WHERE id = %d", $withdrawal_id)), 2) . ' บาท 
+                                จากบัญชีของ: ' . $wpdb->get_var($wpdb->prepare("SELECT display_name FROM {$wpdb->prefix}users WHERE ID = (SELECT user_id FROM {$wpdb->prefix}affiliate_request_payments WHERE id = %d)", $withdrawal_id))
+                            );
+
+                            if (is_wp_error($line_notification)) {
+                                error_log($line_notification->get_error_message());
                             }
 
                             wp_redirect( "/wp-admin/admin.php?page=affiliate&option=affiliate_withdrawals&id=$withdrawal_id&status=success" );
