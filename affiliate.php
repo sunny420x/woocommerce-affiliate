@@ -590,6 +590,8 @@ function get_all_users_table() {
                         <p>* การอัพเดท % Commission จะไม่มีผลย้อนหลังกับข้อมูลการขายเดิมในระบบ แต่จะมีผลกับข้อมูลการขายใหม่ที่จะถูกเพิ่มเข้ามาหลังจากอัพเดท</p>
 
                         <h2>API Settings</h2>
+                        <label for="LINE_channel_id">LINE Channel ID:</label>
+                        <input type="text" name="LINE_channel_id" value="<?= esc_attr(get_option('LINE_channel_id')); ?>" />
                         <label for="LINE_channel_access_token">LINE Channel Access Token:</label>
                         <input type="text" name="LINE_channel_access_token" value="<?= esc_attr(get_option('LINE_channel_access_token')); ?>" />
                         <label for="LINE_channel_secret">LINE Channel Secret:</label>
@@ -910,8 +912,7 @@ function get_all_users_table() {
                             }
 
                             $line_notification = sendLineNotification(
-                                'ยืนยันการถอนเงินใหม่แล้ว จำนวน ' . $wpdb->get_var($wpdb->prepare("SELECT amount FROM {$wpdb->prefix}affiliate_request_payments WHERE id = %d", $withdrawal_id)) . ' บาท',
-                                ''
+                                'ยืนยันการถอนเงินใหม่แล้ว จำนวน ' . $wpdb->get_var($wpdb->prepare("SELECT amount FROM {$wpdb->prefix}affiliate_request_payments WHERE id = %d", $withdrawal_id)) . ' บาท'
                             );
 
                             if (is_wp_error($line_notification)) {
@@ -1174,6 +1175,7 @@ function affiliate_settings_init()
     register_setting('affiliate_settings_group', 'affiliate_commission');
     register_setting('affiliate_settings_group', 'affiliate_enable');
     register_setting('affiliate_settings_group', 'affiliate_logo');
+    register_setting('affiliate_settings_group', 'LINE_channel_id');
     register_setting('affiliate_settings_group', 'LINE_channel_secret');
     register_setting('affiliate_settings_group', 'LINE_channel_access_token');
 
@@ -1562,9 +1564,9 @@ function affiliate_dashboard_template_redirect() {
     }
 }
 
-function sendLineNotification($msg, $to = '') {
+function sendLineNotification($msg) {
     $access_token = trim((string) get_option('LINE_channel_access_token', ''));
-    $to = trim((string) $to);
+    $to = trim((string) get_option('LINE_channel_id', ''));
     $msg = trim((string) $msg);
 
     if ($access_token === '') {
