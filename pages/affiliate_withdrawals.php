@@ -39,7 +39,7 @@ if (isset($_GET['action'], $_GET['start'], $_GET['end']) && $_GET['action'] === 
         <tbody>
             <tr>
                 <th><strong>ยอดรวม Commission ตั้งแต่วันที่ <?=$start?> ถึง <?=$end?></strong></th>
-                <td><strong><?=number_format($total_commission_outcome ,2)?> บาท</strong></td>
+                <td style="text-align: right;"><strong><?=number_format($total_commission_outcome ,2)?> บาท</strong></td>
             </tr>
         </tbody>
     </table>
