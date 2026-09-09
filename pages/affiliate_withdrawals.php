@@ -21,7 +21,7 @@ if(isset($_GET['action']) && $_GET['action'] == "get_reports") {
     FROM {$wpdb->prefix}affiliate_request_payments as w WHERE w.created_at BETWEEN %s AND %s", $start, $end));
 
     foreach($affiliate_withdrawals as $row) {
-        getReport($row->order_id, 'view');
+        getReport($row->id, 'view');
     }
 
     return;
