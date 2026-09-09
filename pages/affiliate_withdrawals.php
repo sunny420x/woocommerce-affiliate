@@ -12,10 +12,26 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
     getReport($_GET['id'], 'manage');
     return;
 }
+
+//ออก Reports ประจำเดือน ตามเดือนต่าง ๆ
+if(isset($_GET['action']) && $_GET['action'] == "get_reports") {
+    $start = $_GET['start'];
+    $start = $_GET['end'];
+    $affiliate_withdrawals = $wpdb->get_results($wpdb->prepare("SELECT w.id, w.order_id, w.created_at 
+    FROM {$wpdb->prefix}affiliate_request_payments as w WHERE w.created_at BETWEEN %s AND %s", $start, $end));
+
+    foreach($affiliate_withdrawals as $row) {
+        getReport($row->order_id, 'view');
+    }
+
+    return;
+}
 ?>
 <h1>คำขอถอนเงิน</h1>
 <div style="padding: 25px 25px 25px 25px;">
-<button class="button button-primary" onclick="window.location.href='admin.php?page=affiliate&option=affiliate_withdrawals&action=monthly_reports'">📋 ออกรายงานค่า Commission ของเดือนนี้</button>
+<button class="button button-primary" 
+    onclick="window.location.href='admin.php?page=affiliate&option=affiliate_withdrawals&action=get_reports&start=<?=date('Y-m-01');?>&end=<?=date('Y-m-t');?>'">📋 ออกรายงานค่า Commission ของเดือนนี้
+</button>
 <br><br>
 <table class="widefat fixed striped">
     <thead>
