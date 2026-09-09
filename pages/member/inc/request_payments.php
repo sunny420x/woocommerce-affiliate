@@ -23,6 +23,8 @@ if(isset($_GET['action']) && $_GET['action'] === 'confirm') {
     global $wpdb;
     $affiliate_request_payments_table = $wpdb->prefix . 'affiliate_request_payments';
 
+    $created_at = current_time('mysql');
+
     $check_existing_request = $wpdb->get_row(
         $wpdb->prepare(
             "SELECT order_id FROM $affiliate_request_payments_table WHERE user_id = %d AND order_id = %s",
@@ -37,10 +39,18 @@ if(isset($_GET['action']) && $_GET['action'] === 'confirm') {
                 'user_id' => $user_id,
                 'amount' => $total_unpaid_sum,
                 'order_id' => implode(',', $order_ids),
-                'created_at' => current_time('mysql'),
+                'created_at' => $created_at,
             ]
         );
         echo "<div class='alert alert-success'>คำขอถอนเงินของคุณถูกส่งเรียบร้อยแล้ว</div>";
+
+        $line_notification = sendLineNotification(
+            "[ $created_at ] มีคำขอถอนเงินใหม่จากผู้ใช้ ID: $user_id จำนวนเงิน: $total_unpaid_sum บาท สำหรับคำสั่งซื้อ: " . implode(', ', $order_ids)
+        );
+
+        if (is_wp_error($line_notification)) {
+            error_log($line_notification->get_error_message());
+        }
     } else {
         echo "<div class='alert alert-warning'>คุณได้ส่งคำขอถอนเงินสำหรับคำสั่งซื้อนี้แล้ว</div>";
     }
