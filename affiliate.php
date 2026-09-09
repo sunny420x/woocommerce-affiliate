@@ -417,21 +417,21 @@ function get_all_users_table() {
             <div class="container">
                 <?php
                 if(isset($_GET['option']) && $_GET['option'] == "statistic") {
-                    require_once plugin_dir_path(__FILE__) . 'pages/statistic.php';
+                    require_once __DIR__ . '/pages/statistic.php';
                 } elseif(isset($_GET['option']) && $_GET['option'] == "reports") {
-                    require_once plugin_dir_path(__FILE__) . 'pages/reports.php';
+                    require_once __DIR__ . '/pages/reports.php';
                 } elseif(isset($_GET['option']) && $_GET['option'] == "pages_content") {
-                    require_once plugin_dir_path(__FILE__) . 'pages/pages_contents.php';
+                    require_once __DIR__ . '/pages/pages_content.php';
                 } elseif(isset($_GET['option']) && $_GET['option'] == "affiliate_settings") {
-                    require_once plugin_dir_path(__FILE__) . 'pages/affiliate-settings.php';
+                    require_once __DIR__ . '/pages/affiliate_settings.php';
                 } elseif(isset($_GET['option']) && $_GET['option'] == "affiliate_commission_settings") {
-                    require_once plugin_dir_path(__FILE__) . 'pages/affiliate-commission-settings.php';
+                    require_once __DIR__ . '/pages/affiliate_commission_settings.php';
                 } elseif(isset($_GET['option']) && $_GET['option'] == "affiliate_tiers_commission_settings") {
-                    require_once plugin_dir_path(__FILE__) . 'pages/affiliate-tiers-commission-settings.php';
+                    require_once __DIR__ . '/pages/affiliate_tiers_commission_settings.php';
                 } elseif(isset($_GET['option']) && $_GET['option'] == "affiliate_users") {
-                    require_once plugin_dir_path(__FILE__) . 'pages/affiliate-users.php';
+                    require_once __DIR__ . '/pages/affiliate_users.php';
                 } elseif(isset($_GET['option']) && $_GET['option'] == "affiliate_withdrawals") {
-                    require_once plugin_dir_path(__FILE__) . 'pages/affiliate-withdrawals.php';
+                    require_once __DIR__ . '/pages/affiliate_withdrawals.php';
                 } else {
                 ?>
                 <h1>WooCommerce Affiliate</h1>
