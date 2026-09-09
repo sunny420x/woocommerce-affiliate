@@ -81,6 +81,14 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
             ?>
             <tr>
                 <td><a href="/wp-admin/post.php?post=<?= $item ?>&action=edit" target="_blank">#<?= $item ?></a></td>
+                <td><?php
+                $commission_status = $wpdb->get_row($wpdb->prepare("SELECT paid FROM {$wpdb->prefix}affiliate_transactions WHERE order_id = %d", $item));
+                if($commission_status->paid == 0) {
+                    echo '<span class="badge warning">ยังไม่ได้จ่าย Commission</span>';
+                } elseif($commission_status->paid == 1) {
+                    echo '<span class="badge success">จ่ายแล้ว</span>';
+                }
+                ?></td></td>
             </tr>
             <?php
             }
@@ -106,7 +114,6 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
             <th>ชื่อผู้ใช้งาน</th>
             <th>จำนวนเงิน</th>
             <th>หมายเลขคำสั่งซื้อ</th>
-            <th>สถานะ</th>
             <th>จัดการ</th>
         </tr>
     </thead>
@@ -119,13 +126,6 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
                 <td><?= $withdrawal->display_name ?></td>
                 <td><?= $withdrawal->amount ?> บาท</td>
                 <td><?= $withdrawal->order_id ?></td>
-                <td><?php 
-                if($withdrawal->status == 0) {
-                    echo '<span class="badge warning">รอการอนุมัติ</span>';
-                } elseif($withdrawal->status == 1) {
-                    echo '<span class="badge success">อนุมัติแล้ว</span>';
-                }
-                ?></td>
                 <td>
                     <a href="admin.php?page=affiliate&option=affiliate_withdrawals&id=<?= $withdrawal->id ?>" class="button button-primary button-small">ดำเนินการ</a>
                 </td>
