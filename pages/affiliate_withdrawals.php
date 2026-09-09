@@ -96,12 +96,13 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
                 foreach ( $order_detail->get_items() as $item_id => $item ) {
                     $product_name = $item->get_name();
                     $product_id   = $item->get_product_id();
+                    $variation_id = $item->get_variation_id();
                     $quantity     = $item->get_quantity();
                     $subtotal     = $item->get_subtotal();
                     $total_subtotal +=  $subtotal * $quantity;
                     $commission_percentage = 0;
                     foreach($commission_info as $commission) {
-                        if($commission->product_id == $product_id) {
+                        if($commission->product_id == $product_id || $commission->product_id == $variation_id) {
                             $commission_percentage = $commission->commission_percentage;
                             $total_commission += $subtotal * ($commission->commission_percentage / 100);
                         }
