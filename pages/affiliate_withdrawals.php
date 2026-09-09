@@ -27,9 +27,9 @@ if (isset($_GET['action'], $_GET['start'], $_GET['end']) && $_GET['action'] === 
     $affiliate_withdrawals = $wpdb->get_results($wpdb->prepare("SELECT w.id, w.order_id, w.created_at 
     FROM {$wpdb->prefix}affiliate_request_payments as w WHERE DATE(w.created_at) BETWEEN %s AND %s", $start, $end));
     ?>
-    <h1>รายงานยอด Commission และคำขอถอนเงิน</h1>
+    <h1 class="no-print">รายงานยอด Commission และคำขอถอนเงิน</h1>
     <div style="padding: 0px 25px 25px 25px;">
-    <h2>ยอดคำขอถอนเงินทั้งหมดในช่วง <?=$start?> ถึง <?=$end?> <button class="button button-primary button-small no-print" onclick="window.print()">พิมพ์รายงาน</button></h2>
+    <h2>ยอดคำขอถอนเงินทั้งหมดในช่วง <?=$start?> ถึง <?=$end?> <span class="no-print"><button class="button button-primary button-small" onclick="window.print()">พิมพ์รายงาน</button></span></h2>
     <?php
     $total_income = 0;
     $total_commission_outcome = 0;
