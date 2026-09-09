@@ -64,7 +64,7 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
         return;
     }
 ?>
-<h1>รายละเอียดคำขอถอนเงิน หมายเลข #<?= $withdrawal->ID ?></h1>
+<h1>รายละเอียดคำขอถอนเงิน หมายเลข #<?= $withdrawal->id ?></h1>
 <div style="padding: 0px 25px 25px 25px;">
     <p><strong>ชื่อผู้ใช้งาน:</strong> <?= $withdrawal->display_name ?></p>
     <p><strong>อีเมล:</strong> <?= $withdrawal->user_email ?></p>
@@ -85,6 +85,7 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
         <tbody>
             <?php
             $all_order_ids = explode(',', $withdrawal->order_id);
+            $sum_commission = 0;
             foreach ($all_order_ids as $order_id) {
                 $commission_info = $wpdb->get_results($wpdb->prepare("SELECT paid, commission_percentage, paid_at, product_id FROM {$wpdb->prefix}affiliate_transactions WHERE order_id = %d", $order_id));
                 $order_detail = wc_get_order($order_id);
@@ -131,8 +132,13 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
                 <td><?=number_format($total_commission, 2)?> บาท</td>
             </tr>
             <?php
+                $sum_commission += $total_commission;
             }
             ?>
+            <tr>
+                <td colspan="5"><strong>รวมยอด Commission ทุกคำสั่งซื้อ</strong></td>
+                <td><?=number_format($sum_commission, 2)?> บาท</td>
+            </tr>
         </tbody>
     </table>
     <p><strong>ส่งคำขอเมื่อ:</strong> <?= $withdrawal->created_at ?></p>
