@@ -9,7 +9,14 @@ FROM {$wpdb->prefix}affiliate_request_payments as w
 LEFT JOIN {$wpdb->prefix}users as u ON u.ID = w.user_id");
 
 if(isset($_GET['id']) && is_numeric($_GET['id'])) {
+?>
+<h1>รายละเอียดคำขอถอนเงิน หมายเลข #<?= $_GET['id'] ?></h1>
+<div style="padding: 0px 25px 25px 25px;">
+<?php
     getReport($_GET['id'], 'manage');
+?>
+</div>
+<?php
     return;
 }
 
@@ -19,11 +26,28 @@ if (isset($_GET['action'], $_GET['start'], $_GET['end']) && $_GET['action'] === 
     $end = sanitize_text_field(wp_unslash($_GET['end']));
     $affiliate_withdrawals = $wpdb->get_results($wpdb->prepare("SELECT w.id, w.order_id, w.created_at 
     FROM {$wpdb->prefix}affiliate_request_payments as w WHERE DATE(w.created_at) BETWEEN %s AND %s", $start, $end));
-
+    ?>
+    <h1>ยอดคำขอถอนเงินทั้งหมดในช่วง <?=$start?> ถึง <?=$end?></h1>
+    <div style="padding: 0px 25px 25px 25px;">
+    <?php
     foreach($affiliate_withdrawals as $row) {
         getReport($row->id, 'view');
     }
-
+    ?>
+    <table>
+        <thead>
+            <tr>
+                <th>ยอดรวม</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><?=number_format(100,2)?></td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+    <?php
     return;
 }
 ?>

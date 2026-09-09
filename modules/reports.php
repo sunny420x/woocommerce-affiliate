@@ -59,9 +59,7 @@ function getReport($id, $option = "view") {
             echo '<div class="wrap"><div class="notice notice-error"><p>ไม่พบคำขอถอนเงินนี้</p></div></div>';
             return;
         }
-    ?>
-    <h1>รายละเอียดคำขอถอนเงิน หมายเลข #<?= $withdrawal->id ?></h1>
-    <div style="padding: 0px 25px 25px 25px;">
+        ?>
         <p><strong>ชื่อผู้ใช้งาน:</strong> <a href="admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=<?=$withdrawal->user_id?>" target="_blank"><?= $withdrawal->display_name ?></a></p>
         <p><strong>อีเมล:</strong> <?= $withdrawal->user_email ?></p>
         <p><strong>หมายเลขบัญชี:</strong> <?= $withdrawal->bank_account_number ?> - <?= $withdrawal->bank_name ?></p>
@@ -149,7 +147,6 @@ function getReport($id, $option = "view") {
         <?php
         }
         ?>
-    </div>
     <?php
     }
 }
