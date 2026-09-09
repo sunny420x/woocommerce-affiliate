@@ -75,6 +75,7 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
         <thead>
             <tr>
                 <th>หมายเลขคำสั่งซื้อ</th>
+                <th>รายการสินค้า</th>
                 <th>ยอดคำสั่งซื้อรวม</th>
                 <th>เปอร์เซ็นต์ Commission</th>
                 <th>ยอด Commission</th>
@@ -87,12 +88,20 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
             foreach ($all_order_ids as $order_id) {
                 $commission_info = $wpdb->get_row($wpdb->prepare("SELECT paid, commission_percentage, paid_at FROM {$wpdb->prefix}affiliate_transactions WHERE order_id = %d", $order_id));
                 $order_detail = wc_get_order($order_id);
+                $total_subtotal = 0;
+                foreach ( $order_detail->get_items() as $item_id => $item ) {
+                    $product_name = $item->get_name();
+                    $product_id   = $item->get_product_id();
+                    $quantity     = $item->get_quantity();
+                    $subtotal     = $item->get_subtotal();
+                    $total_subtotal +=  $subtotal * $quantity;
             ?>
             <tr>
                 <td><a href="/wp-admin/post.php?post=<?= $order_id ?>&action=edit" target="_blank">#<?= $order_id ?></a></td>
-                <td><?=number_format($order_detail->get_subtotal(), 2)?> บาท</td>
+                <td><?=$product_name; ?></td>
+                <td><?=number_format($total_subtotal, 2)?> บาท</td>
                 <td><?= $commission_info->commission_percentage ?>%</td>
-                <td><?= number_format($order_detail->get_subtotal() * ($commission_info->commission_percentage / 100), 2) ?> บาท</td>
+                <td><?= number_format($total_subtotal * ($commission_info->commission_percentage / 100), 2) ?> บาท</td>
                 <td><?php
                 if($commission_info->paid == 0) {
                     echo '<span class="badge pending">ยังไม่ได้จ่าย Commission</span>';
@@ -102,6 +111,7 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
                 ?></td></td>
             </tr>
             <?php
+                }
             }
             ?>
         </tbody>
