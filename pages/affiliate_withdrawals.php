@@ -30,8 +30,9 @@ if (isset($_GET['action'], $_GET['start'], $_GET['end']) && $_GET['action'] === 
     <h1>ยอดคำขอถอนเงินทั้งหมดในช่วง <?=$start?> ถึง <?=$end?></h1>
     <div style="padding: 0px 25px 25px 25px;">
     <?php
+    $total_commission_outcome = 0;
     foreach($affiliate_withdrawals as $row) {
-        getReport($row->id, 'view');
+        $total_commission_outcome += getReport($row->id, 'view');
     }
     ?>
     <table>
@@ -42,7 +43,7 @@ if (isset($_GET['action'], $_GET['start'], $_GET['end']) && $_GET['action'] === 
         </thead>
         <tbody>
             <tr>
-                <td><?=number_format(100,2)?></td>
+                <td><?=number_format($total_commission_outcome ,2)?></td>
             </tr>
         </tbody>
     </table>

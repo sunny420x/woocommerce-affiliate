@@ -149,4 +149,7 @@ function getReport($id, $option = "view") {
         ?>
     <?php
     }
+    if($option == "range") {
+        return $sum_commission;
+    }
 }
