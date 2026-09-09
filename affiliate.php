@@ -585,6 +585,12 @@ function get_all_users_table() {
                             value="<?= esc_attr(get_option('affiliate_commission', 10)); ?>" /> %
                         <p>* การอัพเดท % Commission จะไม่มีผลย้อนหลังกับข้อมูลการขายเดิมในระบบ แต่จะมีผลกับข้อมูลการขายใหม่ที่จะถูกเพิ่มเข้ามาหลังจากอัพเดท</p>
 
+                        <h2>API Settings</h2>
+                        <label for="LINE_channel_access_token">LINE Channel Access Token:</label>
+                        <input type="text" name="LINE_channel_access_token" value="<?= esc_attr(get_option('LINE_channel_access_token')); ?>" />
+                        <label for="LINE_channel_secret">LINE Channel Secret:</label>
+                        <input type="text" name="LINE_channel_secret" value="<?= esc_attr(get_option('LINE_channel_secret')); ?>" />
+
                         <?php submit_button('บันทึกการเปลี่ยนแปลง'); ?>
                     </form>
                     <script type="text/javascript">
@@ -899,6 +905,15 @@ function get_all_users_table() {
                                 $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}affiliate_transactions SET paid = 1 WHERE order_id = %d", $order_id));
                             }
 
+                            $line_notification = sendLineNotification(
+                                'ยืนยันการถอนเงินใหม่แล้ว จำนวน ' . $wpdb->get_var($wpdb->prepare("SELECT amount FROM {$wpdb->prefix}affiliate_request_payments WHERE id = %d", $withdrawal_id)) . ' บาท',
+                                ''
+                            );
+
+                            if (is_wp_error($line_notification)) {
+                                error_log($line_notification->get_error_message());
+                            }
+
                             wp_redirect( "/wp-admin/admin.php?page=affiliate&option=affiliate_withdrawals&id=$withdrawal_id&status=success" );
                         }
                         //Disapprove Withdrawal
@@ -1155,6 +1170,8 @@ function affiliate_settings_init()
     register_setting('affiliate_settings_group', 'affiliate_commission');
     register_setting('affiliate_settings_group', 'affiliate_enable');
     register_setting('affiliate_settings_group', 'affiliate_logo');
+    register_setting('affiliate_settings_group', 'LINE_channel_secret');
+    register_setting('affiliate_settings_group', 'LINE_channel_access_token');
 
     register_setting('affiliate_content_settings_group', 'affiliate_condition');
     register_setting('affiliate_content_settings_group', 'affiliate_support_page');
@@ -1539,4 +1556,62 @@ function affiliate_dashboard_template_redirect() {
             exit;
         }
     }
+}
+
+function sendLineNotification($msg, $to = '') {
+    $access_token = trim((string) get_option('LINE_channel_access_token', ''));
+    $to = trim((string) $to);
+    $msg = trim((string) $msg);
+
+    if ($access_token === '') {
+        return new WP_Error('line_missing_access_token', 'LINE Channel Access Token is not configured.');
+    }
+
+    if ($to === '') {
+        return new WP_Error('line_missing_recipient', 'A LINE recipient ID is required.');
+    }
+
+    if ($msg === '') {
+        return new WP_Error('line_missing_message', 'The LINE notification message cannot be empty.');
+    }
+
+    $response = wp_remote_post(
+        'https://api.line.me/v2/bot/message/push',
+        array(
+            'timeout' => 15,
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $access_token,
+                'Content-Type'  => 'application/json',
+            ),
+            'body' => wp_json_encode(
+                array(
+                    'to' => $to,
+                    'messages' => array(
+                        array(
+                            'type' => 'text',
+                            'text' => $msg,
+                        ),
+                    ),
+                )
+            ),
+        )
+    );
+
+    if (is_wp_error($response)) {
+        return $response;
+    }
+
+    $status_code = wp_remote_retrieve_response_code($response);
+    if ($status_code < 200 || $status_code >= 300) {
+        return new WP_Error(
+            'line_api_error',
+            'LINE API returned an error.',
+            array(
+                'status_code' => $status_code,
+                'body' => wp_remote_retrieve_body($response),
+            )
+        );
+    }
+
+    return true;
 }
