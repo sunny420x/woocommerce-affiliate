@@ -75,22 +75,29 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
         <thead>
             <tr>
                 <th>หมายเลขคำสั่งซื้อ</th>
+                <th>ยอดคำสั่งซื้อรวม</th>
+                <th>เปอร์เซ็นต์ Commission</th>
+                <th>ยอด Commission</th>
                 <th>สถานะ Commission</th>
             </tr>
         </thead>
         <tbody>
             <?php
             $all_order_ids = explode(',', $withdrawal->order_id);
-            foreach ($all_order_ids as $item) {
+            foreach ($all_order_ids as $order_id) {
+                $commission_info = $wpdb->get_row($wpdb->prepare("SELECT paid, commission_percentage, paid_at FROM {$wpdb->prefix}affiliate_transactions WHERE order_id = %d", $order_id));
+                $order_detail = wc_get_order($order_id);
             ?>
             <tr>
-                <td><a href="/wp-admin/post.php?post=<?= $item ?>&action=edit" target="_blank">#<?= $item ?></a></td>
+                <td><a href="/wp-admin/post.php?post=<?= $order_id ?>&action=edit" target="_blank">#<?= $order_id ?></a></td>
+                <td><?=number_format($order_detail->get_total(), 2)?> บาท</td>
+                <td><?= $commission_info->commission_percentage ?>%</td>
+                <td><?= number_format($order_detail->get_total() * $commission_info->commission_percentage, 2) ?> บาท</td>
                 <td><?php
-                $commission_status = $wpdb->get_row($wpdb->prepare("SELECT paid FROM {$wpdb->prefix}affiliate_transactions WHERE order_id = %d", $item));
-                if($commission_status->paid == 0) {
+                if($commission_info->paid == 0) {
                     echo '<span class="badge pending">ยังไม่ได้จ่าย Commission</span>';
-                } elseif($commission_status->paid == 1) {
-                    echo '<span class="badge success">จ่ายแล้ว</span>';
+                } elseif($commission_info->paid == 1) {
+                    echo '<span class="badge success">จ่ายแล้ว เมื่อ ' . $commission_info->paid_at . '</span>';
                 }
                 ?></td></td>
             </tr>
