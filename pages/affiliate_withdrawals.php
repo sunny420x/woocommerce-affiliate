@@ -128,7 +128,7 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
                 <td><?=number_format($total_subtotal, 2)?> บาท</td>
             </tr>
             <tr>
-                <td colspan="5"><strong>ยอด Commission รวม</strong></td>
+                <td colspan="5"><strong>ยอด Commission รวมของคำสั่งซื้อ #<?=$order_id?></strong></td>
                 <td><?=number_format($total_commission, 2)?> บาท</td>
             </tr>
             <?php
@@ -136,8 +136,8 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
             }
             ?>
             <tr>
-                <td colspan="5"><strong>รวมยอด Commission ทุกคำสั่งซื้อ</strong></td>
-                <td><?=number_format($sum_commission, 2)?> บาท</td>
+                <th colspan="5"><strong>รวมยอด Commission ทุกคำสั่งซื้อ</strong></th>
+                <th><?=number_format($sum_commission, 2)?> บาท</th>
             </tr>
         </tbody>
     </table>
