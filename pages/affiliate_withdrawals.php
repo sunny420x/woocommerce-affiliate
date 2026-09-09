@@ -40,10 +40,11 @@ if (isset($_GET['action'], $_GET['start'], $_GET['end']) && $_GET['action'] === 
     }
     ?>
     <h2>สรุปยอดรวม Commission ตั้งแต่วันที่ <?=$start?> ถึง <?=$end?></h2>
+    <p>ออกรายงานเมื่อเวลา <?=date('d-m-Y H:i:s')?></p>
     <table class="widefat fixed striped" style="margin-top: 20px;">
         <tbody>
             <tr>
-                <th><strong>รวมขายทั้งหมด</strong></th>
+                <th><strong>รวมยอดขายทั้งหมด</strong></th>
                 <td style="text-align: right;"><strong><?=number_format($total_income)?> บาท</strong></td>
             </tr>
             <tr>
