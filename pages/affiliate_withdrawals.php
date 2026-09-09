@@ -86,7 +86,7 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
             <?php
             $all_order_ids = explode(',', $withdrawal->order_id);
             foreach ($all_order_ids as $order_id) {
-                $commission_info = $wpdb->get_row($wpdb->prepare("SELECT paid, commission_percentage, paid_at, product_id FROM {$wpdb->prefix}affiliate_transactions WHERE order_id = %d", $order_id));
+                $commission_info = $wpdb->get_results($wpdb->prepare("SELECT paid, commission_percentage, paid_at, product_id FROM {$wpdb->prefix}affiliate_transactions WHERE order_id = %d", $order_id));
                 $order_detail = wc_get_order($order_id);
                 if (!$order_detail) continue;
 
