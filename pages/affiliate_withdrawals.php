@@ -96,7 +96,7 @@ if (isset($_GET['action'], $_GET['start'], $_GET['end']) && $_GET['action'] === 
 </table>
 <script>
     function applyReportFilter() {
-        window.location.href = `admin.php?page=affiliate&option=affiliate_withdrawals&action=get_reports&start=${document.getElementById('startDate').value}&end=${document.getElementById('endDate').value}`
+        window.location.href = `admin.php?page=affiliate&option=affiliate_withdrawals&action=get_reports&start=${document.getElementById('dateStart').value}&end=${document.getElementById('dateEnd').value}`
     }
 </script>
 </div>
