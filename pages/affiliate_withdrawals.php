@@ -35,15 +35,11 @@ if (isset($_GET['action'], $_GET['start'], $_GET['end']) && $_GET['action'] === 
         $total_commission_outcome += getReport($row->id, 'range');
     }
     ?>
-    <table class="widefat fixed striped">
-        <thead>
-            <tr>
-                <th>ยอดรวม</th>
-            </tr>
-        </thead>
+    <table class="widefat fixed striped" style="margin-top: 20px;">
         <tbody>
             <tr>
-                <td><?=number_format($total_commission_outcome ,2)?></td>
+                <th><strong>ยอดรวม Commission ตั้งแต่วันที่ <?=$start?> ถึง <?=$end?></strong></th>
+                <td><strong><?=number_format($total_commission_outcome ,2)?> บาท</strong></td>
             </tr>
         </tbody>
     </table>

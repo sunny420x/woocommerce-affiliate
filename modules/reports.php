@@ -61,11 +61,16 @@ function getReport($id, $option = "view") {
         }
         ?>
         <p><strong>ชื่อผู้ใช้งาน:</strong> <a href="admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=<?=$withdrawal->user_id?>" target="_blank"><?= $withdrawal->display_name ?></a></p>
+        <?php
+        if($option != "range") {
+        ?>
         <p><strong>อีเมล:</strong> <?= $withdrawal->user_email ?></p>
         <p><strong>หมายเลขบัญชี:</strong> <?= $withdrawal->bank_account_number ?> - <?= $withdrawal->bank_name ?></p>
+        <?php
+        }
+        ?>
         <p><strong>จำนวนเงิน:</strong> <strong><?= $withdrawal->amount ?> บาท</strong></p>
         <p><strong>ส่งคำขอเมื่อ:</strong> <?= $withdrawal->created_at ?></p>
-        <h2>หมายเลขคำสั่งซื้อ:</h2>
         <table class="widefat fixed striped">
             <thead>
                 <tr>
