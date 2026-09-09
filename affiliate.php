@@ -406,8 +406,8 @@ function get_all_users_table() {
         <?php
         }
         ?>
-        <div style="display: flex;" class="no-print">
-            <div class="leftside">
+        <div style="display: flex;">
+            <div class="leftside no-print">
                 <h1>WooCommerce Affiliate System</h1>
                 <a href="admin.php?page=affiliate&option=affiliate_users" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_users") { echo "class='active'"; } ?>>🤝 พันธมิตรในระบบ</a>
                 <a href="admin.php?page=affiliate&option=affiliate_withdrawals" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_withdrawals") { echo "class='active'"; } ?>>💸 คำขอถอนเงิน</a>
