@@ -90,6 +90,7 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
                 $order_detail = wc_get_order($order_id);
                 if (!$order_detail) continue;
                 $total_subtotal = 0;
+                $total_commission = 0;
                 foreach ( $order_detail->get_items() as $item_id => $item ) {
                     $product_name = $item->get_name();
                     $product_id   = $item->get_product_id();
@@ -100,6 +101,7 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
                     foreach($commission_info as $commission) {
                         if($commission->product_id == $product_id) {
                             $commission_percentage = $commission->commission_percentage;
+                            $total_commission += $subtotal * ($commission->commission_percentage / 100);
                         }
                     }
             ?>
@@ -121,8 +123,12 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
                 }
             ?>
             <tr>
-                <td colspan="5">ยอดรวม</td>
-                <td><?=number_format($total_subtotal, 2)?></td>
+                <td colspan="5">ยอดรวมทั้งหมด</td>
+                <td><?=number_format($total_subtotal, 2)?> บาท</td>
+            </tr>
+            <tr>
+                <td colspan="5">ยอด Commission รวม</td>
+                <td><?=number_format($total_commission, 2)?> บาท</td>
             </tr>
             <?php
             }
