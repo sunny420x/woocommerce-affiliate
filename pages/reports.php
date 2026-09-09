@@ -18,6 +18,11 @@ if (isset($_GET['start']) && isset($_GET['end'])) {
     $query .= "WHERE t.created_at BETWEEN '$start' AND '$end'";
 }
 
+if(isset($_GET['id']) && is_numeric($_GET['id'])) {
+    getReport($_GET['id'], 'view');
+    return;
+}
+
 $affiliate_report = $wpdb->query($query);
 ?>
 <h1>📋 ออกรายงานสรุป</h1>

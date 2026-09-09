@@ -15,6 +15,7 @@ if (!defined('ABSPATH'))
     exit;
 
 require_once( plugin_dir_path( __FILE__ ) . 'modules/line.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'modules/reports.php' );
 
 function afiliate_enqueue_assets()
 {
