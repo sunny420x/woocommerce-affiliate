@@ -60,8 +60,10 @@ if (isset($_GET['action'], $_GET['start'], $_GET['end']) && $_GET['action'] === 
 ?>
 <h1>คำขอถอนเงิน</h1>
 <div style="padding: 25px 25px 25px 25px;">
-<button class="button button-primary" 
-    onclick="window.location.href='<?= esc_url(admin_url('admin.php?page=affiliate&option=affiliate_withdrawals&action=get_reports&start=' . date('Y-m-01') . '&end=' . date('Y-m-t'))) ?>'">📋 ออกรายงานค่า Commission ของเดือนนี้
+<label for="dateStart">วันที่:</label><input type="date" id="dateStart"> <label for="dateEnd">ถึง</label><input type="date" id="dateEnd">
+ิ<button class="button button-primary" onclick="applyReportFilter()">ออกรายงานตามวันที่ที่เลือก</button>
+<button class="button button-outline-primary" 
+    onclick="window.location.href='<?= esc_url(admin_url('admin.php?page=affiliate&option=affiliate_withdrawals&action=get_reports&start=' . date('Y-m-01') . '&end=' . date('Y-m-t'))) ?>'">ออกรายงานค่า Commission ของเดือนนี้
 </button>
 <br><br>
 <table class="widefat fixed striped">
@@ -92,4 +94,9 @@ if (isset($_GET['action'], $_GET['start'], $_GET['end']) && $_GET['action'] === 
         ?>
     </tbody>
 </table>
+<script>
+    function applyReportFilter() {
+        window.location.href = `admin.php?page=affiliate&option=affiliate_withdrawals&action=get_reports&start=${document.getElementById('startDate').value}&end=${document.getElementById('endDate').value}`
+    }
+</script>
 </div>
