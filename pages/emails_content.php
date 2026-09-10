@@ -43,10 +43,10 @@ if ( ! defined( 'ABSPATH' ) ) {
                 ?>
             </div>
             <div>
-                <h3 for="html_affiliate_suspended"><strong>อีเมล์ยกเลิกการระงับบัญชี Affiliate:</strong></h3>
+                <h3 for="html_affiliate_unsuspended"><strong>อีเมล์ยกเลิกการระงับบัญชี Affiliate:</strong></h3>
                 <?php
-                wp_editor( get_option('html_affiliate_suspended', ''), 'html_affiliate_suspended', array(
-                    'textarea_name' => 'html_affiliate_suspended', // The 'name' attribute for the form submission
+                wp_editor( get_option('html_affiliate_unsuspended', ''), 'html_affiliate_unsuspended', array(
+                    'textarea_name' => 'html_affiliate_unsuspended', // The 'name' attribute for the form submission
                     'textarea_rows' => 15,                      // Number of visible rows
                     'media_buttons' => true,                   // Show "Add Media" buttons
                 ));
