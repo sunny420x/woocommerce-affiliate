@@ -419,6 +419,7 @@ function get_all_users_table() {
                 <a href="admin.php?page=affiliate&option=affiliate_commission_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_commission_settings") { echo "class='active'"; } ?>>📦 Commission ตามประเภทสินค้า</a>
                 <a href="admin.php?page=affiliate&option=affiliate_tiers_commission_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_tiers_commission_settings") { echo "class='active'"; } ?>>🪜 Commission แบบขั้นบันใด</a>
                 <a href="admin.php?page=affiliate&option=pages_content" <?php if(isset($_GET['option']) && $_GET['option'] == "pages_content") { echo "class='active'"; } ?>>📝 เนื้อหาที่แสดงในระบบ</a>
+                <a href="admin.php?page=affiliate&option=emails_content" <?php if(isset($_GET['option']) && $_GET['option'] == "emails_content") { echo "class='active'"; } ?>>📝 อีเมล์</a>
                 <a href="admin.php?page=affiliate&option=affiliate_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_settings") { echo "class='active'"; } ?>>⚙️ ตั้งค่าระบบ</a>
             </div>
             <div class="container">
@@ -429,6 +430,8 @@ function get_all_users_table() {
                     require_once __DIR__ . '/pages/reports.php';
                 } elseif(isset($_GET['option']) && $_GET['option'] == "pages_content") {
                     require_once __DIR__ . '/pages/pages_content.php';
+                } elseif(isset($_GET['option']) && $_GET['option'] == "emails_content") {
+                    require_once __DIR__ . '/pages/emails_content.php';
                 } elseif(isset($_GET['option']) && $_GET['option'] == "affiliate_settings") {
                     require_once __DIR__ . '/pages/affiliate_settings.php';
                 } elseif(isset($_GET['option']) && $_GET['option'] == "affiliate_commission_settings") {
@@ -616,6 +619,11 @@ function affiliate_settings_init()
     register_setting('affiliate_content_settings_group', 'affiliate_condition');
     register_setting('affiliate_content_settings_group', 'affiliate_support_page');
     register_setting('affiliate_content_settings_group', 'affiliate_requirements_and_conditions' );
+
+    register_setting( 'affiliate_email_content_settings_group', 'html_affiliate_approved');
+    register_setting( 'affiliate_email_content_settings_group', 'html_affiliate_disapproved');
+    register_setting( 'affiliate_email_content_settings_group', 'html_affiliate_suspended');
+    register_setting( 'affiliate_email_content_settings_group', 'html_affiliate_payments');
 
     // Tiered commission settings (thresholds and extra %)
     register_setting('affiliate_tiers_settings_group', 'affiliate_tier_threshold_1');
