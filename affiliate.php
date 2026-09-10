@@ -419,7 +419,7 @@ function get_all_users_table() {
                 <a href="admin.php?page=affiliate&option=affiliate_commission_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_commission_settings") { echo "class='active'"; } ?>>📦 Commission ตามประเภทสินค้า</a>
                 <a href="admin.php?page=affiliate&option=affiliate_tiers_commission_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_tiers_commission_settings") { echo "class='active'"; } ?>>🪜 Commission แบบขั้นบันใด</a>
                 <a href="admin.php?page=affiliate&option=pages_content" <?php if(isset($_GET['option']) && $_GET['option'] == "pages_content") { echo "class='active'"; } ?>>📝 เนื้อหาที่แสดงในระบบ</a>
-                <a href="admin.php?page=affiliate&option=emails_content" <?php if(isset($_GET['option']) && $_GET['option'] == "emails_content") { echo "class='active'"; } ?>>📝 อีเมล์</a>
+                <a href="admin.php?page=affiliate&option=emails_content" <?php if(isset($_GET['option']) && $_GET['option'] == "emails_content") { echo "class='active'"; } ?>>📨 อีเมล์</a>
                 <a href="admin.php?page=affiliate&option=affiliate_settings" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_settings") { echo "class='active'"; } ?>>⚙️ ตั้งค่าระบบ</a>
             </div>
             <div class="container">

@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 ?>
-<h1>เนื้อหาอีเมล์ (Email Contents)</h1>
+<h1>📨 เนื้อหาอีเมล์ (Email Contents)</h1>
 <div style="padding: 0 25px 25px 25px;">
     <form action="options.php" method="post">
         <?php
