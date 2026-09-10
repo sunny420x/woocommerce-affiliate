@@ -9,6 +9,17 @@ if(isset($_GET['action'])) {
         if(isset($_GET['user_id'])) {
             $user_id = sanitize_text_field($_GET['user_id']);
             $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}users_affiliate_info SET verified = 1 WHERE user_id = %d", $user_id));
+
+            //User Info
+            $user_info = getAffiliateUserInfoByWithDrawalId($withdrawal_id);
+            $user_email = $user_info->user_email;
+            $user_full_name = $user_info->full_name;
+
+            //Notification
+            sendTemplateMail("affiliate_approved", $user_email, [
+                'full_name' -> $user_full_name
+            ]);
+
             wp_redirect( "/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=$user_id&status=success" );
         }
     }
@@ -16,6 +27,17 @@ if(isset($_GET['action'])) {
         if(isset($_GET['user_id'])) {
             $user_id = sanitize_text_field($_GET['user_id']);
             $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}users_affiliate_info SET verified = 0 WHERE user_id = %d", $user_id));
+
+            //User Info
+            $user_info = getAffiliateUserInfoByWithDrawalId($withdrawal_id);
+            $user_email = $user_info->user_email;
+            $user_full_name = $user_info->full_name;
+
+            //Notification
+            sendTemplateMail("affiliate_approved", $user_email, [
+                'full_name' -> $user_full_name
+            ]);
+
             wp_redirect( "/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=$user_id&status=success" );
         }
     }
@@ -24,6 +46,17 @@ if(isset($_GET['action'])) {
         if(isset($_GET['user_id'])) {
             $user_id = sanitize_text_field($_GET['user_id']);
             $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}users_affiliate_info SET suspended = 1 WHERE user_id = %d", $user_id));
+
+            //User Info
+            $user_info = getAffiliateUserInfoByWithDrawalId($withdrawal_id);
+            $user_email = $user_info->user_email;
+            $user_full_name = $user_info->full_name;
+
+            //Notification
+            sendTemplateMail("affiliate_suspended", $user_email, [
+                'full_name' -> $user_full_name
+            ]);
+
             wp_redirect( "/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=$user_id&status=success" );
         }
     }
@@ -31,6 +64,17 @@ if(isset($_GET['action'])) {
         if(isset($_GET['user_id'])) {
             $user_id = sanitize_text_field($_GET['user_id']);
             $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}users_affiliate_info SET suspended = 0 WHERE user_id = %d", $user_id));
+
+            //User Info
+            $user_info = getAffiliateUserInfoByWithDrawalId($withdrawal_id);
+            $user_email = $user_info->user_email;
+            $user_full_name = $user_info->full_name;
+
+            //Notification
+            sendTemplateMail("affiliate_unsuspended", $user_email, [
+                'full_name' -> $user_full_name
+            ]);
+
             wp_redirect( "/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=$user_id&status=success" );
         }
     }
@@ -49,90 +93,90 @@ if(isset($_GET['action'])) {
                 WHERE u.ID = %d", $user_id)
             );
             $doc_url = get_user_meta($user_id, 'affiliate_identity_doc', true);
-?>
-<h1>ข้อมูลพันธมิตรผู้ใช้งาน Affiliate: <?=$profile->display_name?></h1>
-<div style="padding: 25px 25px 25px 25px;">
-    <table class="widefat fixed striped">
-        <tbody>
-            <tr>
-                <th><strong>ชื่อที่แสดงในระบบ:</strong></th>
-                <td><?=$profile->display_name?>
-                <?php
-                if($profile->suspended) {
-                ?>
-                <span style="color: red;">(บัญชีถูกระงับการใช้งาน)</span>
-                <?php } ?>
-                </td>
-            </tr>
-            <tr>
-                <th><strong>ชื่อ-นามสกุล:</strong></th>
-                <td><?=$profile->full_name?></td>
-            </tr>
-            <tr>
-                <th><strong>เบอร์โทรศัพท์:</strong></th>
-                <td><?=$profile->phone_number?></td>
-            </tr>
-            <tr>
-                <th><strong>สถานะ:</strong> <?php if($profile->verified == 1) {?><span class="badge success">ยืนยันตัวตนแล้ว</span><?php } else {?><span class="badge danger">ยังไม่ได้ยืนยันตัวตน</span><?php } ?></th>
-                <td>
-                <?php 
-                if($profile->verified == 1) {?>
-                <button class="button button-outline-primary button-small" onclick="window.location.href='/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=unverify&user_id=<?=$user_id?>'">ยกเลิกการยืนยัน</button>
-                <?php } else { ?>
-                <button class="button button-outline-primary button-small" onclick="window.location.href='/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=verify&user_id=<?=$user_id?>'">ยืนยันตัวตน</button>
-                <?php } ?>
+            ?>
+            <h1>ข้อมูลพันธมิตรผู้ใช้งาน Affiliate: <?=$profile->display_name?></h1>
+            <div style="padding: 25px 25px 25px 25px;">
+                <table class="widefat fixed striped">
+                    <tbody>
+                        <tr>
+                            <th><strong>ชื่อที่แสดงในระบบ:</strong></th>
+                            <td><?=$profile->display_name?>
+                            <?php
+                            if($profile->suspended) {
+                            ?>
+                            <span style="color: red;">(บัญชีถูกระงับการใช้งาน)</span>
+                            <?php } ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><strong>ชื่อ-นามสกุล:</strong></th>
+                            <td><?=$profile->full_name?></td>
+                        </tr>
+                        <tr>
+                            <th><strong>เบอร์โทรศัพท์:</strong></th>
+                            <td><?=$profile->phone_number?></td>
+                        </tr>
+                        <tr>
+                            <th><strong>สถานะ:</strong> <?php if($profile->verified == 1) {?><span class="badge success">ยืนยันตัวตนแล้ว</span><?php } else {?><span class="badge danger">ยังไม่ได้ยืนยันตัวตน</span><?php } ?></th>
+                            <td>
+                            <?php 
+                            if($profile->verified == 1) {?>
+                            <button class="button button-outline-primary button-small" onclick="window.location.href='/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=unverify&user_id=<?=$user_id?>'">ยกเลิกการยืนยัน</button>
+                            <?php } else { ?>
+                            <button class="button button-outline-primary button-small" onclick="window.location.href='/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=verify&user_id=<?=$user_id?>'">ยืนยันตัวตน</button>
+                            <?php } ?>
 
-                <?php 
-                if($profile->suspended == 1) {?>
-                <button class="button button-outline-primary button-small" onclick="window.location.href='/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=unsuspend&user_id=<?=$user_id?>'">ยกเลิกการระงับ</button>
-                <?php } else { ?>
-                <button class="button button-outline-primary button-small" onclick="window.location.href='/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=suspend&user_id=<?=$user_id?>'">ระงับบัญชี</button>
-                <?php } ?>
-                </td>
-            </tr>
-            <tr>
-                <th><strong>Email:</strong></th>
-                <td><?=$profile->user_email?></td>
-            </tr>
-            <tr>
-                <th><strong>ช่องทางรับค่าคอมมิชชั่น:</strong></th>
-                <td><?=$profile->bank_name?> - <?=$profile->bank_account_number?></td>
-            </tr>
-            <tr>
-                <th><strong>ช่องทางการเผยแพร่:</strong></th>
-                <td>
-                    <?=$profile->social_media_01_type?>: <a href="<?=$profile->social_media_01?>" target="_blank"><?=$profile->social_media_01?></a><br>
-                    <?=$profile->social_media_02_type?>: <a href="<?=$profile->social_media_02?>" target="_blank"><?=$profile->social_media_02?></a><br>
-                    <?=$profile->social_media_03_type?>: <a href="<?=$profile->social_media_03?>" target="_blank"><?=$profile->social_media_03?></a><br>
-                    <?=$profile->social_media_04_type?>: <a href="<?=$profile->social_media_04?>" target="_blank"><?=$profile->social_media_04?></a><br>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <h2>หลักฐานการยืนยันตัวตน</h2>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-    <?php
-    if($doc_url != "") {
-        if (is_array($doc_url)) {
-            foreach ($doc_url as $index => $url) {
-            ?>
-            <img src="<?=esc_url($url)?>" alt="รูปภาพยืนยันตัวตนรูปที่ <?=$index + 1?>" width="100%">
+                            <?php 
+                            if($profile->suspended == 1) {?>
+                            <button class="button button-outline-primary button-small" onclick="window.location.href='/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=unsuspend&user_id=<?=$user_id?>'">ยกเลิกการระงับ</button>
+                            <?php } else { ?>
+                            <button class="button button-outline-primary button-small" onclick="window.location.href='/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=suspend&user_id=<?=$user_id?>'">ระงับบัญชี</button>
+                            <?php } ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><strong>Email:</strong></th>
+                            <td><?=$profile->user_email?></td>
+                        </tr>
+                        <tr>
+                            <th><strong>ช่องทางรับค่าคอมมิชชั่น:</strong></th>
+                            <td><?=$profile->bank_name?> - <?=$profile->bank_account_number?></td>
+                        </tr>
+                        <tr>
+                            <th><strong>ช่องทางการเผยแพร่:</strong></th>
+                            <td>
+                                <?=$profile->social_media_01_type?>: <a href="<?=$profile->social_media_01?>" target="_blank"><?=$profile->social_media_01?></a><br>
+                                <?=$profile->social_media_02_type?>: <a href="<?=$profile->social_media_02?>" target="_blank"><?=$profile->social_media_02?></a><br>
+                                <?=$profile->social_media_03_type?>: <a href="<?=$profile->social_media_03?>" target="_blank"><?=$profile->social_media_03?></a><br>
+                                <?=$profile->social_media_04_type?>: <a href="<?=$profile->social_media_04?>" target="_blank"><?=$profile->social_media_04?></a><br>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h2>หลักฐานการยืนยันตัวตน</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <?php
+                if($doc_url != "") {
+                    if (is_array($doc_url)) {
+                        foreach ($doc_url as $index => $url) {
+                        ?>
+                        <img src="<?=esc_url($url)?>" alt="รูปภาพยืนยันตัวตนรูปที่ <?=$index + 1?>" width="100%">
+                        <?php
+                        }
+                    } else {
+                        ?>
+                        <img src="<?=esc_url($doc_url)?>" alt="รูปภาพยืนยันตัวตน" width="100%">
+                        <?php
+                    }
+                } else {
+                ?>
+                <div class="badge pending" style="width: max-content">ยังไม่ได้อัพโหลดเอกสาร</div>
+                <?php
+                }
+                ?>
+                </div>
+            </div>
             <?php
-            }
-        } else {
-            ?>
-            <img src="<?=esc_url($doc_url)?>" alt="รูปภาพยืนยันตัวตน" width="100%">
-            <?php
-        }
-    } else {
-    ?>
-    <div class="badge pending" style="width: max-content">ยังไม่ได้อัพโหลดเอกสาร</div>
-    <?php
-    }
-    ?>
-    </div>
-</div>
-<?php
             return;
         }
     }

@@ -1,4 +1,14 @@
 <?php
+function getAffiliateUserInfoByWithDrawalId($withdrawal_id) {
+    global $wpdb;
+    $user_info = $wpdb->get_row($wpdb->prepare("SELECT u.user_email, ua.full_name FROM 
+    {$wpdb->prefix}affiliate_request_payments as pm 
+    JOIN {$wpdb->prefix}users as u ON u.ID = pm.user_id 
+    JOIN {$wpdb->prefix}users_affiliate_info as ua ON ua.user_id = pm.user_id 
+    WHERE pm.id = %d", $withdrawal_id));
+
+    return $user_info;
+}
 function getReport($id, $option = "view") {
     global $wpdb;
     if(isset($id) && is_numeric($id)) {
@@ -6,13 +16,22 @@ function getReport($id, $option = "view") {
             //Approve Withdrawal
             if(isset($_GET['action']) && $_GET['action'] == "approve") {
                 $withdrawal_id = intval($id);
+                //Order Info
                 $order_ids = $wpdb->get_var($wpdb->prepare("SELECT order_id FROM {$wpdb->prefix}affiliate_request_payments WHERE id = %d", $withdrawal_id));
                 $order_ids_array = explode(',', $order_ids);
 
                 foreach ($order_ids_array as $order_id) {
                     $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}affiliate_transactions SET paid = 1 WHERE order_id = %d", $order_id));
                 }
+                //User Info
+                $user_info = getAffiliateUserInfoByWithDrawalId($withdrawal_id);
+                $user_email = $user_info->user_email;
+                $user_full_name = $user_info->full_name;
 
+                //Notification
+                sendTemplateMail("affiliate_payments", $user_email, [
+                    'full_name' -> $user_full_name
+                ]);
                 $line_notification = sendLineNotification(
                     'ยืนยันการถอนเงินใหม่แล้ว จำนวน ' . number_format($wpdb->get_var($wpdb->prepare("SELECT amount FROM {$wpdb->prefix}affiliate_request_payments WHERE id = %d", $withdrawal_id)), 2) . ' บาท จากบัญชีของ: ' . $wpdb->get_var($wpdb->prepare("SELECT display_name FROM {$wpdb->prefix}users WHERE ID = (SELECT user_id FROM {$wpdb->prefix}affiliate_request_payments WHERE id = %d)", $withdrawal_id))
                 );

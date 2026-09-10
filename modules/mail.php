@@ -17,12 +17,60 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @param string $from_email  Optional sender override.
  * @return true|WP_Error
  */
-function sendGmailHtmlEmail( $to, $subject, $html, $from_email = '' ) {
+function sendTemplateMail($option, $to, $data = null) {
+    $html = '';
+    $subject = '';
+
+    if($data) {
+        if($option == "affiliate_approved") {
+            $subject = 'ผลการพิจารณาคำขอเข้าร่วม Affiliate Program';
+            $template_html = get_option('html_affiliate_approved');
+    
+            $html = str_replace('[full_name]', $data['full_name'], $template_html);
+        }
+    
+        if($option == "affiliate_disapproved") {
+            $subject = 'ผลการพิจารณาคำขอเข้าร่วม Affiliate Program';
+            $template_html = get_option('html_affiliate_disapproved');
+    
+            $html = str_replace('[full_name]', $data['full_name'], $template_html);
+    
+        }
+    
+        if($option == "affiliate_suspended") {
+            $subject = 'บัญชี Affiliate ของคุณถูก ระงับการใช้งานชั่วคราว';
+            $template_html = get_option('html_affiliate_suspended');
+            
+            $html = str_replace('[full_name]', $data['full_name'], $template_html);
+        }
+
+        if($option == "affiliate_unsuspended") {
+            $subject = 'บัญชี Affiliate ของคุณถูกสามารถกลับมาใช้งานได้ตามปกติ';
+            $template_html = get_option('affiliate_unsuspended');
+            
+            $html = str_replace('[full_name]', $data['full_name'], $template_html);
+        }
+    
+        if($option == "affiliate_payments") {
+            $subject = 'ผลการแจ้งถอนเงิน Affiliate Program';
+            $template_html = get_option('html_affiliate_payments');
+            
+            $html = str_replace('[full_name]', $data['full_name'], $template_html);
+            $html = str_replace('[amount]', $data['amount'], $template_html);
+            $html = str_replace('[date]', $data['date'], $template_html);
+        }
+    
+        sendGmailHtmlEmail( $to, $subject, $html);
+    } else {
+        return new WP_Error('email_template_missing_data', 'sendTemplateMail() function $data attribute can not be empty or null.');
+    }
+}
+
+function sendGmailHtmlEmail( $to, $subject, $html) {
 	$to          = sanitize_email( $to );
 	$subject     = trim( (string) $subject );
 	$html        = trim( (string) $html );
-	$from_email  = sanitize_email( $from_email );
-	$sender      = $from_email !== '' ? $from_email : sanitize_email( get_option( 'GMAIL_sender_email', '' ) );
+	$sender      = sanitize_email( get_option( 'GMAIL_sender_email', '' ) );
 
 	if ( ! is_email( $to ) ) {
 		return new WP_Error( 'gmail_invalid_recipient', 'A valid recipient email address is required.' );
