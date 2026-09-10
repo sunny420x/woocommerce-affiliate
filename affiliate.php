@@ -15,6 +15,7 @@ if (!defined('ABSPATH'))
     exit;
 
 require_once( plugin_dir_path( __FILE__ ) . 'modules/line.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'modules/mail.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'modules/reports.php' );
 
 function afiliate_enqueue_assets()
@@ -604,6 +605,13 @@ function affiliate_settings_init()
     register_setting('affiliate_settings_group', 'LINE_recipient_id');
     register_setting('affiliate_settings_group', 'LINE_channel_secret');
     register_setting('affiliate_settings_group', 'LINE_channel_access_token');
+
+    register_setting('affiliate_settings_group', 'GMAIL_sender_email');
+    register_setting('affiliate_settings_group', 'GMAIL_access_token');
+    register_setting('affiliate_settings_group', 'GMAIL_refresh_token');
+    register_setting('affiliate_settings_group', 'GMAIL_client_id');
+    register_setting('affiliate_settings_group', 'GMAIL_client_secret');
+    register_setting('affiliate_settings_group', 'GMAIL_access_token_expires_at');
 
     register_setting('affiliate_content_settings_group', 'affiliate_condition');
     register_setting('affiliate_content_settings_group', 'affiliate_support_page');

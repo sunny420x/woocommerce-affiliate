@@ -37,7 +37,7 @@ if ( ! defined( 'ABSPATH' ) ) {
             value="<?= esc_attr(get_option('affiliate_commission', 10)); ?>" /> %
         <p>* การอัพเดท % Commission จะไม่มีผลย้อนหลังกับข้อมูลการขายเดิมในระบบ แต่จะมีผลกับข้อมูลการขายใหม่ที่จะถูกเพิ่มเข้ามาหลังจากอัพเดท</p>
 
-        <h2>API Settings</h2>
+        <h2>LINE API Settings</h2>
         <label for="LINE_recipient_id">LINE Recipient ID (User/Group/Room):</label>
         <input type="text" name="LINE_recipient_id" value="<?= esc_attr(get_option('LINE_recipient_id')); ?>" />
         <br>
@@ -48,6 +48,30 @@ if ( ! defined( 'ABSPATH' ) ) {
         <br>
         <label for="LINE_channel_secret">LINE Channel Secret:</label>
         <input type="text" name="LINE_channel_secret" value="<?= esc_attr(get_option('LINE_channel_secret')); ?>" />
+
+        <h2>Gmail API Settings</h2>
+        <label for="GMAIL_sender_email">Gmail Sender Email:</label>
+        <input type="text" name="GMAIL_sender_email" value="<?= esc_attr(get_option('GMAIL_sender_email')); ?>" />
+        <br>
+        <br>
+        <label for="GMAIL_access_token">Gmail Access Token:</label>
+        <input type="text" name="GMAIL_access_token" value="<?= esc_attr(get_option('GMAIL_access_token')); ?>" />
+        <br>
+        <br>
+        <label for="GMAIL_refresh_token">Gmail Refresh Token:</label>
+        <input type="text" name="GMAIL_refresh_token" value="<?= esc_attr(get_option('GMAIL_refresh_token')); ?>" />
+        <br>
+        <br>
+        <label for="GMAIL_client_id">Gmail Client ID:</label>
+        <input type="text" name="GMAIL_client_id" value="<?= esc_attr(get_option('GMAIL_client_id')); ?>" />
+        <br>
+        <br>
+        <label for="GMAIL_client_secret">Gmail Client Secret:</label>
+        <input type="text" name="GMAIL_client_secret" value="<?= esc_attr(get_option('GMAIL_client_secret')); ?>" />
+        <br>
+        <br>
+        <label for="GMAIL_access_token_expires_at">Gmail Access Token Expires At</label>
+        <input type="text" name="GMAIL_access_token_expires_at" value="<?= esc_attr(get_option('GMAIL_access_token_expires_at')); ?>" />
 
         <?php submit_button('บันทึกการเปลี่ยนแปลง'); ?>
     </form>
