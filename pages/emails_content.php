@@ -9,31 +9,50 @@ if ( ! defined( 'ABSPATH' ) ) {
         <?php
         settings_fields('affiliate_email_content_settings_group');
         ?>
-        <h3 for="html_affiliate_approved"><strong>อีเมล์อนุมัติคำขอเป็น Affiliate:</strong></h3>
-        <?php
-        wp_editor( get_option('html_affiliate_approved', ''), 'html_affiliate_approved', array(
-            'textarea_name' => 'html_affiliate_approved', // The 'name' attribute for the form submission
-            'textarea_rows' => 15,                      // Number of visible rows
-            'media_buttons' => true,                   // Show "Add Media" buttons
-        ));
-        ?>
-        <br>
-        <h3 for="html_affiliate_disapproved"><strong>อีเมล์ปฏิเสธคำขอเป็น Affiliate:</strong></h3>
-        <?php
-        wp_editor( get_option('html_affiliate_disapproved', ''), 'html_affiliate_disapproved', array(
-            'textarea_name' => 'html_affiliate_disapproved', // The 'name' attribute for the form submission
-            'textarea_rows' => 15,                      // Number of visible rows
-            'media_buttons' => true,                   // Show "Add Media" buttons
-        ));
-        ?>
-        <h3 for="html_affiliate_suspended"><strong>อีเมล์ระงับบัญชี Affiliate:</strong></h3>
-        <?php
-        wp_editor( get_option('html_affiliate_suspended', ''), 'html_affiliate_suspended', array(
-            'textarea_name' => 'html_affiliate_suspended', // The 'name' attribute for the form submission
-            'textarea_rows' => 15,                      // Number of visible rows
-            'media_buttons' => true,                   // Show "Add Media" buttons
-        ));
-        ?>
+        <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+            <div>                
+                <h3 for="html_affiliate_approved"><strong>อีเมล์อนุมัติคำขอเป็น Affiliate:</strong></h3>
+                <?php
+                wp_editor( get_option('html_affiliate_approved', ''), 'html_affiliate_approved', array(
+                    'textarea_name' => 'html_affiliate_approved', // The 'name' attribute for the form submission
+                    'textarea_rows' => 15,                      // Number of visible rows
+                    'media_buttons' => true,                   // Show "Add Media" buttons
+                ));
+                ?>
+            </div>
+            <div>
+                <h3 for="html_affiliate_disapproved"><strong>อีเมล์ปฏิเสธคำขอเป็น Affiliate:</strong></h3>
+                <?php
+                wp_editor( get_option('html_affiliate_disapproved', ''), 'html_affiliate_disapproved', array(
+                    'textarea_name' => 'html_affiliate_disapproved', // The 'name' attribute for the form submission
+                    'textarea_rows' => 15,                      // Number of visible rows
+                    'media_buttons' => true,                   // Show "Add Media" buttons
+                ));
+                ?>
+            </div>
+        </div>
+        <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+            <div>
+                <h3 for="html_affiliate_suspended"><strong>อีเมล์ระงับบัญชี Affiliate:</strong></h3>
+                <?php
+                wp_editor( get_option('html_affiliate_suspended', ''), 'html_affiliate_suspended', array(
+                    'textarea_name' => 'html_affiliate_suspended', // The 'name' attribute for the form submission
+                    'textarea_rows' => 15,                      // Number of visible rows
+                    'media_buttons' => true,                   // Show "Add Media" buttons
+                ));
+                ?>
+            </div>
+            <div>
+                <h3 for="html_affiliate_suspended"><strong>อีเมล์ยกเลิกการระงับบัญชี Affiliate:</strong></h3>
+                <?php
+                wp_editor( get_option('html_affiliate_suspended', ''), 'html_affiliate_suspended', array(
+                    'textarea_name' => 'html_affiliate_suspended', // The 'name' attribute for the form submission
+                    'textarea_rows' => 15,                      // Number of visible rows
+                    'media_buttons' => true,                   // Show "Add Media" buttons
+                ));
+                ?>
+            </div>
+        </div>
         <h3 for="html_affiliate_payments"><strong>อีเมล์แจ้งเตือนผลการถอนเงิน:</strong></h3>
         <?php
         wp_editor( get_option('html_affiliate_payments', ''), 'html_affiliate_payments', array(

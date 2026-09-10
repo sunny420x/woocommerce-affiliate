@@ -623,6 +623,7 @@ function affiliate_settings_init()
     register_setting( 'affiliate_email_content_settings_group', 'html_affiliate_approved');
     register_setting( 'affiliate_email_content_settings_group', 'html_affiliate_disapproved');
     register_setting( 'affiliate_email_content_settings_group', 'html_affiliate_suspended');
+    register_setting( 'affiliate_email_content_settings_group', 'html_affiliate_unsuspended');
     register_setting( 'affiliate_email_content_settings_group', 'html_affiliate_payments');
 
     // Tiered commission settings (thresholds and extra %)
