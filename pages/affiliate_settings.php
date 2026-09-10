@@ -39,39 +39,39 @@ if ( ! defined( 'ABSPATH' ) ) {
 
         <h2>LINE API Settings</h2>
         <label for="LINE_recipient_id">LINE Recipient ID (User/Group/Room):</label>
-        <input type="text" name="LINE_recipient_id" value="<?= esc_attr(get_option('LINE_recipient_id')); ?>" />
+        <input type="text" name="LINE_recipient_id" value="<?= esc_attr(get_option('LINE_recipient_id')); ?>" style="width: 400px;" />
         <br>
         <br>
         <label for="LINE_channel_access_token">LINE Channel Access Token:</label>
-        <input type="text" name="LINE_channel_access_token" value="<?= esc_attr(get_option('LINE_channel_access_token')); ?>" />
+        <input type="text" name="LINE_channel_access_token" value="<?= esc_attr(get_option('LINE_channel_access_token')); ?>" style="width: 400px;" />
         <br>
         <br>
         <label for="LINE_channel_secret">LINE Channel Secret:</label>
-        <input type="text" name="LINE_channel_secret" value="<?= esc_attr(get_option('LINE_channel_secret')); ?>" />
+        <input type="text" name="LINE_channel_secret" value="<?= esc_attr(get_option('LINE_channel_secret')); ?>" style="width: 400px;" />
 
         <h2>Gmail API Settings</h2>
         <label for="GMAIL_sender_email">Gmail Sender Email:</label>
-        <input type="text" name="GMAIL_sender_email" value="<?= esc_attr(get_option('GMAIL_sender_email')); ?>" />
+        <input type="text" name="GMAIL_sender_email" value="<?= esc_attr(get_option('GMAIL_sender_email')); ?>" style="width: 400px;" />
         <br>
         <br>
         <label for="GMAIL_access_token">Gmail Access Token:</label>
-        <input type="text" name="GMAIL_access_token" value="<?= esc_attr(get_option('GMAIL_access_token')); ?>" />
+        <input type="text" name="GMAIL_access_token" value="<?= esc_attr(get_option('GMAIL_access_token')); ?>" style="width: 400px;" />
         <br>
         <br>
         <label for="GMAIL_refresh_token">Gmail Refresh Token:</label>
-        <input type="text" name="GMAIL_refresh_token" value="<?= esc_attr(get_option('GMAIL_refresh_token')); ?>" />
+        <input type="text" name="GMAIL_refresh_token" value="<?= esc_attr(get_option('GMAIL_refresh_token')); ?>" style="width: 400px;" />
         <br>
         <br>
         <label for="GMAIL_client_id">Gmail Client ID:</label>
-        <input type="text" name="GMAIL_client_id" value="<?= esc_attr(get_option('GMAIL_client_id')); ?>" />
+        <input type="text" name="GMAIL_client_id" value="<?= esc_attr(get_option('GMAIL_client_id')); ?>" style="width: 400px;" />
         <br>
         <br>
         <label for="GMAIL_client_secret">Gmail Client Secret:</label>
-        <input type="text" name="GMAIL_client_secret" value="<?= esc_attr(get_option('GMAIL_client_secret')); ?>" />
+        <input type="text" name="GMAIL_client_secret" value="<?= esc_attr(get_option('GMAIL_client_secret')); ?>" style="width: 400px;" />
         <br>
         <br>
         <label for="GMAIL_access_token_expires_at">Gmail Access Token Expires At</label>
-        <input type="text" name="GMAIL_access_token_expires_at" value="<?= esc_attr(get_option('GMAIL_access_token_expires_at')); ?>" />
+        <input type="text" name="GMAIL_access_token_expires_at" value="<?= esc_attr(get_option('GMAIL_access_token_expires_at')); ?>" style="width: 400px;" />
 
         <?php submit_button('บันทึกการเปลี่ยนแปลง'); ?>
     </form>
