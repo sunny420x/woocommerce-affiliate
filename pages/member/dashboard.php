@@ -280,6 +280,13 @@ if($ref_code && !empty($transactions)) {
     $total_unpaid_sum = 0;
 }
 
+// สรุปยอดรวมสำหรับการ์ดสถิติ (Commission สะสม, ยอดขายรวม, จำนวนคำสั่งซื้อ) จากรายการที่จัดกลุ่มตาม Order ID แล้ว
+foreach ($transactions as $item) {
+    $total_earns_sum   += $item->total_earns_sum;
+    $total_revenue_sum += $item->total_sold_sum;
+    $total_sales_cnt++;
+}
+
 function getOrderById($id) {
     $order_id = absint($id);
 
