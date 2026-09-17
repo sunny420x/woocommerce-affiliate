@@ -9,6 +9,15 @@ function getAffiliateUserInfoByWithDrawalId($withdrawal_id) {
 
     return $user_info;
 }
+function getAffiliateUserInfoByUserId($user_id) {
+    global $wpdb;
+    $user_info = $wpdb->get_row($wpdb->prepare("SELECT u.user_email, ua.full_name FROM 
+    {$wpdb->prefix}users as u 
+    JOIN {$wpdb->prefix}users_affiliate_info as ua ON ua.user_id = u.ID 
+    WHERE u.ID = %d", $user_id));
+
+    return $user_info;
+}
 function getReport($id, $option = "view") {
     global $wpdb;
     if(isset($id) && is_numeric($id)) {
@@ -27,13 +36,16 @@ function getReport($id, $option = "view") {
                 $user_info = getAffiliateUserInfoByWithDrawalId($withdrawal_id);
                 $user_email = $user_info->user_email;
                 $user_full_name = $user_info->full_name;
+                $withdrawal_amount = $wpdb->get_var($wpdb->prepare("SELECT amount FROM {$wpdb->prefix}affiliate_request_payments WHERE id = %d", $withdrawal_id));
 
                 //Notification
                 sendTemplateMail("affiliate_payments", $user_email, [
-                    'full_name' -> $user_full_name
+                    'full_name' => $user_full_name,
+                    'amount'    => number_format($withdrawal_amount, 2),
+                    'date'      => current_time('mysql'),
                 ]);
                 $line_notification = sendLineNotification(
-                    'ยืนยันการถอนเงินใหม่แล้ว จำนวน ' . number_format($wpdb->get_var($wpdb->prepare("SELECT amount FROM {$wpdb->prefix}affiliate_request_payments WHERE id = %d", $withdrawal_id)), 2) . ' บาท จากบัญชีของ: ' . $wpdb->get_var($wpdb->prepare("SELECT display_name FROM {$wpdb->prefix}users WHERE ID = (SELECT user_id FROM {$wpdb->prefix}affiliate_request_payments WHERE id = %d)", $withdrawal_id))
+                    'ยืนยันการถอนเงินใหม่แล้ว จำนวน ' . number_format($withdrawal_amount, 2) . ' บาท จากบัญชีของ: ' . $wpdb->get_var($wpdb->prepare("SELECT display_name FROM {$wpdb->prefix}users WHERE ID = (SELECT user_id FROM {$wpdb->prefix}affiliate_request_payments WHERE id = %d)", $withdrawal_id))
                 );
 
                 if (is_wp_error($line_notification)) {
@@ -66,6 +78,10 @@ function getReport($id, $option = "view") {
             }
         }
 
+        if ($option === "range") {
+            ob_start();
+        }
+
         $withdrawal_id = intval($id);
         $withdrawal = $wpdb->get_row($wpdb->prepare("SELECT 
         w.id, u.display_name, u.user_email, u.ID as user_id, w.amount, w.order_id, w.created_at, a.bank_account_number, a.bank_name
@@ -75,6 +91,10 @@ function getReport($id, $option = "view") {
         WHERE w.id = %d", $withdrawal_id));
 
         if(!$withdrawal) {
+            if ($option === "range") {
+                ob_end_clean();
+                return [ 0, 0 ];
+            }
             echo '<div class="wrap"><div class="notice notice-error"><p>ไม่พบคำขอถอนเงินนี้</p></div></div>';
             return;
         }
@@ -134,12 +154,12 @@ function getReport($id, $option = "view") {
                     <td><?= $commission_percentage ?>%</td>
                     <td><?= number_format($subtotal * ($commission_percentage / 100), 2) ?> บาท</td>
                     <td><?php
-                    if($commission_info[0]->paid == 0) {
+                    if(!empty($commission_info) && $commission_info[0]->paid == 0) {
                         echo '<span class="badge pending">ยังไม่ได้จ่าย Commission</span>';
-                    } elseif($commission_info[0]->paid == 1) {
+                    } elseif(!empty($commission_info) && $commission_info[0]->paid == 1) {
                         echo '<span class="badge success">จ่ายแล้ว</span>';
                     }
-                    ?></td></td>
+                    ?></td>
                 </tr>
                 <?php
                     }
@@ -176,6 +196,7 @@ function getReport($id, $option = "view") {
     <?php
     }
     if($option == "range") {
-        return [ $sum_income, $sum_commission ];
+        ob_end_clean();
+        return [ $sum_income ?? 0, $sum_commission ?? 0 ];
     }
 }

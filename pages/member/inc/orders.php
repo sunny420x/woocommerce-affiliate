@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 ?>
 <div class="card card-custom p-4" id="orders">
     <h5 class="fw-bold mb-3"><i class="fa-solid fa-list-check text-primary me-2"></i>ประวัติคำสั่งซื้อ
-        <button class="btn btn-primary btn-sm" onclick="window.location.href='/affiliate/dashboard/?request_payments=<?=$user_id?>'">ส่งคำขอถอนเงิน</button>
+        <button class="btn btn-primary btn-sm" onclick="window.location.href='/affiliate/?request_payments=<?=$user_id?>'">ส่งคำขอถอนเงิน</button>
     </h5>
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
@@ -66,7 +66,7 @@ if (!defined('ABSPATH')) {
                                 <?php } ?>
                             </td>
                             <td class="text-center">
-                                <button class="btn btn-outline-primary btn-sm" onclick="window.location.href='/affiliate/dashboard/?order_id=<?=$item->order_id?>'">รายละเอียดคำสั่งซื้อ</button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="window.location.href='/affiliate/?order_id=<?=$item->order_id?>'">รายละเอียดคำสั่งซื้อ</button>
                             </td>
                         </tr>
                     <?php

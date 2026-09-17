@@ -46,7 +46,7 @@ function sendTemplateMail($option, $to, $data = null) {
 
         if($option == "affiliate_unsuspended") {
             $subject = 'บัญชี Affiliate ของคุณถูกสามารถกลับมาใช้งานได้ตามปกติ';
-            $template_html = get_option('affiliate_unsuspended');
+            $template_html = get_option('html_affiliate_unsuspended');
             
             $html = str_replace('[full_name]', $data['full_name'], $template_html);
         }
@@ -56,8 +56,8 @@ function sendTemplateMail($option, $to, $data = null) {
             $template_html = get_option('html_affiliate_payments');
             
             $html = str_replace('[full_name]', $data['full_name'], $template_html);
-            $html = str_replace('[amount]', $data['amount'], $template_html);
-            $html = str_replace('[date]', $data['date'], $template_html);
+            $html = str_replace('[amount]', $data['amount'], $html);
+            $html = str_replace('[date]', $data['date'], $html);
         }
     
         sendGmailHtmlEmail( $to, $subject, $html);

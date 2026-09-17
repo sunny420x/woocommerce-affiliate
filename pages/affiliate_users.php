@@ -11,16 +11,17 @@ if(isset($_GET['action'])) {
             $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}users_affiliate_info SET verified = 1 WHERE user_id = %d", $user_id));
 
             //User Info
-            $user_info = getAffiliateUserInfoByWithDrawalId($withdrawal_id);
+            $user_info = getAffiliateUserInfoByUserId($user_id);
             $user_email = $user_info->user_email;
             $user_full_name = $user_info->full_name;
 
             //Notification
             sendTemplateMail("affiliate_approved", $user_email, [
-                'full_name' -> $user_full_name
+                'full_name' => $user_full_name
             ]);
 
             wp_redirect( "/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=$user_id&status=success" );
+            exit;
         }
     }
     if($_GET['action'] == "unverify") {
@@ -29,16 +30,17 @@ if(isset($_GET['action'])) {
             $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}users_affiliate_info SET verified = 0 WHERE user_id = %d", $user_id));
 
             //User Info
-            $user_info = getAffiliateUserInfoByWithDrawalId($withdrawal_id);
+            $user_info = getAffiliateUserInfoByUserId($user_id);
             $user_email = $user_info->user_email;
             $user_full_name = $user_info->full_name;
 
             //Notification
-            sendTemplateMail("affiliate_approved", $user_email, [
-                'full_name' -> $user_full_name
+            sendTemplateMail("affiliate_disapproved", $user_email, [
+                'full_name' => $user_full_name
             ]);
 
             wp_redirect( "/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=$user_id&status=success" );
+            exit;
         }
     }
 
@@ -48,16 +50,17 @@ if(isset($_GET['action'])) {
             $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}users_affiliate_info SET suspended = 1 WHERE user_id = %d", $user_id));
 
             //User Info
-            $user_info = getAffiliateUserInfoByWithDrawalId($withdrawal_id);
+            $user_info = getAffiliateUserInfoByUserId($user_id);
             $user_email = $user_info->user_email;
             $user_full_name = $user_info->full_name;
 
             //Notification
             sendTemplateMail("affiliate_suspended", $user_email, [
-                'full_name' -> $user_full_name
+                'full_name' => $user_full_name
             ]);
 
             wp_redirect( "/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=$user_id&status=success" );
+            exit;
         }
     }
     if($_GET['action'] == "unsuspend") {
@@ -66,16 +69,17 @@ if(isset($_GET['action'])) {
             $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}users_affiliate_info SET suspended = 0 WHERE user_id = %d", $user_id));
 
             //User Info
-            $user_info = getAffiliateUserInfoByWithDrawalId($withdrawal_id);
+            $user_info = getAffiliateUserInfoByUserId($user_id);
             $user_email = $user_info->user_email;
             $user_full_name = $user_info->full_name;
 
             //Notification
             sendTemplateMail("affiliate_unsuspended", $user_email, [
-                'full_name' -> $user_full_name
+                'full_name' => $user_full_name
             ]);
 
             wp_redirect( "/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=$user_id&status=success" );
+            exit;
         }
     }
 

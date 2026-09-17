@@ -15,21 +15,25 @@ $query = "SELECT u.ID as user_id, t.created_at, u.display_name, SUM(os.total_sal
 if (isset($_GET['start']) && isset($_GET['end'])) {
     $start = sanitize_text_field($_GET['start']);
     $end = sanitize_text_field($_GET['end']);
-    $query .= "WHERE t.created_at BETWEEN '$start' AND '$end'";
+    $query .= $wpdb->prepare("WHERE t.created_at BETWEEN %s AND %s ", $start, $end);
 }
+
+$query .= "GROUP BY u.ID, t.created_at, t.paid";
 
 if(isset($_GET['id']) && is_numeric($_GET['id'])) {
     getReport($_GET['id'], 'view');
     return;
 }
 
-$affiliate_report = $wpdb->query($query);
+$affiliate_report = $wpdb->get_results($query);
 ?>
 <h1>📋 ออกรายงานสรุป</h1>
 <div style="padding: 25px 25px 25px 25px;">
     <form action="" method="get">
-        เริ่ม: <input type="date" name="start" id="start" value="<?=$_GET['from'] ?? '' ?>">
-        ถึง: <input type="date" name="end" id="end" value="<?=$_GET['to'] ?? '' ?>">
+        <input type="hidden" name="page" value="affiliate">
+        <input type="hidden" name="option" value="reports">
+        เริ่ม: <input type="date" name="start" id="start" value="<?=esc_attr($_GET['start'] ?? '')?>">
+        ถึง: <input type="date" name="end" id="end" value="<?=esc_attr($_GET['end'] ?? '')?>">
         <button type="submit" class="button button-primary">กรอง</button>
     </form>
     <br>

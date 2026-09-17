@@ -182,8 +182,8 @@ if (isset($_POST['save_affiliate_info'])) {
 }
 
 $user_affiliate_info = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_info WHERE user_id = %d", $user_id));
-$verified = $user_affiliate_info->verified;
-$suspended = $user_affiliate_info->suspended;
+$verified = $user_affiliate_info ? $user_affiliate_info->verified : 0;
+$suspended = $user_affiliate_info ? $user_affiliate_info->suspended : 0;
 
 // ==========================================
 // 3. Query ข้อมูลรายงานและสถิติ (เฉพาะเมื่อมี refCode)

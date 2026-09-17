@@ -122,6 +122,16 @@ function my_plugin_install() {
     if (empty($row)) {
         $wpdb->query("ALTER TABLE $user_table ADD `refCode` VARCHAR(50) DEFAULT NULL");
     }
+
+    // ลงทะเบียน Rewrite Rule ของ /affiliate/ แล้ว Flush ทันที ไม่งั้นลิงก์จะ 404 จนกว่าจะไป Save Permalinks เอง
+    affiliate_dashboard_rewrite_rule();
+    flush_rewrite_rules();
+}
+
+register_deactivation_hook( __FILE__, 'my_plugin_uninstall' );
+
+function my_plugin_uninstall() {
+    flush_rewrite_rules();
 }
 
 add_action('admin_init', 'handle_mark_as_paid');
@@ -274,8 +284,8 @@ function get_all_users_table() {
     $affiliate = new Affiliate();
 
     if(isset($_GET['from']) && !empty($_GET['from']) && isset($_GET['to']) && !empty($_GET['to'])) {
-        $from = sanitize_text_field($_GET['from']);
-        $to = sanitize_text_field($_GET['to']);
+        $from = esc_sql(sanitize_text_field($_GET['from']));
+        $to = esc_sql(sanitize_text_field($_GET['to']));
 
         $waiting_for_payments = $affiliate->getAffiliate("WHERE u.refCode IS NOT NULL AND u.refCode != '' AND t.paid = 0 AND t.created_at BETWEEN '{$from}' AND '{$to}' ");
         $success_payments = $affiliate->getAffiliate("WHERE u.refCode IS NOT NULL AND u.refCode != '' AND t.paid = 1 AND t.created_at BETWEEN '{$from}' AND '{$to}' ");
@@ -878,8 +888,8 @@ add_filter('woocommerce_get_endpoint_url', 'custom_affiliate_menu_endpoint_url',
 function custom_affiliate_menu_endpoint_url($url, $endpoint, $value, $permalink)
 {
     if ($endpoint === 'affiliate-program') {
-        // ชี้ไปที่ URL /affiliate/dashboard/ โดยตรง
-        return site_url('/affiliate/dashboard/');
+        // ชี้ไปที่ URL /affiliate/ โดยตรง
+        return site_url('/affiliate/');
     }
     return $url;
 }
@@ -897,29 +907,24 @@ add_action( 'woocommerce_single_product_summary', 'inject_affliate_share_buttons
 
 function inject_affliate_share_buttons() {
     global $product, $wpdb;
-    
-    // 1. ถ้าไม่ Login ไม่ต้องโชว์ (หรือจะโชว์แบบไม่มี refCode ก็ได้แล้วแต่เพื่อน)
     if ( ! is_user_logged_in() ) return;
 
     $user_id = get_current_user_id();
 
-    // 2. ดึง refCode มาตรงๆ (get_var คืนค่าเป็น string)
     $ref_code = $wpdb->get_var($wpdb->prepare(
         "SELECT refCode FROM {$wpdb->prefix}users WHERE ID = %d",
         $user_id
     ));
 
-    // ถ้าไม่มี refCode ให้เป็นค่าว่าง
     $affiliate_param = $ref_code ? "?ref=" . $ref_code : "";
 
-    // 3. ประกอบ URL ก่อนแล้วค่อย urlencode ทีเดียว
     $full_url      = get_permalink() . $affiliate_param;
     $encoded_url   = urlencode( $full_url );
     
     $product_title = urlencode( get_the_title() );
     $product_img   = urlencode( wp_get_attachment_url( get_post_thumbnail_id() ) );
 
-    if($ref_code != '' || $ref_code != null) {
+    if($ref_code != '' && $ref_code != null) {
     ?>
     <div class="affiliate_element">
         <strong>⭐ แชร์สินค้าชิ้นนี้เพื่อรับ Commission <?=get_option('affiliate_commission');?>% เมื่อมีการซื้อสินค้าจากการแชร์</strong>
@@ -954,7 +959,6 @@ function inject_affliate_share_buttons() {
             var copyText = this.getAttribute('data-url');
             
             navigator.clipboard.writeText(copyText).then(function() {
-                // โชว์ป้ายว่า Copied!
                 var status = document.getElementById('copy-status');
                 status.style.display = 'block';
                 
@@ -984,6 +988,7 @@ function inject_affliate_share_buttons() {
 // เพิ่ม Rewrite Rule สำหรับ /affiliate/dashboard
 add_action('init', 'affiliate_dashboard_rewrite_rule');
 function affiliate_dashboard_rewrite_rule() {
+    // ต้องตรงกับ /affiliate/ ที่ลิงก์ต่าง ๆ ในระบบใช้อ้างอิงถึง
     add_rewrite_rule('^affiliate/?$', 'index.php?is_affiliate_dashboard=1', 'top');
 }
 
