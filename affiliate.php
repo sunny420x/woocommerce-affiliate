@@ -1017,8 +1017,15 @@ function inject_affiliate_commission_badge_loop() {
 
     if ($loop_commission <= 0) return;
     ?>
-    <span class="affiliate_commission_badge" style="display:block; margin-top:5px; font-size:12px; color:#009FE3; font-weight:bold;">
-        <strong><?=$loop_commission;?>%</strong> Commission
+    <span class="affiliate_commission_badge" style="
+        display: block;
+        font-size: 12.5px;
+        color: #333;
+        font-weight: 500;
+        background: #FCAD38;
+        padding: 0 10px;
+        width: max-content;">
+        <?=$loop_commission;?>% Commission
     </span>
     <?php
 }
