@@ -999,6 +999,34 @@ function inject_affliate_share_buttons() {
     }
 }
 
+// แสดงป้ายค่า Commission ในหน้ารายการสินค้า (Shop / Home / Archive) ต่อจาก span.price
+add_action('woocommerce_after_shop_loop_item_title', 'inject_affiliate_commission_badge_loop', 15);
+
+function inject_affiliate_commission_badge_loop() {
+    global $product;
+    if ( ! $product ) return;
+
+    $commission_product_id = $product->is_type('variation') ? $product->get_parent_id() : $product->get_id();
+    $product_terms = get_the_terms($commission_product_id, 'product_cat');
+    $loop_commission = 0;
+
+    if ($product_terms && !is_wp_error($product_terms)) {
+        foreach ($product_terms as $term) {
+            $term_commission = (float) get_option('commission_by_slug_' . str_replace(" ", "_", $term->name), 0);
+            if ($term_commission > $loop_commission) {
+                $loop_commission = $term_commission;
+            }
+        }
+    }
+
+    if ($loop_commission <= 0) return;
+    ?>
+    <span class="affiliate_commission_badge" style="display:block; margin-top:5px; font-size:12px; color:#009FE3; font-weight:bold;">
+        <strong><?=$loop_commission;?>%</strong> Commission
+    </span>
+    <?php
+}
+
 // เพิ่ม Rewrite Rule สำหรับ /affiliate/dashboard
 add_action('init', 'affiliate_dashboard_rewrite_rule');
 function affiliate_dashboard_rewrite_rule() {
