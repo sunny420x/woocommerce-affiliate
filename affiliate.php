@@ -984,7 +984,7 @@ function inject_affliate_share_buttons() {
 // เพิ่ม Rewrite Rule สำหรับ /affiliate/dashboard
 add_action('init', 'affiliate_dashboard_rewrite_rule');
 function affiliate_dashboard_rewrite_rule() {
-    add_rewrite_rule('^affiliate/dashboard/?$', 'index.php?is_affiliate_dashboard=1', 'top');
+    add_rewrite_rule('^affiliate/?$', 'index.php?is_affiliate_dashboard=1', 'top');
 }
 
 add_filter('query_vars', 'affiliate_dashboard_query_vars');
