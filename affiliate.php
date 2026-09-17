@@ -924,10 +924,24 @@ function inject_affliate_share_buttons() {
     $product_title = urlencode( get_the_title() );
     $product_img   = urlencode( wp_get_attachment_url( get_post_thumbnail_id() ) );
 
+    // หาค่า Commission ตามหมวดหมู่สินค้า (ใช้ค่าสูงสุดหากมีหลายหมวดหมู่) ถ้าไม่มีให้ใช้ค่า Default
+    $commission_product_id = $product ? ( $product->is_type('variation') ? $product->get_parent_id() : $product->get_id() ) : get_the_ID();
+    $product_terms = get_the_terms($commission_product_id, 'product_cat');
+    $display_commission = (float) get_option('affiliate_commission', 10);
+
+    if ($product_terms && !is_wp_error($product_terms)) {
+        foreach ($product_terms as $term) {
+            $term_commission = (float) get_option('commission_by_slug_' . str_replace(" ", "_", $term->name), 0);
+            if ($term_commission > $display_commission) {
+                $display_commission = $term_commission;
+            }
+        }
+    }
+
     if($ref_code != '' && $ref_code != null) {
     ?>
     <div class="affiliate_element">
-        <strong>⭐ แชร์สินค้าชิ้นนี้เพื่อรับ Commission <?=get_option('affiliate_commission');?>% เมื่อมีการซื้อสินค้าจากการแชร์</strong>
+        <strong>⭐ แชร์สินค้าชิ้นนี้เพื่อรับ Commission <?=$display_commission;?>% เมื่อมีการซื้อสินค้าจากการแชร์</strong>
         <div class="social-icon">
             <label style="font-weight: bold; margin-right: 10px;">Share : </label>
             <div class="social-share" style="display: inline-block;">
