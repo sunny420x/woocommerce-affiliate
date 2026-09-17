@@ -985,10 +985,14 @@ function inject_affliate_share_buttons() {
 
     <style>
         .affiliate_element {
-            background: #f8f8f8;
+            background: #f9f9f9;
             border-radius: 10px;
             padding: 20px;
             margin-top: 10px;
+            color: #DF301C;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            font-size: 17px;
         }
     </style>
     <?php
