@@ -1034,16 +1034,28 @@ function inject_affiliate_commission_badge_loop() {
     <?php
 }
 
-// เพิ่ม Rewrite Rule สำหรับ /affiliate/dashboard
+// เพิ่ม Rewrite Rule สำหรับ /affiliate/dashboard และเมนูย่อย เช่น /affiliate/help
 add_action('init', 'affiliate_dashboard_rewrite_rule');
 function affiliate_dashboard_rewrite_rule() {
     // ต้องตรงกับ /affiliate/ ที่ลิงก์ต่าง ๆ ในระบบใช้อ้างอิงถึง
+    add_rewrite_rule('^affiliate/([^/]+)/?$', 'index.php?is_affiliate_dashboard=1&affiliate_tab=$matches[1]', 'top');
     add_rewrite_rule('^affiliate/?$', 'index.php?is_affiliate_dashboard=1', 'top');
+}
+
+// Flush rewrite rules once after adding the affiliate_tab rule, so /affiliate/{tab} works without a manual Permalinks re-save.
+add_action('init', 'affiliate_maybe_flush_rewrite_rules', 20);
+function affiliate_maybe_flush_rewrite_rules() {
+    $version = '2';
+    if (get_option('affiliate_rewrite_version') !== $version) {
+        flush_rewrite_rules();
+        update_option('affiliate_rewrite_version', $version);
+    }
 }
 
 add_filter('query_vars', 'affiliate_dashboard_query_vars');
 function affiliate_dashboard_query_vars($vars) {
     $vars[] = 'is_affiliate_dashboard';
+    $vars[] = 'affiliate_tab';
     return $vars;
 }
 

@@ -185,6 +185,21 @@ $user_affiliate_info = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_info 
 $verified = $user_affiliate_info ? $user_affiliate_info->verified : 0;
 $suspended = $user_affiliate_info ? $user_affiliate_info->suspended : 0;
 
+$requested_tab = sanitize_key(get_query_var('affiliate_tab'));
+
+if (!$ref_code || !$verified) {
+    $allowed_tabs  = array('register', 'requirements');
+    $default_tab   = 'register';
+} elseif ($suspended) {
+    $allowed_tabs  = array('suspended', 'requirements');
+    $default_tab   = 'suspended';
+} else {
+    $allowed_tabs  = array('dashboard', 'orders', 'commission', 'settings', 'policy', 'help');
+    $default_tab   = 'dashboard';
+}
+
+$affiliate_tab = in_array($requested_tab, $allowed_tabs, true) ? $requested_tab : $default_tab;
+
 // ==========================================
 // 3. Query ข้อมูลรายงานและสถิติ (เฉพาะเมื่อมี refCode)
 // ==========================================
@@ -452,7 +467,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                 
                 <?php elseif (!$ref_code) : ?>
                     <div class="tab-content">
-                        <div class="tab-pane show active fade" id="register" role="tabpanel">
+                        <div class="tab-pane fade <?= $affiliate_tab === 'register' ? 'show active' : ''; ?>" id="register" role="tabpanel">
                             <div class="card card-custom p-4 p-md-5 my-4">
                                 <div class="text-center mb-4">
                                     <div class="text-primary mb-3">
@@ -544,7 +559,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                 </form>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="requirements" role="tabpanel">
+                        <div class="tab-pane fade <?= $affiliate_tab === 'requirements' ? 'show active' : ''; ?>" id="requirements" role="tabpanel">
                             <?php
                             if (file_exists(__DIR__ . '/inc/requirements.php')) {
                                 include __DIR__ . '/inc/requirements.php';
@@ -556,7 +571,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
             
             <?php elseif (!$verified) : ?>
             <div class="tab-content">
-                <div class="tab-pane show active fade" id="register" role="tabpanel">
+                <div class="tab-pane fade <?= $affiliate_tab === 'register' ? 'show active' : ''; ?>" id="register" role="tabpanel">
                     <div class="card card-custom p-5 text-center my-5">
                         <div class="text-success mb-3">
                             <i class="fa-solid fa-square-check fa-4x"></i>
@@ -565,7 +580,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                         <p class="text-muted mb-0">ทางเราได้รับเอกสารแล้ว และจะดำเนินการตรวจสอบและยืนยันตัวตนของท่านโดยเร็วที่สุด</p>
                     </div>
                 </div>
-                <div class="tab-pane fade" id="requirements" role="tabpanel">
+                <div class="tab-pane fade <?= $affiliate_tab === 'requirements' ? 'show active' : ''; ?>" id="requirements" role="tabpanel">
                     <?php
                     if (file_exists(__DIR__ . '/inc/requirements.php')) {
                         include __DIR__ . '/inc/requirements.php';
@@ -576,7 +591,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
 
             <?php elseif ($suspended) : ?>
             <div class="tab-content">
-                <div class="tab-pane show active fade" id="suspended" role="tabpanel">
+                <div class="tab-pane fade <?= $affiliate_tab === 'suspended' ? 'show active' : ''; ?>" id="suspended" role="tabpanel">
                     <div class="card card-custom p-5 text-center my-5">
                         <div class="text-danger mb-3">
                             <i class="fa-solid fa-triangle-exclamation fa-4x"></i>
@@ -585,7 +600,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                         <p class="text-muted mb-0">ทางเราได้ตรวจสอบและพบว่าบัญชี Affiliate ของคุณทำผิดกฎระเบียบและเงื่อนไขการใช้งานของเรา คุณสามารถโต้แย้งได้โดยติดต่อทีมสนับสนุนของเรา</p>
                     </div>
                 </div>
-                <div class="tab-pane fade" id="requirements" role="tabpanel">
+                <div class="tab-pane fade <?= $affiliate_tab === 'requirements' ? 'show active' : ''; ?>" id="requirements" role="tabpanel">
                     <?php
                     if (file_exists(__DIR__ . '/inc/requirements.php')) {
                         include __DIR__ . '/inc/requirements.php';
@@ -609,42 +624,42 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                     ?>
                 <?php else : ?>
                     <div class="tab-content">
-                        <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+                        <div class="tab-pane fade <?= $affiliate_tab === 'dashboard' ? 'show active' : ''; ?>" id="dashboard" role="tabpanel">
                             <?php
                             if (file_exists(__DIR__ . '/inc/dashboard.php')) {
                                 include __DIR__ . '/inc/dashboard.php';
                             }
                             ?>
                         </div>
-                        <div class="tab-pane fade" id="commission" role="tabpanel">
+                        <div class="tab-pane fade <?= $affiliate_tab === 'commission' ? 'show active' : ''; ?>" id="commission" role="tabpanel">
                             <?php
                             if (file_exists(__DIR__ . '/inc/commission.php')) {
                                 include __DIR__ . '/inc/commission.php';
                             }
                             ?>
                         </div>
-                        <div class="tab-pane fade" id="settings" role="tabpanel">
+                        <div class="tab-pane fade <?= $affiliate_tab === 'settings' ? 'show active' : ''; ?>" id="settings" role="tabpanel">
                             <?php
                             if (file_exists(__DIR__ . '/inc/bank_setting.php')) {
                                 include __DIR__ . '/inc/bank_setting.php';
                             }
                             ?>
                         </div>
-                        <div class="tab-pane fade" id="policy" role="tabpanel">
+                        <div class="tab-pane fade <?= $affiliate_tab === 'policy' ? 'show active' : ''; ?>" id="policy" role="tabpanel">
                             <?php
                             if (file_exists(__DIR__ . '/inc/policy.php')) {
                                 include __DIR__ . '/inc/policy.php';
                             }
                             ?>
                         </div>
-                        <div class="tab-pane fade" id="help" role="tabpanel">
+                        <div class="tab-pane fade <?= $affiliate_tab === 'help' ? 'show active' : ''; ?>" id="help" role="tabpanel">
                             <?php
                             if (file_exists(__DIR__ . '/inc/help.php')) {
                                 include __DIR__ . '/inc/help.php';
                             }
                             ?>
                         </div>
-                        <div class="tab-pane fade" id="orders" role="tabpanel">
+                        <div class="tab-pane fade <?= $affiliate_tab === 'orders' ? 'show active' : ''; ?>" id="orders" role="tabpanel">
                             <?php
                             if (file_exists(__DIR__ . '/inc/orders.php')) {
                                 include __DIR__ . '/inc/orders.php';
