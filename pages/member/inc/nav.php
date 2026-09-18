@@ -13,7 +13,40 @@ if (!defined('ABSPATH')) {
         <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist">
             <?php
             $affiliate_tab = $affiliate_tab ?? '';
-            if(!$verified) {
+            $is_guest = !is_user_logged_in();
+
+            if ($is_guest) {
+                // ผู้เยี่ยมชมที่ยังไม่ได้ Login: เห็นเมนูเหมือนกันหมด แต่กดไปหน้าอื่นไม่ได้ นอกจากหน้านโยบาย
+            ?>
+                <a class="nav-link disabled" href="<?php echo esc_url(wp_login_url('/affiliate/dashboard')); ?>" tabindex="-1" aria-disabled="true">
+                    <i class="fa-solid fa-chart-pie me-2"></i>แผงควบคุม
+                </a>
+
+                <a class="nav-link disabled" href="<?php echo esc_url(wp_login_url('/affiliate/orders')); ?>" tabindex="-1" aria-disabled="true">
+                    <i class="fa-solid fa-list-check me-2"></i>ประวัติการสั่งซื้อ
+                </a>
+
+                <a class="nav-link disabled" href="<?php echo esc_url(wp_login_url('/affiliate/commission')); ?>" tabindex="-1" aria-disabled="true">
+                    <i class="fa-solid fa-table me-2"></i>อัตราคอมมิชชั่น
+                </a>
+
+                <a class="nav-link disabled" href="<?php echo esc_url(wp_login_url('/affiliate/settings')); ?>" tabindex="-1" aria-disabled="true">
+                    <i class="fa-solid fa-building-columns me-2"></i>ตั้งค่าบัญชี
+                </a>
+
+                <a class="nav-link active" href="/affiliate/policy">
+                    <i class="fa-solid fa-file-contract me-2"></i>นโยบายและเงื่อนไข
+                </a>
+
+                <a class="nav-link disabled" href="<?php echo esc_url(wp_login_url('/affiliate/help')); ?>" tabindex="-1" aria-disabled="true">
+                    <i class="fa-regular fa-circle-question me-2"></i>ช่วยเหลือ
+                </a>
+                <hr>
+                <a class="nav-link" style="cursor: pointer;" href="/">
+                    <i class="fa-solid fa-store me-2"></i>กลับไปหน้าร้านค้า
+                </a>
+            <?php
+            } elseif(!$verified) {
             ?>
                 <a class="nav-link <?= $affiliate_tab === 'register' ? 'active' : ''; ?>" href="/affiliate/register">
                     <i class="fa-solid fa-right-to-bracket me-2"></i> สมัครสมาชิก

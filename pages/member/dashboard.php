@@ -4,6 +4,101 @@
  * File: pages/member/dashboard.php
  */
 
+// อนุญาตให้เข้าดูหน้านโยบายและเงื่อนไข (/affiliate/policy) ได้โดยไม่ต้อง Login
+if (sanitize_key(get_query_var('affiliate_tab')) === 'policy' && !is_user_logged_in()) {
+    $affiliate_tab = 'policy';
+    ?>
+    <!DOCTYPE html>
+    <html lang="th">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>นโยบายและเงื่อนไข - Affiliate Program</title>
+        <link rel="icon" href="https://www.worldchemical.co.th/wp-content/uploads/2022/06/cropped-faviconnn-Custom-192x192.png" sizes="192x192" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+            body {
+                font-family: 'Prompt', sans-serif;
+                background-color: #f1f5f9;
+                color: #334155;
+            }
+            .sidebar {
+                min-height: 100vh;
+                background: #0f172a;
+                color: #fff;
+            }
+            .sidebar .nav-link {
+                color: #94a3b8;
+                padding: 12px 18px;
+                border-radius: 8px;
+                margin-bottom: 4px;
+                transition: all 0.2s ease;
+            }
+            .sidebar .nav-link:hover,
+            .sidebar .nav-link.active {
+                color: #fff;
+                background: #1e293b;
+            }
+            .sidebar .nav-link.disabled {
+                opacity: .45;
+                cursor: not-allowed;
+                pointer-events: none;
+            }
+            .sidebar .nav-link i {
+                width: 24px;
+            }
+            .card-custom {
+                border: none;
+                border-radius: 12px;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+                background: #ffffff;
+            }
+
+            @media screen and (max-width: 1024px) {
+                .sidebar {
+                    min-height: max-content;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar Navigation -->
+                <?php include __DIR__ . '/inc/nav.php'; ?>
+
+                <!-- Main Content Area -->
+                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <button class="btn btn-dark d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                            <i class="fa-solid fa-bars"></i>
+                        </button>
+                        <div>
+                            <h3 class="fw-bold mb-1">ระบบตัวแทนแนะนำสินค้า</h3>
+                            <p class="text-muted small mb-0">นโยบายและเงื่อนไขโปรแกรมตัวแทนแนะนำสินค้า</p>
+                        </div>
+                        <a href="<?php echo esc_url(wp_login_url('/affiliate/dashboard')); ?>" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-right-to-bracket me-1"></i>เข้าสู่ระบบ
+                        </a>
+                    </div>
+
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="policy" role="tabpanel">
+                            <?php include __DIR__ . '/inc/policy.php'; ?>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+    </html>
+    <?php
+    exit;
+}
+
 // ตรวจสอบการ Login
 if (!is_user_logged_in()) {
     wp_redirect(wp_login_url());
@@ -390,6 +485,11 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
         .sidebar .nav-link.active {
             color: #fff;
             background: #1e293b;
+        }
+        .sidebar .nav-link.disabled {
+            opacity: .45;
+            cursor: not-allowed;
+            pointer-events: none;
         }
         .sidebar .nav-link i {
             width: 24px;
