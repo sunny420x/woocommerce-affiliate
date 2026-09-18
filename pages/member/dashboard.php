@@ -41,11 +41,6 @@ if (sanitize_key(get_query_var('affiliate_tab')) === 'policy' && !is_user_logged
                 color: #fff;
                 background: #1e293b;
             }
-            .sidebar .nav-link.disabled {
-                opacity: .45;
-                cursor: not-allowed;
-                pointer-events: none;
-            }
             .sidebar .nav-link i {
                 width: 24px;
             }
