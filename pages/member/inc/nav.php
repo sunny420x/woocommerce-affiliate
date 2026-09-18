@@ -16,7 +16,6 @@ if (!defined('ABSPATH')) {
             $is_guest = !is_user_logged_in();
 
             if ($is_guest) {
-                // ผู้เยี่ยมชมที่ยังไม่ได้ Login: เห็นเมนูเหมือนกันหมด แต่กดไปหน้าอื่นไม่ได้ นอกจากหน้านโยบาย
             ?>
                 <a class="nav-link active" href="/affiliate/policy">
                     <i class="fa-solid fa-file-contract me-2"></i>นโยบายและเงื่อนไข
