@@ -1003,7 +1003,15 @@ function inject_affliate_share_buttons() {
 add_action('woocommerce_after_shop_loop_item_title', 'inject_affiliate_commission_badge_loop', 15);
 
 function inject_affiliate_commission_badge_loop() {
-    global $product;
+    global $product, $wpdb;
+    if ( ! is_user_logged_in() ) return;
+
+    $is_verified_affiliate = $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM {$wpdb->prefix}users_affiliate_info WHERE user_id = %d AND verified = 1",
+        get_current_user_id()
+    ));
+
+    if ( ! $is_verified_affiliate ) return;
     if ( ! $product ) return;
 
     $commission_product_id = $product->is_type('variation') ? $product->get_parent_id() : $product->get_id();
