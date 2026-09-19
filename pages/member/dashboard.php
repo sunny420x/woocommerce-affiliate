@@ -289,7 +289,7 @@ if (!$ref_code || !$verified) {
     $allowed_tabs  = array('suspended', 'requirements');
     $default_tab   = 'suspended';
 } else {
-    $allowed_tabs  = array('dashboard', 'orders', 'commission', 'settings', 'policy', 'help');
+    $allowed_tabs  = array('dashboard', 'orders', 'commission', 'settings', 'policy', 'requirements', 'help');
     $default_tab   = 'dashboard';
 }
 
