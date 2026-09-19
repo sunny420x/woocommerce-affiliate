@@ -4,16 +4,21 @@
  * File: pages/member/dashboard.php
  */
 
-// อนุญาตให้เข้าดูหน้านโยบายและเงื่อนไข (/affiliate/policy) ได้โดยไม่ต้อง Login
-if (sanitize_key(get_query_var('affiliate_tab')) === 'policy' && !is_user_logged_in()) {
-    $affiliate_tab = 'policy';
+// อนุญาตให้เข้าดูหน้านโยบายและเงื่อนไข (/affiliate/policy) และหน้าคุณสมบัติ (/affiliate/requirements) ได้โดยไม่ต้อง Login
+$guest_tab = sanitize_key(get_query_var('affiliate_tab'));
+if (in_array($guest_tab, array('policy', 'requirements'), true) && !is_user_logged_in()) {
+    $guest_pages = array(
+        'policy'       => array('title' => 'นโยบายและเงื่อนไข', 'subtitle' => 'นโยบายและเงื่อนไขโปรแกรมตัวแทนแนะนำสินค้า'),
+        'requirements' => array('title' => 'คุณสมบัติและเงื่อนไขการสมัคร', 'subtitle' => 'คุณสมบัติและเงื่อนไขการสมัครเป็นตัวแทนแนะนำสินค้า'),
+    );
+    $affiliate_tab = $guest_tab;
     ?>
     <!DOCTYPE html>
     <html lang="th">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>นโยบายและเงื่อนไข - Affiliate Program</title>
+        <title><?php echo esc_html($guest_pages[$affiliate_tab]['title']); ?> - Affiliate Program</title>
         <link rel="icon" href="https://www.worldchemical.co.th/wp-content/uploads/2022/06/cropped-faviconnn-Custom-192x192.png" sizes="192x192" />
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -72,7 +77,7 @@ if (sanitize_key(get_query_var('affiliate_tab')) === 'policy' && !is_user_logged
                         </button>
                         <div>
                             <h3 class="fw-bold mb-1">ระบบตัวแทนแนะนำสินค้า</h3>
-                            <p class="text-muted small mb-0">นโยบายและเงื่อนไขโปรแกรมตัวแทนแนะนำสินค้า</p>
+                            <p class="text-muted small mb-0"><?php echo esc_html($guest_pages[$affiliate_tab]['subtitle']); ?></p>
                         </div>
                         <a href="<?php echo esc_url(wp_login_url('/affiliate/dashboard')); ?>" class="btn btn-primary btn-sm">
                             <i class="fa-solid fa-right-to-bracket me-1"></i>เข้าสู่ระบบ
@@ -80,8 +85,8 @@ if (sanitize_key(get_query_var('affiliate_tab')) === 'policy' && !is_user_logged
                     </div>
 
                     <div class="tab-content">
-                        <div class="tab-pane fade show active" id="policy" role="tabpanel">
-                            <?php include __DIR__ . '/inc/policy.php'; ?>
+                        <div class="tab-pane fade show active" id="<?php echo esc_attr($affiliate_tab); ?>" role="tabpanel">
+                            <?php include __DIR__ . '/inc/' . $affiliate_tab . '.php'; ?>
                         </div>
                     </div>
                 </main>
