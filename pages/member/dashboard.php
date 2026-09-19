@@ -752,6 +752,13 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                             }
                             ?>
                         </div>
+                        <div class="tab-pane fade <?= $affiliate_tab === 'requirements' ? 'show active' : ''; ?>" id="requirements" role="tabpanel">
+                            <?php
+                            if (file_exists(__DIR__ . '/inc/requirements.php')) {
+                                include __DIR__ . '/inc/requirements.php';
+                            }
+                            ?>
+                        </div>
                         <div class="tab-pane fade <?= $affiliate_tab === 'help' ? 'show active' : ''; ?>" id="help" role="tabpanel">
                             <?php
                             if (file_exists(__DIR__ . '/inc/help.php')) {
