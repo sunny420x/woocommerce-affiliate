@@ -283,10 +283,10 @@ $suspended = $user_affiliate_info ? $user_affiliate_info->suspended : 0;
 $requested_tab = sanitize_key(get_query_var('affiliate_tab'));
 
 if (!$ref_code || !$verified) {
-    $allowed_tabs  = array('register', 'requirements');
+    $allowed_tabs  = array('register', 'requirements', 'policy');
     $default_tab   = 'register';
 } elseif ($suspended) {
-    $allowed_tabs  = array('suspended', 'requirements');
+    $allowed_tabs  = array('suspended', 'requirements', 'policy');
     $default_tab   = 'suspended';
 } else {
     $allowed_tabs  = array('dashboard', 'orders', 'commission', 'settings', 'policy', 'requirements', 'help');
