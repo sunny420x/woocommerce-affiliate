@@ -3,16 +3,14 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 ?>
-<div class="row">
-    <div class="col-lg-8 row">
-        <div class="card card-custom p-4 col-lg-6" id="policy">
-            <?=get_option("affiliate_policy")?>
-        </div>
-        <div class="card card-custom p-4 col-lg-6" id="requirements">
-            <?=get_option("affiliate_requirements_and_conditions")?>
-        </div>
+<div class="d-flex flex-column gap-2 card card-custom p-4">
+    <div id="policy">
+        <?=get_option("affiliate_policy")?>
     </div>
-    <div class="col-lg-4">
-        <?=get_option("affiliate_instructions")?>
+    <div id="requirements">
+        <?=get_option("affiliate_requirements_and_conditions")?>
     </div>
+</div>
+<div class="d-flex gap-2">
+    <?=get_option("affiliate_instructions")?>
 </div>
