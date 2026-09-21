@@ -628,7 +628,8 @@ function affiliate_settings_init()
 
     register_setting('affiliate_content_settings_group', 'affiliate_condition');
     register_setting('affiliate_content_settings_group', 'affiliate_support_page');
-    register_setting('affiliate_content_settings_group', 'affiliate_requirements_and_conditions' );
+    register_setting('affiliate_content_settings_group', 'affiliate_requirements_and_conditions');
+    register_setting('affiliate_content_settings_group', 'affiliate_policy');
 
     register_setting( 'affiliate_email_content_settings_group', 'html_affiliate_approved');
     register_setting( 'affiliate_email_content_settings_group', 'html_affiliate_disapproved');
