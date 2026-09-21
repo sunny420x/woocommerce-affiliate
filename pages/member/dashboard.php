@@ -564,7 +564,6 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                     <p class="text-muted mb-0">ขณะนี้ระบบตัวแทนจำหน่ายกำลังปิดปรับปรุงชั่วคราว กรุณากลับมาใหม่อีกครั้งในภายหลัง</p>
                 </div>
 
-                
                 <?php elseif (!$ref_code) : ?>
                     <div class="tab-content">
                         <div class="tab-pane fade <?= $affiliate_tab === 'register' ? 'show active' : ''; ?>" id="register" role="tabpanel">
@@ -681,11 +680,11 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                             ?>
                         </div>
                         <div class="tab-pane fade <?= $affiliate_tab === 'policy' ? 'show active' : ''; ?>" id="policy" role="tabpanel">
-                        <?php
-                        if (file_exists(__DIR__ . '/inc/policy.php')) {
-                            include __DIR__ . '/inc/policy.php';
-                        }
-                        ?>
+                            <?php
+                            if (file_exists(__DIR__ . '/inc/policy.php')) {
+                                include __DIR__ . '/inc/policy.php';
+                            }
+                            ?>
                         </div>
                     </div>
                 </div>
@@ -748,6 +747,12 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                     <?php
                     if (file_exists(__DIR__ . '/inc/request_payments.php')) {
                         include __DIR__ . '/inc/request_payments.php';
+                    }
+                    ?>
+                <?php elseif (isset($_GET['policy']) && !empty($_GET['policy'])) : ?>
+                    <?php
+                    if (file_exists(__DIR__ . '/inc/policy.php')) {
+                        include __DIR__ . '/inc/policy.php';
                     }
                     ?>
                 <?php else : ?>
