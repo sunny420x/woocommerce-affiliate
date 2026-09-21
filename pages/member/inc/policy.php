@@ -5,8 +5,5 @@ if (!defined('ABSPATH')) {
 ?>
 <div class="card card-custom p-4" id="policy">
     <?=get_option("affiliate_policy")?>
-</div>
-
-<div class="card card-custom p-4" id="requirements">
     <?=get_option("affiliate_requirements_and_conditions")?>
 </div>
