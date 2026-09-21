@@ -36,9 +36,6 @@ if (!defined('ABSPATH')) {
                 <a class="nav-link <?= $affiliate_tab === 'policy' ? 'active' : ''; ?>" href="/affiliate/policy">
                     <i class="fa-solid fa-file-contract me-2"></i>นโยบายและเงื่อนไข
                 </a>
-                <a class="nav-link <?= $affiliate_tab === 'requirements' ? 'active' : ''; ?>" href="/affiliate/requirements">
-                    <i class="fa-solid fa-circle-exclamation me-2"></i> คุณสมบัติและเงื่อนไข
-                </a>
             <?php
             } else {
             ?>

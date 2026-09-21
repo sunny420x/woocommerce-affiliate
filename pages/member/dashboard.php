@@ -4,12 +4,10 @@
  * File: pages/member/dashboard.php
  */
 
-// อนุญาตให้เข้าดูหน้านโยบายและเงื่อนไข (/affiliate/policy) และหน้าคุณสมบัติ (/affiliate/requirements) ได้โดยไม่ต้อง Login
 $guest_tab = sanitize_key(get_query_var('affiliate_tab'));
-if (in_array($guest_tab, array('policy', 'requirements'), true) && !is_user_logged_in()) {
+if (in_array($guest_tab, array('policy'), true) && !is_user_logged_in()) {
     $guest_pages = array(
         'policy'       => array('title' => 'นโยบายและเงื่อนไข', 'subtitle' => 'นโยบายและเงื่อนไขโปรแกรมตัวแทนแนะนำสินค้า'),
-        'requirements' => array('title' => 'คุณสมบัติและเงื่อนไขการสมัคร', 'subtitle' => 'คุณสมบัติและเงื่อนไขการสมัครเป็นตัวแทนแนะนำสินค้า'),
     );
     $affiliate_tab = $guest_tab;
     ?>
@@ -99,7 +97,6 @@ if (in_array($guest_tab, array('policy', 'requirements'), true) && !is_user_logg
     exit;
 }
 
-// ตรวจสอบการ Login
 if (!is_user_logged_in()) {
     wp_redirect(wp_login_url());
     exit;
@@ -110,7 +107,6 @@ $user_id      = get_current_user_id();
 $current_user = wp_get_current_user();
 $table_info   = $wpdb->prefix . 'users_affiliate_info';
 
-// ดึง refCode ของ User
 $ref_code = $wpdb->get_var($wpdb->prepare(
     "SELECT refCode FROM {$wpdb->prefix}users WHERE ID = %d",
     $user_id
@@ -283,13 +279,13 @@ $suspended = $user_affiliate_info ? $user_affiliate_info->suspended : 0;
 $requested_tab = sanitize_key(get_query_var('affiliate_tab'));
 
 if (!$ref_code || !$verified) {
-    $allowed_tabs  = array('register', 'requirements', 'policy');
+    $allowed_tabs  = array('register', 'policy');
     $default_tab   = 'register';
 } elseif ($suspended) {
-    $allowed_tabs  = array('suspended', 'requirements', 'policy');
+    $allowed_tabs  = array('suspended', 'policy');
     $default_tab   = 'suspended';
 } else {
-    $allowed_tabs  = array('dashboard', 'orders', 'commission', 'settings', 'policy', 'requirements', 'help');
+    $allowed_tabs  = array('dashboard', 'orders', 'commission', 'settings', 'policy', 'help');
     $default_tab   = 'dashboard';
 }
 
@@ -672,13 +668,6 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                 </form>
                             </div>
                         </div>
-                        <div class="tab-pane fade <?= $affiliate_tab === 'requirements' ? 'show active' : ''; ?>" id="requirements" role="tabpanel">
-                            <?php
-                            if (file_exists(__DIR__ . '/inc/requirements.php')) {
-                                include __DIR__ . '/inc/requirements.php';
-                            }
-                            ?>
-                        </div>
                         <div class="tab-pane fade <?= $affiliate_tab === 'policy' ? 'show active' : ''; ?>" id="policy" role="tabpanel">
                             <?php
                             if (file_exists(__DIR__ . '/inc/policy.php')) {
@@ -700,13 +689,6 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                         <p class="text-muted mb-0">ทางเราได้รับเอกสารแล้ว และจะดำเนินการตรวจสอบและยืนยันตัวตนของท่านโดยเร็วที่สุด</p>
                     </div>
                 </div>
-                <div class="tab-pane fade <?= $affiliate_tab === 'requirements' ? 'show active' : ''; ?>" id="requirements" role="tabpanel">
-                    <?php
-                    if (file_exists(__DIR__ . '/inc/requirements.php')) {
-                        include __DIR__ . '/inc/requirements.php';
-                    }
-                    ?>
-                </div>
                 <div class="tab-pane fade <?= $affiliate_tab === 'policy' ? 'show active' : ''; ?>" id="policy" role="tabpanel">
                     <?php
                     if (file_exists(__DIR__ . '/inc/policy.php')) {
@@ -727,10 +709,10 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                         <p class="text-muted mb-0">ทางเราได้ตรวจสอบและพบว่าบัญชี Affiliate ของคุณทำผิดกฎระเบียบและเงื่อนไขการใช้งานของเรา คุณสามารถโต้แย้งได้โดยติดต่อทีมสนับสนุนของเรา</p>
                     </div>
                 </div>
-                <div class="tab-pane fade <?= $affiliate_tab === 'requirements' ? 'show active' : ''; ?>" id="requirements" role="tabpanel">
+                <div class="tab-pane fade <?= $affiliate_tab === 'policy' ? 'show active' : ''; ?>" id="policy" role="tabpanel">
                     <?php
-                    if (file_exists(__DIR__ . '/inc/requirements.php')) {
-                        include __DIR__ . '/inc/requirements.php';
+                    if (file_exists(__DIR__ . '/inc/policy.php')) {
+                        include __DIR__ . '/inc/policy.php';
                     }
                     ?>
                 </div>
@@ -782,13 +764,6 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                             <?php
                             if (file_exists(__DIR__ . '/inc/policy.php')) {
                                 include __DIR__ . '/inc/policy.php';
-                            }
-                            ?>
-                        </div>
-                        <div class="tab-pane fade <?= $affiliate_tab === 'requirements' ? 'show active' : ''; ?>" id="requirements" role="tabpanel">
-                            <?php
-                            if (file_exists(__DIR__ . '/inc/requirements.php')) {
-                                include __DIR__ . '/inc/requirements.php';
                             }
                             ?>
                         </div>
