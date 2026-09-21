@@ -44,6 +44,14 @@ if ( ! defined( 'ABSPATH' ) ) {
             'media_buttons' => true,                   // Show "Add Media" buttons
         ));
         ?>
+        <h3 for="affiliate_instructions"><strong>คำแนะนำสำหรับพันธมิตร:</strong></h3>
+        <?php
+        wp_editor( get_option('affiliate_instructions', ''), 'affiliate_instructions', array(
+            'textarea_name' => 'affiliate_instructions', // The 'name' attribute for the form submission
+            'textarea_rows' => 15,                      // Number of visible rows
+            'media_buttons' => true,                   // Show "Add Media" buttons
+        ));
+        ?>
         <?php submit_button('บันทึกการเปลี่ยนแปลง'); ?>
     </form>
 </div>
