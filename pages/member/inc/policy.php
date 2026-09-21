@@ -3,11 +3,11 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 ?>
-<div class="d-flex gap-2 card card-custom p-4">
-    <div id="policy">
+<div class="row card card-custom p-4">
+    <div class="col-lg-6" id="policy">
         <?=get_option("affiliate_policy")?>
     </div>
-    <div id="requirements">
+    <div class="col-lg-6" id="requirements">
         <?=get_option("affiliate_requirements_and_conditions")?>
     </div>
 </div>
