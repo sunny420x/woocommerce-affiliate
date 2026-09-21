@@ -653,14 +653,14 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                     </div>
                                     <div class="form-group mb-4">
                                         <div class="input-group">
-                                            <input type="checkbox" name="agree_terms_read" id="agree_terms_read" required> 
+                                            <input type="checkbox" name="agree_terms_read" id="agree_terms_read" class="me-2" required> 
                                             <label for="agree_terms_read">ข้าพเจ้าได้อ่านและยอมรับ</label>
                                         </div>
                                         <p>เงื่อนไขการเข้าร่วม World Chemical Affiliate Program และนโยบายการผลิตคอนเทนต์ และตกลงปฏิบัติตามเงื่อนไขดังกล่าว</p>
                                     </div>
                                     <div class="form-group mb-4">
                                         <div class="input-group">
-                                            <input type="checkbox" name="agree_terms_ack" id="agree_terms_ack" required> 
+                                            <input type="checkbox" name="agree_terms_ack" id="agree_terms_ack" class="me-2" required> 
                                             <label for="agree_terms_ack">ข้าพเจ้ารับทราบ</label>
                                         </div>
                                         <p>ข้าพเจ้าจะตรวจสอบข้อมูลสินค้า กฎหมาย และข้อกำหนดของแพลตฟอร์มก่อนเผยแพร่ Content ทุกครั้ง และเข้าใจว่าการฝ่าฝืนเงื่อนไขอาจส่งผลต่อสถานะ Affiliate และ Commission ตามเงื่อนไขของบริษัท</p>
