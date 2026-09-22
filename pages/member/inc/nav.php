@@ -39,15 +39,6 @@ if (!defined('ABSPATH')) {
             <?php
             } else {
             ?>
-                <?php
-                if(isset($_GET['order_id']) || isset($_GET['request_payments'])) {
-                ?>
-                <a class="nav-link" href="/affiliate/">
-                    <i class="fa-solid fa-arrow-left me-2"></i>กลับไปหน้าแรก
-                </a>
-                <?php
-                } else {
-                ?>
                 <a class="nav-link <?= $affiliate_tab === 'dashboard' ? 'active' : ''; ?>" href="/affiliate/dashboard">
                     <i class="fa-solid fa-chart-pie me-2"></i>แผงควบคุม
                 </a>
@@ -76,7 +67,6 @@ if (!defined('ABSPATH')) {
                     <i class="fa-solid fa-store me-2"></i>กลับไปหน้าร้านค้า
                 </a>
             <?php
-                }
             }
             ?>
         </div>
