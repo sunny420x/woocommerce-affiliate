@@ -6,11 +6,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 <h1>📝 เนื้อหา (Contents)</h1>
 <div style="padding: 0 25px 25px 25px;">
     <div>
-        <button onclick="togglePage('affiliate_condition_content');">เงื่อนไขการจ่ายค่าตอบแทน</button>
-        <button onclick="togglePage('affiliate_support_page_content');">หน้าช่วยเหลือของพันธมิตร</button>
-        <button onclick="togglePage('affiliate_requirements_and_conditions_content');">คุณสมบัติและเงื่อนไขของผู้สมัคร</button>
-        <button onclick="togglePage('affiliate_policy_content');">นโยบายของพันธมิตร</button>
-        <button onclick="togglePage('affiliate_instructions_content');">คำแนะนำสำหรับพันธมิตร</button>
+        <button class="button button-primary" onclick="togglePage('affiliate_condition_content');">เงื่อนไขการจ่ายค่าตอบแทน</button>
+        <button class="button button-primary" onclick="togglePage('affiliate_support_page_content');">หน้าช่วยเหลือของพันธมิตร</button>
+        <button class="button button-primary" onclick="togglePage('affiliate_requirements_and_conditions_content');">คุณสมบัติและเงื่อนไขของผู้สมัคร</button>
+        <button class="button button-primary" onclick="togglePage('affiliate_policy_content');">นโยบายของพันธมิตร</button>
+        <button class="button button-primary" onclick="togglePage('affiliate_instructions_content');">คำแนะนำสำหรับพันธมิตร</button>
     </div>
     <form action="options.php" method="post" id="affiliate_content_form ">
         <?php
@@ -77,7 +77,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     <script>
         function togglePage(id) {
             var affiliate_content_form = document.getElementById('affiliate_content_form');
-            Array.from(affiliate_content_form.elements).forEach(element => {
+            Array.from(affiliate_content_form.children).forEach(element => {
                 element.style.display = "none"; // Hide all elements within the form initially
             });
 
