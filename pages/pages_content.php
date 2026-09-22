@@ -5,13 +5,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <h1>📝 เนื้อหา (Contents)</h1>
 <div style="padding: 0 25px 25px 25px;">
-    <div>
-        <button class="button button-primary" onclick="togglePage('affiliate_condition_content');">เงื่อนไขการจ่ายค่าตอบแทน</button>
-        <button class="button button-primary" onclick="togglePage('affiliate_support_page_content');">หน้าช่วยเหลือของพันธมิตร</button>
-        <button class="button button-primary" onclick="togglePage('affiliate_requirements_and_conditions_content');">คุณสมบัติและเงื่อนไขของผู้สมัคร</button>
-        <button class="button button-primary" onclick="togglePage('affiliate_policy_content');">นโยบายของพันธมิตร</button>
-        <button class="button button-primary" onclick="togglePage('affiliate_instructions_content');">คำแนะนำสำหรับพันธมิตร</button>
+    <div class="contentTabContainer">
+        <button class="contentTab" onclick="togglePage('affiliate_condition_content');">เงื่อนไขการจ่ายค่าตอบแทน</button>
+        <button class="contentTab" onclick="togglePage('affiliate_support_page_content');">หน้าช่วยเหลือของพันธมิตร</button>
+        <button class="contentTab" onclick="togglePage('affiliate_requirements_and_conditions_content');">คุณสมบัติและเงื่อนไขของผู้สมัคร</button>
+        <button class="contentTab" onclick="togglePage('affiliate_policy_content');">นโยบายของพันธมิตร</button>
+        <button class="contentTab" onclick="togglePage('affiliate_instructions_content');">คำแนะนำสำหรับพันธมิตร</button>
     </div>
+    <style>
+        .contentTabContainer {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .contentTab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+        .contentTab:hover {
+            background-color: #e9e9e9;
+        }
+    </style>
     <form action="options.php" method="post" id="affiliate_content_form">
         <?php
         settings_fields('affiliate_content_settings_group');
