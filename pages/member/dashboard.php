@@ -497,6 +497,11 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
             /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); */
             background: #ffffff;
         }
+        .content-header {
+            background: #94a3b8;
+            width: 100%;
+            padding: 16px;
+        }
         .icon-shape {
             width: 48px;
             height: 48px;

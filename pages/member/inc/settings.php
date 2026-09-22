@@ -3,6 +3,9 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 ?>
+<div class="content-header">
+    <p class="text-muted mb-0">จัดการข้อมูลส่วนตัวของคุณและตั้งค่าบัญชีธนาคารสำหรับรับเงินค่าคอมมิชชั่น</p>
+</div>
 <div class="card card-custom p-4" id="settings">
     <h5 class="fw-bold my-4"><i class="fa-solid fa-user-cog text-primary me-2"></i>ตั้งค่าข้อมูลส่วนตัว</h5>
     <div class="table-responsive">
