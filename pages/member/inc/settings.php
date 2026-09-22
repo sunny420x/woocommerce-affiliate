@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
             <tbody>
                 <tr>
                     <th>จัดการข้อมูลส่วนตัว (Account Settings)</th>
-                    <td><button class="btn btn-outline-primary" onclick="window.open('/my-account/edit-account/')">จัดการ</button></td>
+                    <td><button class="btn btn-outline-primary btn-sm" onclick="window.open('/my-account/edit-account/')"><i class="fa-solid fa-gear me-1"></i>จัดการ</button></td>
                 </tr>
             </tbody>
         </table>
