@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
     }
     ?>
     <div class="row g-3 mb-4">
-        <div class="col-12 col-sm-6 col-xl-4">
+        <div class="col-12 col-sm-6">
             <div class="card card-custom p-3">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
@@ -31,7 +31,7 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-xl-4">
+        <div class="col-12 col-sm-6">
             <div class="card card-custom p-3">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
@@ -50,7 +50,7 @@ if (!defined('ABSPATH')) {
             <button class="btn btn-primary btn-sm" onclick="window.location.href='/affiliate/?request_payments=<?=$user_id?>'">ส่งคำขอถอนเงิน</button>
         </h5>
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table align-middle mb-0">
                 <thead class="table-light">
                     <tr>
                         <th>หมายเลขคำสั่งซื้อ</th>
