@@ -498,7 +498,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
             background: #ffffff;
         }
         .content-header {
-            background: #94a3b8;
+            background: #f8f8f8;
             width: 100%;
             padding: 16px;
         }
