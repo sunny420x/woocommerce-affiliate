@@ -565,7 +565,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                 <?php elseif (!$ref_code) : ?>
                     <div class="tab-content">
                         <div class="tab-pane fade <?= $affiliate_tab === 'register' ? 'show active' : ''; ?>" id="register" role="tabpanel">
-                            <div class="card card-custom p-4 p-md-5 my-4">
+                            <div class="card card-custom p-4 p-md-5">
                                 <div class="text-center mb-4">
                                     <div class="text-primary mb-3">
                                         <i class="fa-solid fa-id-card fa-3x"></i>
@@ -683,7 +683,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
             <?php elseif (!$verified) : ?>
             <div class="tab-content">
                 <div class="tab-pane fade <?= $affiliate_tab === 'register' ? 'show active' : ''; ?>" id="register" role="tabpanel">
-                    <div class="card card-custom p-5 text-center my-5">
+                    <div class="card card-custom p-5 text-center">
                         <div class="text-success mb-3">
                             <i class="fa-solid fa-square-check fa-4x"></i>
                         </div>
@@ -703,7 +703,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
             <?php elseif ($suspended) : ?>
             <div class="tab-content">
                 <div class="tab-pane fade <?= $affiliate_tab === 'suspended' ? 'show active' : ''; ?>" id="suspended" role="tabpanel">
-                    <div class="card card-custom p-5 text-center my-5">
+                    <div class="card card-custom p-5 text-center">
                         <div class="text-danger mb-3">
                             <i class="fa-solid fa-triangle-exclamation fa-4x"></i>
                         </div>
