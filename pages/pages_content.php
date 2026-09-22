@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         <button class="button button-primary" onclick="togglePage('affiliate_policy_content');">นโยบายของพันธมิตร</button>
         <button class="button button-primary" onclick="togglePage('affiliate_instructions_content');">คำแนะนำสำหรับพันธมิตร</button>
     </div>
-    <form action="options.php" method="post" id="affiliate_content_form ">
+    <form action="options.php" method="post" id="affiliate_content_form">
         <?php
         settings_fields('affiliate_content_settings_group');
         ?>
@@ -77,8 +77,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     <script>
         function togglePage(id) {
             var affiliate_content_form = document.getElementById('affiliate_content_form');
-            Array.from(affiliate_content_form.children).forEach(element => {
-                element.style.display = "none"; // Hide all elements within the form initially
+            Array.from(affiliate_content_form.querySelectorAll('div')).forEach(element => {
+                element.style.display = "none";
             });
 
             if (document.getElementById(id).style.display === "none") {
