@@ -68,7 +68,7 @@ foreach ($order_items as $order_item) {
 <div class="content-header">
     <p class="text-muted mb-0"><a class="text-dark me-2" href="/affiliate/orders"><i class="fa-solid fa-chevron-left me-3"></i></a>รายละเอียดคำสั่งซื้อ (Order Details)</p>
 </div>
-<div class="card card-custom p-4 mb-4" id="order-detail">
+<div class="bg-white p-4 mb-4" id="order-detail">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-2">
         <div>
             <h5 class="fw-bold mb-1"><i class="fa-solid fa-receipt text-primary me-2"></i>รายละเอียดคำสั่งซื้อ #<?= esc_html($order->get_id()); ?></h5>
