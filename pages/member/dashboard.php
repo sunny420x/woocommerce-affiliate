@@ -286,7 +286,7 @@ if (!$ref_code || !$verified) {
     $default_tab   = 'suspended';
 } else {
     $allowed_tabs  = array('dashboard', 'orders', 'commission', 'settings', 'policy', 'help');
-    $default_tab   = 'dashboard';
+    $default_tab   = '';
 }
 
 $affiliate_tab = in_array($requested_tab, $allowed_tabs, true) ? $requested_tab : $default_tab;
