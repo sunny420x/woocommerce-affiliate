@@ -4,7 +4,18 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <div class="card card-custom p-4" id="settings">
-    <h5 class="fw-bold mb-3"><i class="fa-solid fa-building-columns text-primary me-2"></i>ตั้งค่าบัญชีธนาคารสำหรับรับเงิน</h5>
+    <h5 class="fw-bold my-4"><i class="fa-solid fa-user-cog text-primary me-2"></i>ตั้งค่าข้อมูลส่วนตัว</h5>
+    <div class="table-responsive">
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>จัดการข้อมูลส่วนตัว (Account Settings)</th>
+                    <td><button class="btn btn-outline-primary" onclick="window.open('/my-account/edit-account/')">จัดการ</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <h5 class="fw-bold my-4"><i class="fa-solid fa-building-columns text-primary me-2"></i>ตั้งค่าบัญชีธนาคารสำหรับรับเงิน</h5>
     <p class="text-muted mb-0">กรุณากรอกข้อมูลบัญชีธนาคารของคุณเพื่อให้เราสามารถโอนเงินค่าคอมมิชชั่นให้คุณได้อย่างถูกต้อง</p>
     <form action="" method="post" class="row g-3">
         <div class="col-md-6">
@@ -33,16 +44,4 @@ if (!defined('ABSPATH')) {
             </button>
         </div>
     </form>
-    <br />
-    <h5 class="fw-bold my-4"><i class="fa-solid fa-building-columns text-primary me-2"></i>ตั้งค่าข้อมูลส่วนตัว</h5>
-    <div class="table-responsive">
-        <table class="table">
-            <tbody>
-                <tr>
-                    <th>ข้อมูลส่วนตัว</th>
-                    <td><button class="btn btn-outline-primary" onclick="window.open('/my-account/edit-account/')">จัดการ</button></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
 </div>
