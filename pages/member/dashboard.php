@@ -377,7 +377,7 @@ function getTransactionOrderInfo($transactions_full = []) {
 }
 
 if ($ref_code) {
-    $transactions = getTransaction($user_id, "", null);
+    $transactions = getTransaction($user_id, "", 'wc-completed');
 }
 
 if($ref_code && !empty($transactions)) {

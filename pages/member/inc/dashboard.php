@@ -85,7 +85,7 @@ if (file_exists(__DIR__ . '/inc/chart.php')) {
             </thead>
             <tbody>
                 <?php
-                $transactions_latest = getTransaction($user_id, "LIMIT 5", 'wc-completed');
+                $transactions_latest = getTransaction($user_id, "LIMIT 5", null);
 
                 if (!empty($transactions_latest)) {
                     $transactions = [];
