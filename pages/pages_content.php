@@ -77,7 +77,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     <script>
         function togglePage(id) {
             //Get only first level divs within the form
-            var affiliate_content_form = document.getElementById('affiliate_content_form').querySelectorAll('> div');
+            var affiliate_content_form = document.getElementById('affiliate_content_form').querySelectorAll(':scope > div');
             Array.from(affiliate_content_form).forEach(element => {
                 element.style.display = "none";
             });
