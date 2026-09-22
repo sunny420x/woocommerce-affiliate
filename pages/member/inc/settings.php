@@ -7,6 +7,10 @@ if (!defined('ABSPATH')) {
     <h5 class="fw-bold my-4"><i class="fa-solid fa-user-cog text-primary me-2"></i>ตั้งค่าข้อมูลส่วนตัว</h5>
     <div class="table-responsive">
         <table class="table">
+            <thead>
+                <th>รายละเอียด</th>
+                <th>Action</th>
+            </thead>
             <tbody>
                 <tr>
                     <th>จัดการข้อมูลส่วนตัว (Account Settings)</th>
