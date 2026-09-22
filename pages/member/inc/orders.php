@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 ?>
-<div class="card card-custom p-4" id="orders">
+<div class="p-4" id="orders">
     <h5 class="fw-bold mb-3"><i class="fa-solid fa-list-check text-primary me-2"></i>ประวัติคำสั่งซื้อ
         <button class="btn btn-primary btn-sm" onclick="window.location.href='/affiliate/?request_payments=<?=$user_id?>'">ส่งคำขอถอนเงิน</button>
     </h5>
@@ -49,7 +49,7 @@ if (!defined('ABSPATH')) {
         </div>
     </div>
 
-    <div class="table-responsive">
+    <div class="table-responsive card card-custom">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
                 <tr>
