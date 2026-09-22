@@ -26,7 +26,7 @@ if (!defined('ABSPATH')) {
                 $total_unpaid_sum = 0;
 
                 if($ref_code) {
-                    [ $transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo(getTransaction($user_id, ""));
+                    [ $transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo(getTransaction($user_id, "", null));
                 } else {
                     $total_paid_sum = 0;
                     $total_unpaid_sum = 0;

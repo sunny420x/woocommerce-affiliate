@@ -303,7 +303,7 @@ $total_revenue_sum  = 0;
 $total_sales_cnt    = 0;
 $transactions       = [];
 
-function getTransaction($user_id, $limit = '') {
+function getTransaction($user_id, $limit = '', $status = '') {
     global $wpdb;
 
     $affiliate_users        = $wpdb->prefix . 'users';
@@ -317,6 +317,7 @@ function getTransaction($user_id, $limit = '') {
     LEFT JOIN {$order_stats_table} AS os 
     ON t.order_id = os.order_id
     WHERE u.ID = %d
+    " . ($status ? $wpdb->prepare(" AND os.status = %s", $status) : "") . "
     GROUP BY t.product_id, t.commission_percentage, t.paid, t.order_id, t.refCode, os.status
     ORDER BY t.id DESC {$limit}", $user_id));
 
@@ -376,7 +377,7 @@ function getTransactionOrderInfo($transactions_full = []) {
 }
 
 if ($ref_code) {
-    $transactions = getTransaction($user_id, "");
+    $transactions = getTransaction($user_id, "", null);
 }
 
 if($ref_code && !empty($transactions)) {

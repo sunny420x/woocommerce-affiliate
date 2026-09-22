@@ -73,7 +73,7 @@ if (file_exists(__DIR__ . '/inc/chart.php')) {
 <div class="card card-custom p-4 mb-4">
     <h5 class="fw-bold mb-3"><i class="fa-solid fa-list-check text-primary me-2"></i>รายการคำสั่งซื้อล่าสุด</h5>
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
+        <table class="table align-middle mb-0">
             <thead class="table-light">
                 <tr>
                     <th>หมายเลขคำสั่งซื้อ</th>
@@ -85,7 +85,7 @@ if (file_exists(__DIR__ . '/inc/chart.php')) {
             </thead>
             <tbody>
                 <?php
-                $transactions_latest = getTransaction($user_id, "LIMIT 5");
+                $transactions_latest = getTransaction($user_id, "LIMIT 5", 'wc-completed');
 
                 if (!empty($transactions_latest)) {
                     $transactions = [];
