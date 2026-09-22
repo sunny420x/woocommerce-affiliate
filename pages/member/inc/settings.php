@@ -33,6 +33,7 @@ if (!defined('ABSPATH')) {
             </button>
         </div>
     </form>
+    <br />
     <h5 class="fw-bold my-4"><i class="fa-solid fa-building-columns text-primary me-2"></i>ตั้งค่าข้อมูลส่วนตัว</h5>
     <div class="table-responsive">
         <table class="table">
