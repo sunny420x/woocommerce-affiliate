@@ -7,6 +7,48 @@ if (!defined('ABSPATH')) {
     <h5 class="fw-bold mb-3"><i class="fa-solid fa-list-check text-primary me-2"></i>ประวัติคำสั่งซื้อ
         <button class="btn btn-primary btn-sm" onclick="window.location.href='/affiliate/?request_payments=<?=$user_id?>'">ส่งคำขอถอนเงิน</button>
     </h5>
+    <?php
+    $transactions = [];
+    $total_paid_sum = 0;
+    $total_unpaid_sum = 0;
+
+    if($ref_code) {
+        [ $transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo(getTransaction($user_id, "", null));
+    } else {
+        $total_paid_sum = 0;
+        $total_unpaid_sum = 0;
+    }
+    ?>
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6 col-xl-4">
+            <div class="card card-custom p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted small fw-medium">Commission สะสมทั้งหมด</span>
+                        <h4 class="fw-bold my-1 text-success">฿ <?= number_format($total_paid_sum, 2); ?></h4>
+                    </div>
+                    <div class="icon-shape bg-success-subtle text-success">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-4">
+            <div class="card card-custom p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted small fw-medium">Commission ที่กำลังรอการจ่าย</span>
+                        <h4 class="fw-bold my-1 text-primary">฿ <?= number_format($total_unpaid_sum, 2); ?></h4>
+                    </div>
+                    <div class="icon-shape bg-primary-subtle text-primary">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
@@ -21,16 +63,6 @@ if (!defined('ABSPATH')) {
             </thead>
             <tbody>
                 <?php
-                $transactions = [];
-                $total_paid_sum = 0;
-                $total_unpaid_sum = 0;
-
-                if($ref_code) {
-                    [ $transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo(getTransaction($user_id, "", null));
-                } else {
-                    $total_paid_sum = 0;
-                    $total_unpaid_sum = 0;
-                }
                 if (!empty($transactions)) {
                     foreach ($transactions as $item) {
                         ?>
