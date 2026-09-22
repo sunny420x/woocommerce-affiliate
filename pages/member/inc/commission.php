@@ -3,8 +3,10 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 ?>
+<div class="content-header">
+    <p class="text-muted mb-0"><a class="text-dark me-2" href="/affiliate"><i class="fa-solid fa-chevron-left me-3"></i></a>ตารางอัตราคอมมิชชั่น (Commission Table)</p>
+</div>
 <div class="card card-custom p-4" id="commission">
-    <h5 class="fw-bold mb-3"><i class="fa-solid fa-table text-primary me-2"></i>ตารางอัตราคอมมิชชั่น (Commission Table)</h5>
     <table class="table">
         <thead>
             <th>หมวดหมู่สินค้า</th>
