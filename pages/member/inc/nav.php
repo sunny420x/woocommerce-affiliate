@@ -39,7 +39,7 @@ if (!defined('ABSPATH')) {
             <?php
             } else {
             ?>
-                <a class="nav-link <?= $affiliate_tab === 'dashboard' ? 'active' : ''; ?>" href="/affiliate/dashboard">
+                <a class="nav-link <?= $affiliate_tab === 'dashboard' && !isset($_GET['order_id']) && !isset($_GET['request_payments']) ? 'active' : ''; ?>" href="/affiliate/dashboard">
                     <i class="fa-solid fa-chart-pie me-2"></i>แผงควบคุม
                 </a>
 
