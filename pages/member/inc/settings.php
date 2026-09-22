@@ -22,8 +22,8 @@ if (!defined('ABSPATH')) {
             </tbody>
         </table>
     </div>
-    <h5 class="fw-bold my-4"><i class="fa-solid fa-building-columns text-primary me-2"></i>ตั้งค่าบัญชีธนาคารสำหรับรับเงิน</h5>
-    <p class="text-muted mb-0">กรุณากรอกข้อมูลบัญชีธนาคารของคุณเพื่อให้เราสามารถโอนเงินค่าคอมมิชชั่นให้คุณได้อย่างถูกต้อง</p>
+    <h5 class="fw-bold mt-4"><i class="fa-solid fa-building-columns text-primary me-2"></i>ตั้งค่าบัญชีธนาคารสำหรับรับเงิน</h5>
+    <p class="text-muted mb-3">กรุณากรอกข้อมูลบัญชีธนาคารของคุณเพื่อให้เราสามารถโอนเงินค่าคอมมิชชั่นให้คุณได้อย่างถูกต้อง</p>
     <form action="" method="post" class="row g-3">
         <div class="col-md-6">
             <label class="form-label fw-medium">หมายเลขบัญชีธนาคาร:</label>
