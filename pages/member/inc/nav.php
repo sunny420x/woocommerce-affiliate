@@ -43,7 +43,7 @@ if (!defined('ABSPATH')) {
                     <i class="fa-solid fa-chart-pie me-2"></i>แผงควบคุม
                 </a>
 
-                <a class="nav-link <?= $affiliate_tab === 'orders' ? 'active' : ''; ?>" href="/affiliate/orders">
+                <a class="nav-link <?= $affiliate_tab === 'orders' || isset($_GET['order_id']) || isset($_GET['request_payments']) ? 'active' : ''; ?>" href="/affiliate/orders">
                     <i class="fa-solid fa-list-check me-2"></i>ประวัติการสั่งซื้อ
                 </a>
 
