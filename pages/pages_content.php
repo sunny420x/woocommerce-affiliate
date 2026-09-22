@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
             <?php
             wp_editor( get_option('affiliate_condition', ''), 'affiliate_condition', array(
                 'textarea_name' => 'affiliate_condition', // The 'name' attribute for the form submission
-                'textarea_rows' => 50,                      // Number of visible rows
+                'textarea_rows' => 15,                      // Number of visible rows
                 'media_buttons' => true,                   // Show "Add Media" buttons
             ));
             ?>
@@ -49,7 +49,7 @@ if ( ! defined( 'ABSPATH' ) ) {
             <?php
             wp_editor( get_option('affiliate_support_page', ''), 'affiliate_support_page', array(
                 'textarea_name' => 'affiliate_support_page', // The 'name' attribute for the form submission
-                'textarea_rows' => 50,                      // Number of visible rows
+                'textarea_rows' => 15,                      // Number of visible rows
                 'media_buttons' => true,                   // Show "Add Media" buttons
             ));
             ?>
@@ -60,7 +60,7 @@ if ( ! defined( 'ABSPATH' ) ) {
             <?php
             wp_editor( get_option('affiliate_requirements_and_conditions', ''), 'affiliate_requirements_and_conditions', array(
                 'textarea_name' => 'affiliate_requirements_and_conditions', // The 'name' attribute for the form submission
-                'textarea_rows' => 50,                      // Number of visible rows
+                'textarea_rows' => 15,                      // Number of visible rows
                 'media_buttons' => true,                   // Show "Add Media" buttons
             ));
             ?>
@@ -71,7 +71,7 @@ if ( ! defined( 'ABSPATH' ) ) {
             <?php
             wp_editor( get_option('affiliate_policy', ''), 'affiliate_policy', array(
                 'textarea_name' => 'affiliate_policy', // The 'name' attribute for the form submission
-                'textarea_rows' => 50,                      // Number of visible rows
+                'textarea_rows' => 15,                      // Number of visible rows
                 'media_buttons' => true,                   // Show "Add Media" buttons
             ));
             ?>
@@ -82,7 +82,7 @@ if ( ! defined( 'ABSPATH' ) ) {
             <?php
             wp_editor( get_option('affiliate_instructions', ''), 'affiliate_instructions', array(
                 'textarea_name' => 'affiliate_instructions', // The 'name' attribute for the form submission
-                'textarea_rows' => 50,                      // Number of visible rows
+                'textarea_rows' => 15,                      // Number of visible rows
                 'media_buttons' => true,                   // Show "Add Media" buttons
             ));
             ?>
