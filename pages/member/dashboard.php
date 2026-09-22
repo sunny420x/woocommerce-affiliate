@@ -747,7 +747,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                     ?>
                 <?php else : ?>
                     <div class="tab-content">
-                        <div class="tab-pane p-4 fade <?= $affiliate_tab === 'dashboard' ? 'show active' : ''; ?>" id="dashboard" role="tabpanel">
+                        <div class="tab-pane fade <?= $affiliate_tab === 'dashboard' ? 'show active' : ''; ?>" id="dashboard" role="tabpanel">
                             <?php
                             if (file_exists(__DIR__ . '/inc/dashboard.php')) {
                                 include __DIR__ . '/inc/dashboard.php';

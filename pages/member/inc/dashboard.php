@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 <div class="content-header">
     <p class="text-white mb-0"><i class="fa-solid fa-chart me-2"></i>Dashboard</p>
 </div>
-<div class="row g-3 mb-4">
+<div class="row g-3 mb-4 p-4">
     <div class="col-12 col-sm-6 col-xl-4">
         <div class="card card-custom p-3">
             <div class="d-flex align-items-center justify-content-between">
