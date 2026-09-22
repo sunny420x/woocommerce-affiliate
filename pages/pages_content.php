@@ -102,5 +102,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                 document.getElementById(id).style.display = "block";
             }
         }
+
+        togglePage('affiliate_condition_content');
     </script>
 </div>
