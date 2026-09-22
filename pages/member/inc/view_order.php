@@ -66,7 +66,7 @@ foreach ($order_items as $order_item) {
 }
 ?>
 <div class="content-header">
-    <p class="text-muted mb-0"><a class="text-dark me-2" href="/affiliate/orders"><i class="fa-solid fa-chevron-left me-3"></i></a>รายละเอียดคำสั่งซื้อ (Order Details)</p>
+    <p class="text-white mb-0"><a class="text-white me-2" href="/affiliate/orders"><i class="fa-solid fa-chevron-left me-3"></i></a>รายละเอียดคำสั่งซื้อ (Order Details)</p>
 </div>
 <div class="bg-white p-4 mb-4" id="order-detail">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-2">

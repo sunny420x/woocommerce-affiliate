@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <div class="content-header">
-    <p class="text-muted mb-0"><a class="text-dark me-2" href="/affiliate"><i class="fa-solid fa-chevron-left me-3"></i></a>ประวัติคำสั่งซื้อ (Order History)</p>
+    <p class="text-white mb-0"><a class="text-white me-2" href="/affiliate"><i class="fa-solid fa-chevron-left me-3"></i></a>ประวัติคำสั่งซื้อ (Order History)</p>
 </div>
 <div class="p-4" id="orders">
     <?php

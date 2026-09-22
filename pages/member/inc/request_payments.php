@@ -62,7 +62,7 @@ if(isset($_GET['action']) && $_GET['action'] === 'confirm') {
 }
 ?>
 <div class="content-header">
-    <p class="text-muted mb-0"><a class="text-dark me-2" href="/affiliate/orders"><i class="fa-solid fa-chevron-left me-3"></i></a>ส่งคำขอถอนเงิน (Request Payments)</p>
+    <p class="text-white mb-0"><a class="text-white me-2" href="/affiliate/orders"><i class="fa-solid fa-chevron-left me-3"></i></a>ส่งคำขอถอนเงิน (Request Payments)</p>
 </div>
 <div class="bg-white p-4" id="orders">
     <h5 class="fw-bold mb-3"><i class="fa-solid fa-list-check text-primary me-2"></i>ส่งคำขอถอนเงิน</h5>

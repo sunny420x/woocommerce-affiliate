@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <div class="content-header">
-    <p class="text-muted mb-0"><a class="text-dark me-2" href="/affiliate"><i class="fa-solid fa-chevron-left me-3"></i></a>จัดการข้อมูลส่วนตัวของคุณและตั้งค่าบัญชีธนาคารสำหรับรับเงินค่าคอมมิชชั่น</p>
+    <p class="text-white mb-0"><a class="text-white me-2" href="/affiliate"><i class="fa-solid fa-chevron-left me-3"></i></a>จัดการข้อมูลส่วนตัวของคุณและตั้งค่าบัญชีธนาคารสำหรับรับเงินค่าคอมมิชชั่น</p>
 </div>
 <div class="bg-white p-4" id="settings">
     <h5 class="fw-bold mb-4"><i class="fa-solid fa-user-cog text-primary me-2"></i>ตั้งค่าข้อมูลส่วนตัว</h5>
