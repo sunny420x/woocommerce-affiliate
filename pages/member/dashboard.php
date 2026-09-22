@@ -533,7 +533,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
         <!-- Main Content Area -->
         <main class="col-md-9 p-0">
             <!-- Top Bar -->
-            <div class="d-flex d-md-none justify-content-between align-items-center mb-4 mobile-navigator">
+            <div class="d-flex d-md-none justify-content-between align-items-center mb-4 px-3 mobile-navigator">
                 <button class="btn btn-dark d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fa-solid fa-bars"></i>
                 </button>
