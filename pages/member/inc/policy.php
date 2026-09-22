@@ -13,6 +13,8 @@ if (!defined('ABSPATH')) {
         </div>
     </div>
 </div>
-<div class="card card-custom mb-4 d-flex gap-2">
-    <?=get_option("affiliate_instructions")?>
+<div class="card card-custom mb-4">
+    <div class="row">
+        <?=get_option("affiliate_instructions")?>
+    </div>
 </div>
