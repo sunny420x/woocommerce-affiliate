@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 ?>
-<div class="card card-custom p-4 mb-4">
+<div class="card card-custom p-4 mb-4" style="line-height: 28px;">
     <div class="row">
         <div class="row col-lg-5" style="max-width: 1000px; margin: 0 auto;">
             <?=get_option("affiliate_instructions")?>
