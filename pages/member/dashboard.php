@@ -510,6 +510,10 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
             .sidebar {
                 min-height: max-content;
             }
+            .mobile-navigator {
+                background: #0f172a;
+                color: #f1f5f9;
+            }
         }
     </style>
 </head>
@@ -529,13 +533,12 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
         <!-- Main Content Area -->
         <main class="col-md-9 p-0">
             <!-- Top Bar -->
-            <div class="d-sm-flex d-md-none justify-content-between align-items-center mb-4">
+            <div class="d-flex d-md-none justify-content-between align-items-center mb-4 mobile-navigator">
                 <button class="btn btn-dark d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fa-solid fa-bars"></i>
                 </button>
                 <div>
-                    <h3 class="fw-bold mb-1">ระบบตัวแทนแนะนำสินค้า</h3>
-                    <p class="text-muted small mb-0">สวัสดีคุณ <?= esc_html($current_user->display_name); ?></p>
+                    <h4 class="fw-bold m-3">ระบบตัวแทนแนะนำสินค้า</h4>
                 </div>
                 <div class="d-flex align-items-center gap-3">
                     <img src="<?php echo get_avatar_url($user_id); ?>" class="rounded-circle border" width="42" height="42" alt="Avatar">
