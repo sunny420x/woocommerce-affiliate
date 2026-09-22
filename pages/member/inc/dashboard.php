@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <div class="content-header">
-    <p class="text-white mb-0"><i class="fa-solid fa-chart me-2">Dashboard</p>
+    <p class="text-white mb-0"><i class="fa-solid fa-chart me-2"></i>Dashboard</p>
 </div>
 <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-4">
