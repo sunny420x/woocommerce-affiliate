@@ -8,13 +8,9 @@ if (!defined('ABSPATH')) {
         <div class="row col-lg-5" style="max-width: 1000px; margin: auto;">
             <?=get_option("affiliate_instructions")?>
         </div>
-        <div class="row col-lg-7">
-            <div class="col-lg-6" id="policy">
-                <?=get_option("affiliate_policy")?>
-            </div>
-            <div class="col-lg-6" id="requirements">
-                <?=get_option("affiliate_requirements_and_conditions")?>
-            </div>
+        <div class="col-lg-7">
+            <?=get_option("affiliate_policy")?>
+            <?=get_option("affiliate_requirements_and_conditions")?>
         </div>
     </div>
 </div>
