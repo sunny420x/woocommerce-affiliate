@@ -76,8 +76,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     </form>
     <script>
         function togglePage(id) {
-            var affiliate_content_form = document.getElementById('affiliate_content_form');
-            Array.from(affiliate_content_form.querySelectorAll('div')).forEach(element => {
+            //Get only first level divs within the form
+            var affiliate_content_form = document.getElementById('affiliate_content_form').querySelectorAll('> div');
+            Array.from(affiliate_content_form).forEach(element => {
                 element.style.display = "none";
             });
 
