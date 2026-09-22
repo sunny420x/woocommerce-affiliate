@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <div class="col-lg-2 d-md-block sidebar collapse p-3" id="sidebarMenu">
-    <div class="d-flex align-items-center px-2">
+    <div class="d-flex align-items-center mb-4 px-2">
         <i class="fa-solid fa-handshake text-primary fs-3 me-2"></i>
         <span class="fs-5 fw-bold text-white">Affiliate Hub</span>
     </div>
