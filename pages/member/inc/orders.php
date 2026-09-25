@@ -12,11 +12,11 @@ if (!defined('ABSPATH')) {
     $total_paid_sum = 0;
     $total_unpaid_sum = 0;
 
-    $order_status = $_GET['order_status'] ?? "";
-    $payment_status = $_GET['payment_status'] ?? "";
+    $order_status = $_GET['order_status'] ?? null;
+    $payment_status = $_GET['payment_status'] ?? null;
 
     if($ref_code) {
-        [ $transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo(getTransaction($user_id, "", $order_status ?? null, $payment_status ?? null));
+        [ $transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo(getTransaction($user_id, "", $order_status, $payment_status));
     } else {
         $total_paid_sum = 0;
         $total_unpaid_sum = 0;

@@ -310,17 +310,24 @@ function getTransaction($user_id, $limit = '', $status = null, $payment_status =
     $affiliate_transactions = $wpdb->prefix . 'affiliate_transactions';
     $order_stats_table      = $wpdb->prefix . 'wc_order_stats';
 
-    $transactions = $wpdb->get_results($wpdb->prepare("
-    SELECT t.product_id, t.commission_percentage, t.paid, t.order_id, t.refCode, os.status 
+    $query = "SELECT t.product_id, t.commission_percentage, t.paid, t.order_id, t.refCode, os.status 
     FROM {$affiliate_transactions} as t 
     JOIN {$affiliate_users} as u ON u.refCode = t.refCode 
     LEFT JOIN {$order_stats_table} AS os 
     ON t.order_id = os.order_id
-    WHERE u.ID = %d
-    " . ($status ? $wpdb->prepare(" AND os.status = %s", $status) : "") . "
-    " . ($payment_status ? $wpdb->prepare(" AND t.paid = %d", intval($payment_status)) : "") . "
-    GROUP BY t.product_id, t.commission_percentage, t.paid, t.order_id, t.refCode, os.status
-    ORDER BY t.id DESC {$limit}", $user_id));
+    WHERE u.ID = %d";
+
+    $transactions = $wpdb->get_results($wpdb->prepare($query, $user_id));
+    if($status) {
+        $query .= $wpdb->prepare(" AND os.status = %s", $status);
+    } 
+    if($payment_status !== null) {
+        $query .= $wpdb->prepare(" AND t.paid = %d", intval($payment_status));
+    }
+    $query .= " GROUP BY t.product_id, t.commission_percentage, t.paid, t.order_id, t.refCode, os.status
+    ORDER BY t.id DESC {$limit}";
+
+    $transactions = $wpdb->get_results($wpdb->prepare($query, $user_id));
 
     return $transactions;
 }
