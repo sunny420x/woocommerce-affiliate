@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$data_full_chart = getTransaction($user_id, "", "wc-completed", null);
+$data_full_chart = getTransaction($user_id, "", null, null);
 $data_full_chart_json = wp_json_encode($data_full_chart);
 ?>
 
