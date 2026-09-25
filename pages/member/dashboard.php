@@ -815,7 +815,5 @@ function copyLink() {
     alert("คัดลอกลิงก์แนะนำเรียบร้อยแล้ว!");
 }
 </script>
-<?php endif; ?>
-
 </body>
 </html>
