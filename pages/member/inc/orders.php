@@ -61,9 +61,10 @@ if (!defined('ABSPATH')) {
                     <div class="mb-3">
                         <select name="order_status" id="order_status" class="form-select">
                             <option value="">ทั้งหมด</option>
-                            <option value="wc-pending" <?= $order_status === 'wc-pending' ? 'selected' : '' ?>>รอดำเนินการ</option>
+                            <option value="wc-on-hold" <?= $order_status === 'wc-on-hold' ? 'selected' : '' ?>>รอดำเนินการ</option>
                             <option value="wc-processing" <?= $order_status === 'wc-processing' ? 'selected' : '' ?>>กำลังดำเนินการ</option>
                             <option value="wc-completed" <?= $order_status === 'wc-completed' ? 'selected' : '' ?>>เสร็จสิ้น</option>
+                            <option value="wc-refunded" <?= $order_status === 'wc-refunded' ? 'selected' : '' ?>>คืนเงิน</option>
                             <option value="wc-cancelled" <?= $order_status === 'wc-cancelled' ? 'selected' : '' ?>>ยกเลิก</option>
                         </select>
                     </div>
