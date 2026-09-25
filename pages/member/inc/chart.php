@@ -59,6 +59,21 @@ const unpaidTransactions = dataStatusChart.filter(
     item => String(item.paid) !== '1'
 );
 
+if ( document.getElementById('commissionFullChart')) {
+    const existingChart = Chart.getChart( document.getElementById('commissionFullChart'));
+
+    if (existingChart) {
+        existingChart.destroy();
+    }
+}
+if ( document.getElementById('commissionStatusChart')) {
+    const existingChart = Chart.getChart( document.getElementById('commissionStatusChart'));
+
+    if (existingChart) {
+        existingChart.destroy();
+    }
+}
+
 const commissionStatusChart = new Chart(
     commissionStatusChartCtx,
     {
