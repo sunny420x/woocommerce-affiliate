@@ -71,6 +71,16 @@ if (!defined('ABSPATH')) {
         <small class="text-muted">* เมื่อมีผู้ซื้อสินค้าผ่านลิงก์นี้ คุณจะได้รับ Commission ทันที (สามารถต่อท้าย
             <code>?ref=<?= $esc_ref ?></code> บน URL อื่น ๆ ในเว็บได้)</small>
     </div>
+
+    <!-- Charts -->
+    <div class="card card-custom p-4 mb-4">
+        <h5 class="fw-bold mb-3"><i class="fa-solid fa-chart-line text-primary me-2"></i>สถิติการขาย</h5>
+        <?php
+        if (file_exists(__DIR__ . '/inc/chart.php')) {
+            include __DIR__ . '/inc/chart.php';
+        }
+        ?>
+    </div>
     
     <!-- Transactions Table -->
     <div class="card card-custom p-4 mb-4">
