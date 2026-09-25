@@ -12,6 +12,9 @@ if (!defined('ABSPATH')) {
     $total_paid_sum = 0;
     $total_unpaid_sum = 0;
 
+    $order_status = $_GET['order_status'] ?? "";
+    $payment_status = $_GET['payment_status'] ?? "";
+
     if($ref_code) {
         [ $transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo(getTransaction($user_id, "", null, $order_status ?? "", $payment_status ?? ""));
     } else {
@@ -57,18 +60,18 @@ if (!defined('ABSPATH')) {
                 <label for="order_status" class="form-label">สถานะออเดอร์</label>
                 <select name="order_status" id="order_status" class="form-select">
                     <option value="">ทั้งหมด</option>
-                    <option value="pending">รอดำเนินการ</option>
-                    <option value="processing">กำลังดำเนินการ</option>
-                    <option value="completed">เสร็จสิ้น</option>
-                    <option value="cancelled">ยกเลิก</option>
+                    <option value="pending" <?= $order_status === 'pending' ? 'selected' : '' ?>>รอดำเนินการ</option>
+                    <option value="processing" <?= $order_status === 'processing' ? 'selected' : '' ?>>กำลังดำเนินการ</option>
+                    <option value="completed" <?= $order_status === 'completed' ? 'selected' : '' ?>>เสร็จสิ้น</option>
+                    <option value="cancelled" <?= $order_status === 'cancelled' ? 'selected' : '' ?>>ยกเลิก</option>
                 </select>
             </div>
             <div class="mb-3">
                 <label for="payment_status" class="form-label">สถานะการจ่ายเงิน</label>
                 <select name="payment_status" id="payment_status" class="form-select">
                     <option value="">ทั้งหมด</option>
-                    <option value="paid">จ่ายแล้ว</option>
-                    <option value="unpaid">รอการจ่าย</option>
+                    <option value="paid" <?= $payment_status === 'paid' ? 'selected' : '' ?>>จ่ายแล้ว</option>
+                    <option value="unpaid" <?= $payment_status === 'unpaid' ? 'selected' : '' ?>>รอการจ่าย</option>
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">กรอง</button>
