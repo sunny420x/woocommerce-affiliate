@@ -53,7 +53,7 @@ if (!defined('ABSPATH')) {
     </div>
     <div class="card card-custom p-4">
         <form action="" method="get">
-            <div class="d-flex gap-2 mb-3">
+            <div class="d-flex justify-content-between mb-3">
                 <h5 class="fw-bold mb-3"><i class="fa-solid fa-list-check text-primary me-2"></i>ประวัติคำสั่งซื้อ
                     <button class="btn btn-primary btn-sm" onclick="window.location.href='/affiliate/?request_payments=<?=$user_id?>'">ส่งคำขอถอนเงิน</button>
                 </h5>
