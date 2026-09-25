@@ -37,7 +37,7 @@ $data_full_chart_json = wp_json_encode($data_full_chart);
     </div>
 
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 const commissionStatusChartCtx =
     document.getElementById('commissionStatusChart').getContext('2d');
