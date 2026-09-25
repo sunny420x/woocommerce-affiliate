@@ -3,7 +3,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$data_full_chart = getTransaction($user_id, "", null, null);
+$dataChart = getTransaction($user_id, "", null, null);
+$data_full_chart = getTransactionOrderInfo($dataChart);
 $data_full_chart_json = wp_json_encode($data_full_chart);
 ?>
 
@@ -82,18 +83,12 @@ const commissionStatusChart = new Chart(
 );
 
 const salesByOrder = {};
-
 dataFullChart.forEach(item => {
-
     const orderId = item.order_id;
-
     if (!salesByOrder[orderId]) {
         salesByOrder[orderId] = 0;
     }
-
-    salesByOrder[orderId] += parseFloat(
-        item.commission_percentage || 0
-    );
+    salesByOrder[orderId] = Number(item.total_sold_sum) || 0;
 });
 
 const salesLabels = Object.keys(salesByOrder);
@@ -108,23 +103,16 @@ const commissionFullChart = new Chart(
 
             datasets: [{
                 label: 'ยอดขาย (บาท)',
-
                 data: salesData,
-
                 borderColor: '#198754',
-
                 backgroundColor: 'rgba(25, 135, 84, 0.2)',
-
                 fill: true,
-
                 tension: 0.3
             }]
         },
-
         options: {
             responsive: true,
             maintainAspectRatio: false,
-
             scales: {
                 y: {
                     beginAtZero: true,
