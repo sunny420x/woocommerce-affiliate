@@ -805,63 +805,8 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
         </main>
     </div>
 </div>
-
-<!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- Bootstrap 5.3 JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<?php if ($ref_code && $is_affiliate_enabled): ?>
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    // 1. Render Pie Chart
-    const ctx = document.getElementById('commissionChart');
-    if (ctx) {
-        new Chart(ctx.getContext('2d'), {
-            type: 'pie',
-            data: {
-                labels: <?php echo json_encode($chart_labels); ?>,
-                datasets: [{
-                    label: 'ยอดเงิน (บาท)',
-                    data: <?php echo !empty($chart_data) ? json_encode($chart_data) : '[]'; ?>,
-                    backgroundColor: ['#22c55e', '#f59e0b', '#ef4444', '#3b82f6'],
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    }
-
-    // 2. Render Line Chart
-    const ctx_full = document.getElementById('commissionFullChart');
-    if (ctx_full) {
-        new Chart(ctx_full.getContext('2d'), {
-            type: 'line',
-            data: {
-                labels: <?php echo json_encode($full_chart_labels); ?>,
-                datasets: [{
-                    label: 'ยอดขาย (บาท)',
-                    data: <?php echo !empty($full_chart_data) ? json_encode($full_chart_data) : '[]'; ?>,
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    borderColor: '#3b82f6',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: { 
-                    y: { beginAtZero: true } 
-                }
-            }
-        });
-    }
-});
-
 function copyLink() {
     var copyText = document.getElementById("affLink");
     copyText.select();
