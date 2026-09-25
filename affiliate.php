@@ -936,7 +936,7 @@ function inject_affliate_share_buttons() {
         }
     }
 
-    if($ref_code != '' && $ref_code != null) {
+    if($ref_code != '' && $ref_code != null && $display_commission > 0) {
     ?>
     <div class="affiliate_element">
         <strong>⭐ แชร์สินค้าชิ้นนี้เพื่อรับ Commission <?=$display_commission;?>% เมื่อมีการซื้อสินค้าจากการแชร์</strong>
