@@ -53,7 +53,7 @@ if (!defined('ABSPATH')) {
     </div>
     <div class="card card-custom p-4">
         <form action="" method="get">
-            <div class="d-flex justify-content-between mb-3">
+            <div class="d-lg-flex justify-content-between mb-3">
                 <h5 class="fw-bold mb-3"><i class="fa-solid fa-list-check text-primary me-2"></i>ประวัติคำสั่งซื้อ
                     <button class="btn btn-primary btn-sm" onclick="window.location.href='/affiliate/?request_payments=<?=$user_id?>'">ส่งคำขอถอนเงิน</button>
                 </h5>
@@ -61,7 +61,7 @@ if (!defined('ABSPATH')) {
                     <div class="mb-3">
                         <select name="order_status" id="order_status" class="form-select">
                             <option value="">ทั้งหมด</option>
-                            <option value="wc-on-hold" <?= $order_status === 'wc-on-hold' ? 'selected' : '' ?>>รอดำเนินการ</option>
+                            <option value="wc-on-hold" <?= $order_status === 'wc-on-hold' ? 'selected' : '' ?>>รอตรวจสอบการชำระเงิน</option>
                             <option value="wc-processing" <?= $order_status === 'wc-processing' ? 'selected' : '' ?>>กำลังดำเนินการ</option>
                             <option value="wc-completed" <?= $order_status === 'wc-completed' ? 'selected' : '' ?>>เสร็จสิ้น</option>
                             <option value="wc-refunded" <?= $order_status === 'wc-refunded' ? 'selected' : '' ?>>คืนเงิน</option>
@@ -71,8 +71,8 @@ if (!defined('ABSPATH')) {
                     <div class="mb-3">
                         <select name="payment_status" id="payment_status" class="form-select">
                             <option value="">ทั้งหมด</option>
-                            <option value="1" <?= $payment_status === 1 ? 'selected' : '' ?>>จ่ายแล้ว</option>
-                            <option value="0" <?= $payment_status === 0 ? 'selected' : '' ?>>รอการจ่าย</option>
+                            <option value="1" <?= $payment_status === '1' ? 'selected' : '' ?>>จ่ายแล้ว</option>
+                            <option value="0" <?= $payment_status === '0' ? 'selected' : '' ?>>รอการจ่าย</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary mb-3">กรอง</button>
