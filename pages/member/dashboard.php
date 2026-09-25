@@ -318,7 +318,7 @@ function getTransaction($user_id, $limit = '', $status = '', $payment_status = n
     ON t.order_id = os.order_id
     WHERE u.ID = %d
     " . ($status ? $wpdb->prepare(" AND os.status = %s", $status) : "") . "
-    " . ($payment_status ? $wpdb->prepare(" AND t.paid = %s", $payment_status) : "") . "
+    " . ($payment_status ? $wpdb->prepare(" AND t.paid = %d", intval($payment_status)) : "") . "
     GROUP BY t.product_id, t.commission_percentage, t.paid, t.order_id, t.refCode, os.status
     ORDER BY t.id DESC {$limit}", $user_id));
 
