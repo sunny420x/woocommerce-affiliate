@@ -363,6 +363,7 @@ function getTransactionOrderInfo($transactions_full = []) {
                 "total_earns_sum" => 0,
                 "commission_percentage" => $item->commission_percentage,
                 "paid" => $item->paid,
+                "created_at" => $item->created_at,
             ];
         }
 

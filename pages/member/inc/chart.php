@@ -99,8 +99,19 @@ dataFullChart.forEach(item => {
     salesByOrder[orderId] = Number(item.total_sold_sum) || 0;
 });
 
-const salesLabels = Object.keys(salesByOrder);
-const salesData = Object.values(salesByOrder);
+const salesLabels = dataFullChart.map(item => {
+    if (!item.created_at) {
+        return '';
+    }
+
+    const date = new Date(item.created_at);
+
+    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+});
+
+const salesData = dataFullChart.map(item =>
+    Number(item.total_sold_sum) || 0
+);
 
 const commissionFullChart = new Chart(
     commissionFullChartCtx,
