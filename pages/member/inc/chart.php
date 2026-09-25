@@ -46,117 +46,123 @@ $dataChartjson = wp_json_encode($dataChart);
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-const commissionStatusChartCtx = document.getElementById('commissionStatusChart').getContext('2d');
-const commissionFullChartCtx = document.getElementById('commissionFullChart').getContext('2d');
-const dataFullChart = <?= $data_full_chart_json ?: '[]' ?>;
-const dataStatusChart = <?= $dataChartjson ?: '[]' ?>;
+(function () {
 
-const paidTransactions = dataStatusChart.filter(
-    item => String(item.paid) === '1'
-);
+    const dataFullChart = <?= $data_full_chart_json ?: '[]' ?>;
+    const dataStatusChart = <?= $dataChartjson ?: '[]' ?>;
 
-const unpaidTransactions = dataStatusChart.filter(
-    item => String(item.paid) !== '1'
-);
+    console.log('dataFullChart:', dataFullChart);
 
-if ( document.getElementById('commissionFullChart')) {
-    const existingChart = Chart.getChart( document.getElementById('commissionFullChart'));
+    const statusCanvas = document.getElementById('commissionStatusChart');
 
-    if (existingChart) {
-        existingChart.destroy();
-    }
-}
-if ( document.getElementById('commissionStatusChart')) {
-    const existingChart = Chart.getChart( document.getElementById('commissionStatusChart'));
-
-    if (existingChart) {
-        existingChart.destroy();
-    }
-}
-
-const commissionStatusChart = new Chart(
-    commissionStatusChartCtx,
-    {
-        type: 'pie',
-
-        data: {
-            labels: [
-                'Paid',
-                'Unpaid'
-            ],
-
-            datasets: [{
-                data: [
-                    paidTransactions.length,
-                    unpaidTransactions.length
-                ],
-
-                backgroundColor: [
-                    '#ffc107',
-                    '#6c757d'
-                ]
-            }]
-        },
-
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
+    if (statusCanvas) {
+        const existingStatusChart = Chart.getChart(statusCanvas);
+        if (existingStatusChart) {
+            existingStatusChart.destroy();
         }
+        const paidTransactions = dataStatusChart.filter(
+            item => String(item.paid) === '1'
+        );
+        const unpaidTransactions = dataStatusChart.filter(
+            item => String(item.paid) !== '1'
+        );
+        new Chart(statusCanvas.getContext('2d'), {
+            type: 'pie',
+            data: {
+                labels: [
+                    'Paid',
+                    'Unpaid'
+                ],
+                datasets: [{
+                    data: [
+                        paidTransactions.length,
+                        unpaidTransactions.length
+                    ],
+                    backgroundColor: [
+                        '#ffc107',
+                        '#6c757d'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
     }
-);
 
-const salesByOrder = {};
-dataFullChart.forEach(item => {
-    const orderId = item.order_id;
-    if (!salesByOrder[orderId]) {
-        salesByOrder[orderId] = 0;
-    }
-    salesByOrder[orderId] = Number(item.total_sold_sum) || 0;
-});
+    const salesCanvas =
+        document.getElementById('commissionFullChart');
 
-const salesLabels = dataFullChart.map(item => {
-    if (!item.created_at) {
-        return '';
-    }
+    if (salesCanvas) {
 
-    const date = new Date(item.created_at);
+        const existingSalesChart = Chart.getChart(salesCanvas);
 
-    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-});
+        if (existingSalesChart) {
+            existingSalesChart.destroy();
+        }
+        const salesLabels = dataFullChart.map(item => {
+            if (!item.created_at) {
+                return '';
+            }
+            const datePart =
+                String(item.created_at).split(' ')[0];
+            const parts = datePart.split('-');
+            if (parts.length !== 3) {
+                return datePart;
+            }
+            const year = parts[0];
+            const month = Number(parts[1]);
+            const day = Number(parts[2]);
 
-const salesData = Object.values(salesByOrder);
+            return `${day}/${month}/${year}`;
+        });
 
-const commissionFullChart = new Chart(
-    commissionFullChartCtx,
-    {
-        type: 'line',
-        data: {
-            labels: salesLabels,
+        const salesData = dataFullChart.map(item => {
+            return Number(item.total_sold_sum) || 0;
+        });
 
-            datasets: [{
-                label: 'ยอดขาย (บาท)',
-                data: salesData,
-                borderColor: '#198754',
-                backgroundColor: 'rgba(25, 135, 84, 0.2)',
-                fill: true,
-                tension: 0.3
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
+        console.log('salesLabels:', salesLabels);
+        console.log('salesData:', salesData);
+        console.log(
+            'length:',
+            salesLabels.length,
+            salesData.length
+        );
 
-                    ticks: {
-                        callback: function(value) {
-                            return value.toLocaleString() + ' บาท';
+        new Chart(salesCanvas.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: salesLabels,
+                datasets: [{
+                    label: 'ยอดขาย (บาท)',
+                    data: salesData,
+                    borderColor: '#198754',
+                    backgroundColor:
+                        'rgba(25, 135, 84, 0.2)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return Number(value)
+                                    .toLocaleString() + ' บาท';
+                            }
                         }
                     }
                 }
             }
-        }
+        });
     }
-);
+})();
 </script>
