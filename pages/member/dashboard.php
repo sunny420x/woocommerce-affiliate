@@ -310,7 +310,7 @@ function getTransaction($user_id, $limit = '', $status = null, $payment_status =
     $affiliate_transactions = $wpdb->prefix . 'affiliate_transactions';
     $order_stats_table      = $wpdb->prefix . 'wc_order_stats';
 
-    $query = "SELECT t.product_id, t.commission_percentage, t.paid, t.order_id, t.refCode, os.status 
+    $query = "SELECT t.product_id, t.commission_percentage, t.paid, t.order_id, t.refCode, os.status, t.created_at  
     FROM {$affiliate_transactions} as t 
     JOIN {$affiliate_users} as u ON u.refCode = t.refCode 
     LEFT JOIN {$order_stats_table} AS os 
@@ -323,7 +323,7 @@ function getTransaction($user_id, $limit = '', $status = null, $payment_status =
     if($payment_status !== null && $payment_status !== '') {
         $query .= $wpdb->prepare(" AND t.paid = %d", intval($payment_status));
     }
-    $query .= " GROUP BY t.product_id, t.commission_percentage, t.paid, t.order_id, t.refCode, os.status
+    $query .= " GROUP BY t.product_id, t.commission_percentage, t.paid, t.order_id, t.refCode, os.status, t.created_at 
     ORDER BY t.id DESC {$limit}";
 
     $transactions = $wpdb->get_results($wpdb->prepare($query, $user_id));
