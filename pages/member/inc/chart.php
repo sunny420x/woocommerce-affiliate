@@ -42,12 +42,13 @@ $data_full_chart_json = wp_json_encode($data_full_chart);
 const commissionStatusChartCtx = document.getElementById('commissionStatusChart').getContext('2d');
 const commissionFullChartCtx = document.getElementById('commissionFullChart').getContext('2d');
 const dataFullChart = <?= $data_full_chart_json ?: '[]' ?>;
+const dataStatusChart = <?= $dataChart ?: '[]' ?>;
 
-const paidTransactions = dataFullChart.filter(
+const paidTransactions = dataStatusChart.filter(
     item => String(item.paid) === '1'
 );
 
-const unpaidTransactions = dataFullChart.filter(
+const unpaidTransactions = dataStatusChart.filter(
     item => String(item.paid) !== '1'
 );
 
