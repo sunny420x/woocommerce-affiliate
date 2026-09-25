@@ -317,8 +317,7 @@ function getTransaction($user_id, $limit = '', $status = null, $payment_status =
     ON t.order_id = os.order_id
     WHERE u.ID = %d";
 
-    $transactions = $wpdb->get_results($wpdb->prepare($query, $user_id));
-    if($status) {
+    if($status !== null) {
         $query .= $wpdb->prepare(" AND os.status = %s", $status);
     } 
     if($payment_status !== null) {
