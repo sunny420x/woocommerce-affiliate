@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
 }
 
 $dataChart = getTransaction($user_id, "", null, null);
-$data_full_chart = getTransactionOrderInfo($dataChart);
+[ $transactions, $total_paid_sum, $total_unpaid_sum ] = getTransactionOrderInfo($dataChart);
 $data_full_chart_json = wp_json_encode($data_full_chart);
 $dataChartjson = wp_json_encode($dataChart);
 ?>
@@ -90,7 +90,7 @@ dataFullChart.forEach(item => {
     if (!salesByOrder[orderId]) {
         salesByOrder[orderId] = 0;
     }
-    salesByOrder[orderId] = Number(item.total_sold_sum) || 0;
+    salesByOrder[orderId] = Number(item.total_paid_sum) || 0;
 });
 
 const salesLabels = Object.keys(salesByOrder);

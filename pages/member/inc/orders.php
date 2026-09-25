@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
     $payment_status = $_GET['payment_status'] ?? null;
 
     if($ref_code) {
-        [ $transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo(getTransaction($user_id, "", $order_status, $payment_status));
+        [ $transactions, $total_paid_sum, $total_unpaid_sum ] = getTransactionOrderInfo(getTransaction($user_id, "", $order_status, $payment_status));
     } else {
         $total_paid_sum = 0;
         $total_unpaid_sum = 0;
