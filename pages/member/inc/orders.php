@@ -58,7 +58,6 @@ if (!defined('ABSPATH')) {
         <form action="" method="get">
             <div class="d-flex justify-content-end mb-3">
                 <div class="mb-3">
-                    <label for="order_status" class="form-label">สถานะออเดอร์</label>
                     <select name="order_status" id="order_status" class="form-select">
                         <option value="">ทั้งหมด</option>
                         <option value="pending" <?= $order_status === 'wc-pending' ? 'selected' : '' ?>>รอดำเนินการ</option>
@@ -68,7 +67,6 @@ if (!defined('ABSPATH')) {
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label for="payment_status" class="form-label">สถานะการจ่ายเงิน</label>
                     <select name="payment_status" id="payment_status" class="form-select">
                         <option value="">ทั้งหมด</option>
                         <option value="paid" <?= $payment_status === 'paid' ? 'selected' : '' ?>>จ่ายแล้ว</option>
