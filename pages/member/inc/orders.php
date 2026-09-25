@@ -56,7 +56,7 @@ if (!defined('ABSPATH')) {
             <button class="btn btn-primary btn-sm" onclick="window.location.href='/affiliate/?request_payments=<?=$user_id?>'">ส่งคำขอถอนเงิน</button>
         </h5>
         <form action="" method="get">
-            <div class="d-flex justify-content-end mb-3">
+            <div class="d-flex justify-content-end gap-2 mb-3">
                 <div class="mb-3">
                     <select name="order_status" id="order_status" class="form-select">
                         <option value="">ทั้งหมด</option>
