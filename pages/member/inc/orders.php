@@ -61,17 +61,17 @@ if (!defined('ABSPATH')) {
                     <div class="mb-3">
                         <select name="order_status" id="order_status" class="form-select">
                             <option value="">ทั้งหมด</option>
-                            <option value="pending" <?= $order_status === 'wc-pending' ? 'selected' : '' ?>>รอดำเนินการ</option>
-                            <option value="processing" <?= $order_status === 'wc-processing' ? 'selected' : '' ?>>กำลังดำเนินการ</option>
-                            <option value="completed" <?= $order_status === 'wc-completed' ? 'selected' : '' ?>>เสร็จสิ้น</option>
-                            <option value="cancelled" <?= $order_status === 'wc-cancelled' ? 'selected' : '' ?>>ยกเลิก</option>
+                            <option value="wc-pending" <?= $order_status === 'wc-pending' ? 'selected' : '' ?>>รอดำเนินการ</option>
+                            <option value="wc-processing" <?= $order_status === 'wc-processing' ? 'selected' : '' ?>>กำลังดำเนินการ</option>
+                            <option value="wc-completed" <?= $order_status === 'wc-completed' ? 'selected' : '' ?>>เสร็จสิ้น</option>
+                            <option value="wc-cancelled" <?= $order_status === 'wc-cancelled' ? 'selected' : '' ?>>ยกเลิก</option>
                         </select>
                     </div>
                     <div class="mb-3">
                         <select name="payment_status" id="payment_status" class="form-select">
                             <option value="">ทั้งหมด</option>
-                            <option value="paid" <?= $payment_status === 'paid' ? 'selected' : '' ?>>จ่ายแล้ว</option>
-                            <option value="unpaid" <?= $payment_status === 'unpaid' ? 'selected' : '' ?>>รอการจ่าย</option>
+                            <option value="1" <?= $payment_status === 1 ? 'selected' : '' ?>>จ่ายแล้ว</option>
+                            <option value="0" <?= $payment_status === 0 ? 'selected' : '' ?>>รอการจ่าย</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary mb-3">กรอง</button>
