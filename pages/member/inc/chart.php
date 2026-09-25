@@ -109,9 +109,7 @@ const salesLabels = dataFullChart.map(item => {
     return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 });
 
-const salesData = dataFullChart.map(item =>
-    Number(item.total_sold_sum) || 0
-);
+const salesData = Object.values(salesByOrder);
 
 const commissionFullChart = new Chart(
     commissionFullChartCtx,
