@@ -317,10 +317,10 @@ function getTransaction($user_id, $limit = '', $status = null, $payment_status =
     ON t.order_id = os.order_id
     WHERE u.ID = %d";
 
-    if($status !== null) {
+    if($status !== null && $status !== '') {
         $query .= $wpdb->prepare(" AND os.status = %s", $status);
     } 
-    if($payment_status !== null) {
+    if($payment_status !== null && $payment_status !== '') {
         $query .= $wpdb->prepare(" AND t.paid = %d", intval($payment_status));
     }
     $query .= " GROUP BY t.product_id, t.commission_percentage, t.paid, t.order_id, t.refCode, os.status
