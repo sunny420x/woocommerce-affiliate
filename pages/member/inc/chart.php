@@ -57,14 +57,14 @@ const commissionStatusChart = new Chart(
 
         data: {
             labels: [
-                'Paid ',
-                'Unpaid '
+                'Paid',
+                'Unpaid'
             ],
 
             datasets: [{
                 data: [
-                    paidTransactions.length+" รายการ",
-                    unpaidTransactions.length+" รายการ"
+                    paidTransactions.length,
+                    unpaidTransactions.length
                 ],
 
                 backgroundColor: [
