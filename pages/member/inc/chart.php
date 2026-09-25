@@ -3,7 +3,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-global $wpdb;
 $data_full_chart = getTransaction($user_id, "", "", null);
 $data_full_chart_json = wp_json_encode($data_full_chart);
 ?>
@@ -39,10 +38,8 @@ $data_full_chart_json = wp_json_encode($data_full_chart);
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-const commissionStatusChartCtx =
-    document.getElementById('commissionStatusChart').getContext('2d');
-const commissionFullChartCtx =
-    document.getElementById('commissionFullChart').getContext('2d');
+const commissionStatusChartCtx = document.getElementById('commissionStatusChart').getContext('2d');
+const commissionFullChartCtx = document.getElementById('commissionFullChart').getContext('2d');
 const dataFullChart = <?= $data_full_chart_json ?: '[]' ?>;
 
 const paidTransactions = dataFullChart.filter(

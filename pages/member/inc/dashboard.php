@@ -76,8 +76,8 @@ if (!defined('ABSPATH')) {
     <div class="card card-custom p-4 mb-4">
         <h5 class="fw-bold mb-3"><i class="fa-solid fa-chart-line text-primary me-2"></i>สถิติการขาย</h5>
         <?php
-        if (file_exists(__DIR__ . '/inc/chart.php')) {
-            include __DIR__ . '/inc/chart.php';
+        if (file_exists(__DIR__ . 'chart.php')) {
+            include __DIR__ . 'chart.php';
         }
         ?>
     </div>
