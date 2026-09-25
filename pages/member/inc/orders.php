@@ -55,8 +55,8 @@ if (!defined('ABSPATH')) {
         <h5 class="fw-bold mb-3"><i class="fa-solid fa-list-check text-primary me-2"></i>ประวัติคำสั่งซื้อ
             <button class="btn btn-primary btn-sm" onclick="window.location.href='/affiliate/?request_payments=<?=$user_id?>'">ส่งคำขอถอนเงิน</button>
         </h5>
-        <div class="d-flex justify-content-end mb-3">
-            <form action="" method="get">
+        <form action="" method="get">
+            <div class="d-flex justify-content-end mb-3">
                 <div class="mb-3">
                     <label for="order_status" class="form-label">สถานะออเดอร์</label>
                     <select name="order_status" id="order_status" class="form-select">
@@ -76,8 +76,8 @@ if (!defined('ABSPATH')) {
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary">กรอง</button>
-            </form>
-        </div>
+            </div>
+        </form>
         <div class="table-responsive">
             <table class="table align-middle mb-0">
                 <thead class="table-light">
