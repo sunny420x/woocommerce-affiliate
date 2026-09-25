@@ -60,10 +60,10 @@ if (!defined('ABSPATH')) {
                 <label for="order_status" class="form-label">สถานะออเดอร์</label>
                 <select name="order_status" id="order_status" class="form-select">
                     <option value="">ทั้งหมด</option>
-                    <option value="pending" <?= $order_status === 'pending' ? 'selected' : '' ?>>รอดำเนินการ</option>
-                    <option value="processing" <?= $order_status === 'processing' ? 'selected' : '' ?>>กำลังดำเนินการ</option>
-                    <option value="completed" <?= $order_status === 'completed' ? 'selected' : '' ?>>เสร็จสิ้น</option>
-                    <option value="cancelled" <?= $order_status === 'cancelled' ? 'selected' : '' ?>>ยกเลิก</option>
+                    <option value="pending" <?= $order_status === 'wc-pending' ? 'selected' : '' ?>>รอดำเนินการ</option>
+                    <option value="processing" <?= $order_status === 'wc-processing' ? 'selected' : '' ?>>กำลังดำเนินการ</option>
+                    <option value="completed" <?= $order_status === 'wc-completed' ? 'selected' : '' ?>>เสร็จสิ้น</option>
+                    <option value="cancelled" <?= $order_status === 'wc-cancelled' ? 'selected' : '' ?>>ยกเลิก</option>
                 </select>
             </div>
             <div class="mb-3">
