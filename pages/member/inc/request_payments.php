@@ -7,7 +7,7 @@ $total_unpaid_sum = 0;
 $order_ids = [];
 
 if($ref_code) {
-    [ $transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo(getTransaction($user_id, "", null));
+    [ $transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo(getTransaction($user_id, "", null, null, null));
 } else {
     $total_unpaid_sum = 0;
 }

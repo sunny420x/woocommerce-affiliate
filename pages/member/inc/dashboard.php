@@ -88,7 +88,7 @@ if (!defined('ABSPATH')) {
                 </thead>
                 <tbody>
                     <?php
-                    $transactions_latest = getTransaction($user_id, "LIMIT 5", null);
+                    $transactions_latest = getTransaction($user_id, "LIMIT 5", null, null, null);
     
                     if (!empty($transactions_latest)) {
                         $transactions = [];

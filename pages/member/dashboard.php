@@ -303,7 +303,7 @@ $total_revenue_sum  = 0;
 $total_sales_cnt    = 0;
 $transactions       = [];
 
-function getTransaction($user_id, $limit = '', $status = '') {
+function getTransaction($user_id, $limit = '', $status = '', $order_status = '', $payment_status = '') {
     global $wpdb;
 
     $affiliate_users        = $wpdb->prefix . 'users';
@@ -318,6 +318,8 @@ function getTransaction($user_id, $limit = '', $status = '') {
     ON t.order_id = os.order_id
     WHERE u.ID = %d
     " . ($status ? $wpdb->prepare(" AND os.status = %s", $status) : "") . "
+    " . ($order_status ? $wpdb->prepare(" AND os.status = %s", $order_status) : "") . "
+    " . ($payment_status ? $wpdb->prepare(" AND t.paid = %s", $payment_status) : "") . "
     GROUP BY t.product_id, t.commission_percentage, t.paid, t.order_id, t.refCode, os.status
     ORDER BY t.id DESC {$limit}", $user_id));
 
@@ -377,7 +379,7 @@ function getTransactionOrderInfo($transactions_full = []) {
 }
 
 if ($ref_code) {
-    $transactions = getTransaction($user_id, "", 'wc-completed');
+    $transactions = getTransaction($user_id, "", 'wc-completed', null, null);
 }
 
 if($ref_code && !empty($transactions)) {

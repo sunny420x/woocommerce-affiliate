@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
     $total_unpaid_sum = 0;
 
     if($ref_code) {
-        [ $transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo(getTransaction($user_id, "", null));
+        [ $transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo(getTransaction($user_id, "", null, $order_status ?? "", $payment_status ?? ""));
     } else {
         $total_paid_sum = 0;
         $total_unpaid_sum = 0;
@@ -52,6 +52,27 @@ if (!defined('ABSPATH')) {
         <h5 class="fw-bold mb-3"><i class="fa-solid fa-list-check text-primary me-2"></i>ประวัติคำสั่งซื้อ
             <button class="btn btn-primary btn-sm" onclick="window.location.href='/affiliate/?request_payments=<?=$user_id?>'">ส่งคำขอถอนเงิน</button>
         </h5>
+        <form action="" method="get">
+            <div class="mb-3">
+                <label for="order_status" class="form-label">สถานะออเดอร์</label>
+                <select name="order_status" id="order_status" class="form-select">
+                    <option value="">ทั้งหมด</option>
+                    <option value="pending">รอดำเนินการ</option>
+                    <option value="processing">กำลังดำเนินการ</option>
+                    <option value="completed">เสร็จสิ้น</option>
+                    <option value="cancelled">ยกเลิก</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="payment_status" class="form-label">สถานะการจ่ายเงิน</label>
+                <select name="payment_status" id="payment_status" class="form-select">
+                    <option value="">ทั้งหมด</option>
+                    <option value="paid">จ่ายแล้ว</option>
+                    <option value="unpaid">รอการจ่าย</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">กรอง</button>
+        </form>
         <div class="table-responsive">
             <table class="table align-middle mb-0">
                 <thead class="table-light">
