@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) {
 $dataChart = getTransaction($user_id, "", null, null);
 $data_full_chart = getTransactionOrderInfo($dataChart);
 $data_full_chart_json = wp_json_encode($data_full_chart);
+$dataChartjson = wp_json_encode($dataChart);
 ?>
 
 <div class="row g-3 mb-4">
@@ -42,7 +43,7 @@ $data_full_chart_json = wp_json_encode($data_full_chart);
 const commissionStatusChartCtx = document.getElementById('commissionStatusChart').getContext('2d');
 const commissionFullChartCtx = document.getElementById('commissionFullChart').getContext('2d');
 const dataFullChart = <?= $data_full_chart_json ?: '[]' ?>;
-const dataStatusChart = <?= $dataChart ?: '[]' ?>;
+const dataStatusChart = <?= $dataChartjson ?: '[]' ?>;
 
 const paidTransactions = dataStatusChart.filter(
     item => String(item.paid) === '1'
