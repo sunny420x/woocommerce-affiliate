@@ -75,7 +75,7 @@ if (!defined('ABSPATH')) {
                         <option value="unpaid" <?= $payment_status === 'unpaid' ? 'selected' : '' ?>>รอการจ่าย</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary">กรอง</button>
+                <button type="submit" class="btn btn-primary mb-3">กรอง</button>
             </div>
         </form>
         <div class="table-responsive">
