@@ -3,8 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$data_full_chart = getTransaction($user_id, "", "", null);
-$data_full_chart_json = wp_json_encode($data_full_chart);
+$data_full_chart_json = wp_json_encode($transactions);
 ?>
 
 <div class="row g-3 mb-4">
