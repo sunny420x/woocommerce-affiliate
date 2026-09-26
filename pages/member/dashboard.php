@@ -637,12 +637,14 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
 
                                         <div class="form-group mb-4">
                                             <label for="full_name">ชื่อ-นามสกุล:</label>
-                                            <input type="text" name="full_name" id="full_name" class="form-control">
+                                            <input type="text" name="full_name" id="full_name" class="form-control" onchange="validateName(this, 'full_name_error')">
+                                            <small id="full_name_error" class="text-danger small mt-1"></small>
                                         </div>
 
                                         <div class="form-group mb-4">
                                             <label for="phone_number">เบอร์โทรศัพท์:</label>
-                                            <input type="text" name="phone_number" id="phone_number" class="form-control">
+                                            <input type="text" name="phone_number" id="phone_number" class="form-control" onchange="validatePhoneNumber(this, 'phone_number_error')">
+                                            <small id="phone_number_error" class="text-danger small mt-1"></small>
                                         </div>
 
                                         <div class="form-group mb-4">
@@ -904,8 +906,35 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
             if (value && !value.startsWith('http://') && !value.startsWith('https://')) {
                 document.getElementById(errorElementId).textContent = 'กรุณาใส่ลิงก์ที่ถูกต้อง (ต้องขึ้นต้นด้วย http:// หรือ https://)';
                 input.focus();
+                return false;
             } else {
                 document.getElementById(errorElementId).textContent = '';
+                return true;
+            }
+        }
+
+        function validateName(input, errorElementId) {
+            const value = input.value;
+            if (!value || (!value.includes('นาย') && !value.includes('นาง') && !value.includes('นางสาว'))) {
+                document.getElementById(errorElementId).textContent = 'กรุณาใส่ชื่อนามสกุลพร้อมคำนำหน้า (นาย, นาง, นางสาว)';
+                input.focus();
+                return false;
+            } else {
+                document.getElementById(errorElementId).textContent = '';
+                return true;
+            }
+        }
+        
+        function validatePhoneNumber(input, errorElementId) {
+            const value = input.value;
+            const phonePattern = /^[0-9]{10}$/;
+            if (!value || !phonePattern.test(value)) {
+                document.getElementById(errorElementId).textContent = 'กรุณาใส่หมายเลขโทรศัพท์ที่ถูกต้อง (10 หลัก) โดยไม่ต้องใส่เครื่องหมาย - หรือเว้นวรรค';
+                input.focus();
+                return false;
+            } else {
+                document.getElementById(errorElementId).textContent = '';
+                return true;
             }
         }
     </script>
