@@ -7,17 +7,20 @@
 $guest_tab = sanitize_key(get_query_var('affiliate_tab'));
 if (in_array($guest_tab, array('policy'), true) && !is_user_logged_in()) {
     $guest_pages = array(
-        'policy'       => array('title' => 'นโยบายและเงื่อนไข', 'subtitle' => 'นโยบายและเงื่อนไขโปรแกรมตัวแทนแนะนำสินค้า'),
+        'policy' => array('title' => 'นโยบายและเงื่อนไข', 'subtitle' => 'นโยบายและเงื่อนไขโปรแกรมตัวแทนแนะนำสินค้า'),
     );
     $affiliate_tab = $guest_tab;
     ?>
     <!DOCTYPE html>
     <html lang="th">
+
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><?php echo esc_html($guest_pages[$affiliate_tab]['title']); ?> - Affiliate Program</title>
-        <link rel="icon" href="https://www.worldchemical.co.th/wp-content/uploads/2022/06/cropped-faviconnn-Custom-192x192.png" sizes="192x192" />
+        <link rel="icon"
+            href="https://www.worldchemical.co.th/wp-content/uploads/2022/06/cropped-faviconnn-Custom-192x192.png"
+            sizes="192x192" />
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
         <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -27,11 +30,13 @@ if (in_array($guest_tab, array('policy'), true) && !is_user_logged_in()) {
                 background-color: #f1f5f9;
                 color: #334155;
             }
+
             .sidebar {
                 min-height: 100vh;
                 background: #0f172a;
                 color: #fff;
             }
+
             .sidebar .nav-link {
                 color: #94a3b8;
                 padding: 12px 18px;
@@ -39,14 +44,17 @@ if (in_array($guest_tab, array('policy'), true) && !is_user_logged_in()) {
                 margin-bottom: 4px;
                 transition: all 0.2s ease;
             }
+
             .sidebar .nav-link:hover,
             .sidebar .nav-link.active {
                 color: #fff;
                 background: #1e293b;
             }
+
             .sidebar .nav-link i {
                 width: 24px;
             }
+
             .card-custom {
                 border: none;
                 border-radius: 12px;
@@ -61,6 +69,7 @@ if (in_array($guest_tab, array('policy'), true) && !is_user_logged_in()) {
             }
         </style>
     </head>
+
     <body>
         <div class="container-fluid">
             <div class="row">
@@ -70,14 +79,18 @@ if (in_array($guest_tab, array('policy'), true) && !is_user_logged_in()) {
                 <!-- Main Content Area -->
                 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <button class="btn btn-dark d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                        <button class="btn btn-dark d-md-none" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
+                            aria-label="Toggle navigation">
                             <i class="fa-solid fa-bars"></i>
                         </button>
                         <div>
                             <h3 class="fw-bold mb-1">ระบบตัวแทนแนะนำสินค้า</h3>
-                            <p class="text-muted small mb-0"><?php echo esc_html($guest_pages[$affiliate_tab]['subtitle']); ?></p>
+                            <p class="text-muted small mb-0">
+                                <?php echo esc_html($guest_pages[$affiliate_tab]['subtitle']); ?></p>
                         </div>
-                        <a href="<?php echo esc_url(wp_login_url('/affiliate/dashboard')); ?>" class="btn btn-primary btn-sm">
+                        <a href="<?php echo esc_url(wp_login_url('/affiliate/dashboard')); ?>"
+                            class="btn btn-primary btn-sm">
                             <i class="fa-solid fa-right-to-bracket me-1"></i>เข้าสู่ระบบ
                         </a>
                     </div>
@@ -92,6 +105,7 @@ if (in_array($guest_tab, array('policy'), true) && !is_user_logged_in()) {
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     </body>
+
     </html>
     <?php
     exit;
@@ -103,9 +117,9 @@ if (!is_user_logged_in()) {
 }
 
 global $wpdb;
-$user_id      = get_current_user_id();
+$user_id = get_current_user_id();
 $current_user = wp_get_current_user();
-$table_info   = $wpdb->prefix . 'users_affiliate_info';
+$table_info = $wpdb->prefix . 'users_affiliate_info';
 
 $ref_code = $wpdb->get_var($wpdb->prepare(
     "SELECT refCode FROM {$wpdb->prefix}users WHERE ID = %d",
@@ -114,53 +128,53 @@ $ref_code = $wpdb->get_var($wpdb->prepare(
 
 // ตัวแปรสำหรับแจ้งเตือน
 $notice_message = '';
-$notice_type    = 'success';
+$notice_type = 'success';
 
 // ==========================================
 // 1. ประมวลผล: การสมัครเป็นตัวแทน (Affiliate Registration)
 // ==========================================
 if (isset($_POST['register_affiliate'])) {
     if (check_admin_referer('aff_reg')) {
-        
+
         // 1. ตรวจสอบ User ID (รับค่ากรณีผู้ใช้ล็อกอินอยู่)
         $user_id = get_current_user_id();
         if (!$user_id) {
             $notice_message = 'กรุณาเข้าสู่ระบบก่อนทำการสมัคร';
-            $notice_type    = 'danger';
+            $notice_type = 'danger';
             return;
         }
 
         // 2. เช็คว่ามีการเลือกไฟล์มาอย่างน้อย 1 ไฟล์หรือไม่
         if (!empty($_FILES['aff_identity_doc']['name'][0])) {
             require_once(ABSPATH . 'wp-admin/includes/file.php');
-            
-            $uploaded_urls    = array();
-            $files            = $_FILES['aff_identity_doc'];
+
+            $uploaded_urls = array();
+            $files = $_FILES['aff_identity_doc'];
             $has_upload_error = false;
-            $error_msg        = '';
+            $error_msg = '';
 
             // กำหนดเฉพาะ MIME Types ที่อนุญาต (เพื่อความปลอดภัย)
             $mimes = array(
                 'jpg|jpeg|jpe' => 'image/jpeg',
-                'png'          => 'image/png',
-                'pdf'          => 'application/pdf'
+                'png' => 'image/png',
+                'pdf' => 'application/pdf'
             );
 
             // วนลูปประมวลผลไฟล์ทีละไฟล์
             foreach ($files['name'] as $key => $value) {
                 if (!empty($files['name'][$key])) {
-                    
+
                     $file = array(
-                        'name'     => $files['name'][$key],
-                        'type'     => $files['type'][$key],
+                        'name' => $files['name'][$key],
+                        'type' => $files['type'][$key],
                         'tmp_name' => $files['tmp_name'][$key],
-                        'error'    => $files['error'][$key],
-                        'size'     => $files['size'][$key]
+                        'error' => $files['error'][$key],
+                        'size' => $files['size'][$key]
                     );
 
                     $upload_overrides = array(
                         'test_form' => false,
-                        'mimes'     => $mimes // กรองประเภทไฟล์
+                        'mimes' => $mimes // กรองประเภทไฟล์
                     );
 
                     $movefile = wp_handle_upload($file, $upload_overrides);
@@ -169,7 +183,7 @@ if (isset($_POST['register_affiliate'])) {
                         $uploaded_urls[] = $movefile['url'];
                     } else {
                         $has_upload_error = true;
-                        $error_msg        = $movefile['error'];
+                        $error_msg = $movefile['error'];
                         break; // หากพบไฟล์มีปัญหาให้หยุดลูปทันที
                     }
                 }
@@ -181,16 +195,16 @@ if (isset($_POST['register_affiliate'])) {
                 update_user_meta($user_id, 'affiliate_identity_doc', $uploaded_urls);
 
                 $social_data = array(
-                    'user_id'              => $user_id,
-                    'full_name'      => sanitize_text_field($_POST['full_name'] ?? ''),
-                    'phone_number'      => sanitize_text_field($_POST['phone_number'] ?? ''),
-                    'social_media_01'      => sanitize_text_field($_POST['social_media_01'] ?? ''),
+                    'user_id' => $user_id,
+                    'full_name' => sanitize_text_field($_POST['full_name'] ?? ''),
+                    'phone_number' => sanitize_text_field($_POST['phone_number'] ?? ''),
+                    'social_media_01' => sanitize_text_field($_POST['social_media_01'] ?? ''),
                     'social_media_01_type' => sanitize_text_field($_POST['social_media_01_type'] ?? ''),
-                    'social_media_02'      => sanitize_text_field($_POST['social_media_02'] ?? ''),
+                    'social_media_02' => sanitize_text_field($_POST['social_media_02'] ?? ''),
                     'social_media_02_type' => sanitize_text_field($_POST['social_media_02_type'] ?? ''),
-                    'social_media_03'      => sanitize_text_field($_POST['social_media_03'] ?? ''),
+                    'social_media_03' => sanitize_text_field($_POST['social_media_03'] ?? ''),
                     'social_media_03_type' => sanitize_text_field($_POST['social_media_03_type'] ?? ''),
-                    'social_media_04'      => sanitize_text_field($_POST['social_media_04'] ?? ''),
+                    'social_media_04' => sanitize_text_field($_POST['social_media_04'] ?? ''),
                     'social_media_04_type' => sanitize_text_field($_POST['social_media_04_type'] ?? ''),
                 );
 
@@ -203,7 +217,7 @@ if (isset($_POST['register_affiliate'])) {
                 if ($inserted !== false) {
                     // สร้าง refCode และอัปเดตลงตาราง users (ทำเพียงครั้งเดียว)
                     $new_ref = strtoupper(substr(md5($user_id . time() . wp_rand()), 0, 8));
-                    
+
                     $updated = $wpdb->update(
                         "{$wpdb->prefix}users",
                         array('refCode' => $new_ref),
@@ -213,25 +227,25 @@ if (isset($_POST['register_affiliate'])) {
                     );
 
                     if ($updated !== false) {
-                        $ref_code       = $new_ref;
+                        $ref_code = $new_ref;
                         $notice_message = 'ยินดีด้วย! ส่งหลักฐานและสมัครเป็นตัวแทนพันธมิตรสำเร็จแล้ว';
-                        $notice_type    = 'success';
+                        $notice_type = 'success';
                     } else {
                         $notice_message = 'บันทึกข้อมูลเรียบร้อย แต่ไม่สามารถสร้าง Ref Code ได้';
-                        $notice_type    = 'warning';
+                        $notice_type = 'warning';
                     }
                 } else {
                     $notice_message = 'เกิดข้อผิดพลาดในการบันทึกข้อมูลลงฐานข้อมูล';
-                    $notice_type    = 'danger';
+                    $notice_type = 'danger';
                 }
 
             } else {
                 $notice_message = 'เกิดข้อผิดพลาดในการอัปโหลดไฟล์: ' . esc_html($error_msg);
-                $notice_type    = 'danger';
+                $notice_type = 'danger';
             }
         } else {
             $notice_message = 'กรุณาแนบไฟล์รูปหลักฐานยืนยันตัวตนอย่างน้อย 1 ไฟล์';
-            $notice_type    = 'danger';
+            $notice_type = 'danger';
         }
     }
 }
@@ -241,7 +255,7 @@ if (isset($_POST['register_affiliate'])) {
 // ==========================================
 if (isset($_POST['save_affiliate_info'])) {
     $account_number = sanitize_text_field($_POST['aff_account_number']);
-    $bank_name      = sanitize_text_field($_POST['aff_bank_name']);
+    $bank_name = sanitize_text_field($_POST['aff_bank_name']);
 
     $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_info WHERE user_id = %d", $user_id));
 
@@ -250,8 +264,8 @@ if (isset($_POST['save_affiliate_info'])) {
             $table_info,
             array(
                 'bank_account_number' => $account_number,
-                'bank_name'           => $bank_name,
-                'updated_at'          => current_time('mysql')
+                'bank_name' => $bank_name,
+                'updated_at' => current_time('mysql')
             ),
             array('user_id' => $user_id),
             array('%s', '%s', '%s'),
@@ -261,10 +275,10 @@ if (isset($_POST['save_affiliate_info'])) {
         $wpdb->insert(
             $table_info,
             array(
-                'user_id'             => $user_id,
+                'user_id' => $user_id,
                 'bank_account_number' => $account_number,
-                'bank_name'           => $bank_name,
-                'updated_at'          => current_time('mysql')
+                'bank_name' => $bank_name,
+                'updated_at' => current_time('mysql')
             ),
             array('%d', '%s', '%s', '%s')
         );
@@ -279,14 +293,14 @@ $suspended = $user_affiliate_info ? $user_affiliate_info->suspended : 0;
 $requested_tab = sanitize_key(get_query_var('affiliate_tab'));
 
 if (!$ref_code || !$verified) {
-    $allowed_tabs  = array('register', 'policy');
-    $default_tab   = 'register';
+    $allowed_tabs = array('register', 'policy');
+    $default_tab = 'register';
 } elseif ($suspended) {
-    $allowed_tabs  = array('suspended', 'policy');
-    $default_tab   = 'suspended';
+    $allowed_tabs = array('suspended', 'policy');
+    $default_tab = 'suspended';
 } else {
-    $allowed_tabs  = array('dashboard', 'orders', 'commission', 'settings', 'policy', 'help');
-    $default_tab   = 'dashboard';
+    $allowed_tabs = array('dashboard', 'orders', 'commission', 'settings', 'policy', 'help');
+    $default_tab = 'dashboard';
 }
 
 $affiliate_tab = in_array($requested_tab, $allowed_tabs, true) ? $requested_tab : $default_tab;
@@ -294,21 +308,22 @@ $affiliate_tab = in_array($requested_tab, $allowed_tabs, true) ? $requested_tab 
 // ==========================================
 // 3. Query ข้อมูลรายงานและสถิติ (เฉพาะเมื่อมี refCode)
 // ==========================================
-$chart_labels       = [];
-$chart_data         = [];
-$full_chart_labels  = [];
-$full_chart_data    = [];
-$total_earns_sum    = 0;
-$total_revenue_sum  = 0;
-$total_sales_cnt    = 0;
-$transactions       = [];
+$chart_labels = [];
+$chart_data = [];
+$full_chart_labels = [];
+$full_chart_data = [];
+$total_earns_sum = 0;
+$total_revenue_sum = 0;
+$total_sales_cnt = 0;
+$transactions = [];
 
-function getTransaction($user_id, $limit = '', $status = null, $payment_status = null) {
+function getTransaction($user_id, $limit = '', $status = null, $payment_status = null)
+{
     global $wpdb;
 
-    $affiliate_users        = $wpdb->prefix . 'users';
+    $affiliate_users = $wpdb->prefix . 'users';
     $affiliate_transactions = $wpdb->prefix . 'affiliate_transactions';
-    $order_stats_table      = $wpdb->prefix . 'wc_order_stats';
+    $order_stats_table = $wpdb->prefix . 'wc_order_stats';
 
     $query = "SELECT t.product_id, t.commission_percentage, t.paid, t.order_id, t.refCode, os.status, t.created_at  
     FROM {$affiliate_transactions} as t 
@@ -317,10 +332,10 @@ function getTransaction($user_id, $limit = '', $status = null, $payment_status =
     ON t.order_id = os.order_id
     WHERE u.ID = %d";
 
-    if($status !== null && $status !== '') {
+    if ($status !== null && $status !== '') {
         $query .= $wpdb->prepare(" AND os.status = %s", $status);
-    } 
-    if($payment_status !== null && $payment_status !== '') {
+    }
+    if ($payment_status !== null && $payment_status !== '') {
         $query .= $wpdb->prepare(" AND t.paid = %d", intval($payment_status));
     }
     $query .= " GROUP BY t.product_id, t.commission_percentage, t.paid, t.order_id, t.refCode, os.status, t.created_at 
@@ -331,7 +346,8 @@ function getTransaction($user_id, $limit = '', $status = null, $payment_status =
     return $transactions;
 }
 
-function getTransactionOrderInfo($transactions_full = []) {
+function getTransactionOrderInfo($transactions_full = [])
+{
     $transactions = [];
     $total_paid_sum = 0;
     $total_unpaid_sum = 0;
@@ -373,14 +389,14 @@ function getTransactionOrderInfo($transactions_full = []) {
         $transactions[$item->order_id]->total_earns_sum += $commission_value;
 
         if ($item->paid != 1) {
-            if($transactions[$item->order_id]->status == "wc-completed" || $transactions[$item->order_id]->status == "completed") {
+            if ($transactions[$item->order_id]->status == "wc-completed" || $transactions[$item->order_id]->status == "completed") {
                 $total_unpaid_sum += $commission_value;
             }
         } else {
             $total_paid_sum += $commission_value;
         }
     }
-    
+
     return [$transactions, $total_paid_sum, $total_unpaid_sum];
 }
 
@@ -388,8 +404,8 @@ if ($ref_code) {
     $transactions = getTransaction($user_id, "", 'wc-completed', null);
 }
 
-if($ref_code && !empty($transactions)) {
-    [ $transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo($transactions);
+if ($ref_code && !empty($transactions)) {
+    [$transactions, $total_paid_sum, $total_unpaid_sum] = getTransactionOrderInfo($transactions);
 } else {
     $total_paid_sum = 0;
     $total_unpaid_sum = 0;
@@ -397,12 +413,13 @@ if($ref_code && !empty($transactions)) {
 
 // สรุปยอดรวมสำหรับการ์ดสถิติ (Commission สะสม, ยอดขายรวม, จำนวนคำสั่งซื้อ) จากรายการที่จัดกลุ่มตาม Order ID แล้ว
 foreach ($transactions as $item) {
-    $total_earns_sum   += $item->total_earns_sum;
+    $total_earns_sum += $item->total_earns_sum;
     $total_revenue_sum += $item->total_sold_sum;
     $total_sales_cnt++;
 }
 
-function getOrderById($id) {
+function getOrderById($id)
+{
     $order_id = absint($id);
 
     if (!$order_id || !function_exists('wc_get_order')) {
@@ -414,38 +431,39 @@ function getOrderById($id) {
 }
 
 // Helper
-function getOrderStatusInThai($status) {
+function getOrderStatusInThai($status)
+{
     $status = strtolower(trim($status));
 
     switch ($status) {
         case 'wc-processing':
         case 'processing':
             return "<div class='badge bg-info text-dark'>กำลังดำเนินการ</div>";
-            
+
         case 'wc-completed':
         case 'completed':
             return "<div class='badge bg-success'>เสร็จสมบูรณ์</div>";
-            
+
         case 'wc-cancelled':
         case 'cancelled':
             return "<div class='badge bg-secondary'>ถูกยกเลิก</div>";
-            
+
         case 'wc-refunded':
         case 'refunded':
             return "<div class='badge bg-danger'>ถูกคืนเงิน</div>";
-            
+
         case 'wc-failed':
         case 'failed':
             return "<div class='badge bg-danger'>ชำระเงินไม่สำเร็จ</div>";
-            
+
         case 'wc-on-hold':
         case 'on-hold':
             return "<div class='badge bg-warning text-dark'>รอตรวจสอบการชำระเงิน</div>";
-            
+
         case 'wc-pending':
         case 'pending':
             return "<div class='badge bg-dark'>รอชำระเงิน</div>";
-            
+
         default:
             return "<div class='badge bg-light text-dark'>" . esc_html($status) . "</div>";
     }
@@ -456,11 +474,14 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
 ?>
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบพันธมิตร - Affiliate Dashboard</title>
-    <link rel="icon" href="https://www.worldchemical.co.th/wp-content/uploads/2022/06/cropped-faviconnn-Custom-192x192.png" sizes="192x192" />
+    <link rel="icon"
+        href="https://www.worldchemical.co.th/wp-content/uploads/2022/06/cropped-faviconnn-Custom-192x192.png"
+        sizes="192x192" />
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome Icons -->
@@ -474,11 +495,13 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
             background-color: #f1f5f9;
             color: #334155;
         }
+
         .sidebar {
             min-height: 100vh;
             background: #0f172a;
             color: #fff;
         }
+
         .sidebar .nav-link {
             color: #94a3b8;
             padding: 12px 18px;
@@ -486,30 +509,36 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
             margin-bottom: 4px;
             transition: all 0.2s ease;
         }
-        .sidebar .nav-link:hover, 
+
+        .sidebar .nav-link:hover,
         .sidebar .nav-link.active {
             color: #fff;
             background: #1e293b;
         }
+
         .sidebar .nav-link.disabled {
             opacity: .45;
             cursor: not-allowed;
             pointer-events: none;
         }
+
         .sidebar .nav-link i {
             width: 24px;
         }
+
         .card-custom {
             border: none;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
             background: #ffffff;
         }
+
         .content-header {
             background: #172441;
             width: 100%;
             padding: 16px;
         }
+
         .icon-shape {
             width: 48px;
             height: 48px;
@@ -524,6 +553,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
             .sidebar {
                 min-height: max-content;
             }
+
             .mobile-navigator {
                 background: #0f172a;
                 color: #f1f5f9;
@@ -531,54 +561,60 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
         }
     </style>
 </head>
+
 <body>
 
-<div class="container-fluid">
-    <div class="row">
+    <div class="container-fluid">
+        <div class="row">
 
-        <!-- Sidebar Navigation -->
-        <?php 
-        $nav_path = __DIR__ . '/inc/nav.php';
-        if (file_exists($nav_path)) {
-            include $nav_path;
-        }
-        ?>
+            <!-- Sidebar Navigation -->
+            <?php
+            $nav_path = __DIR__ . '/inc/nav.php';
+            if (file_exists($nav_path)) {
+                include $nav_path;
+            }
+            ?>
 
-        <!-- Main Content Area -->
-        <main class="col-md-10 p-0">
-            <!-- Top Bar -->
-            <div class="d-flex d-md-none justify-content-between align-items-center px-3 mobile-navigator">
-                <button class="btn btn-dark d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                <div>
-                    <h4 class="fw-bold m-3">ระบบตัวแทนแนะนำสินค้า</h4>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <img src="<?php echo get_avatar_url($user_id); ?>" class="rounded-circle border" width="42" height="42" alt="Avatar">
-                </div>
-            </div>
-
-            <!-- Global Alert Notice -->
-            <?php if (!empty($notice_message)) : ?>
-                <div class="alert alert-success alert-dismissible fade show mb-4 card-custom" role="alert">
-                    <i class="fa-solid fa-circle-check me-2"></i><?= esc_html($notice_message); ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            <?php endif; ?>
-
-            <?php if (!$is_affiliate_enabled) : ?>
-                <div class="card card-custom p-5 text-center my-5">
-                    <div class="text-warning mb-3">
-                        <i class="fa-solid fa-triangle-exclamation fa-4x"></i>
+            <!-- Main Content Area -->
+            <main class="col-md-10 p-0">
+                <!-- Top Bar -->
+                <div class="d-flex d-md-none justify-content-between align-items-center px-3 mobile-navigator">
+                    <button class="btn btn-dark d-md-none" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div>
+                        <h4 class="fw-bold m-3">ระบบตัวแทนแนะนำสินค้า</h4>
                     </div>
-                    <h3 class="fw-bold">ปิดใช้งานระบบพันธมิตรชั่วคราว</h3>
-                    <p class="text-muted mb-0">ขณะนี้ระบบตัวแทนจำหน่ายกำลังปิดปรับปรุงชั่วคราว กรุณากลับมาใหม่อีกครั้งในภายหลัง</p>
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="<?php echo get_avatar_url($user_id); ?>" class="rounded-circle border" width="42"
+                            height="42" alt="Avatar">
+                    </div>
                 </div>
 
-                <?php elseif (!$ref_code) : ?>
+                <!-- Global Alert Notice -->
+                <?php if (!empty($notice_message)): ?>
+                    <div class="alert alert-success alert-dismissible fade show mb-4 card-custom" role="alert">
+                        <i class="fa-solid fa-circle-check me-2"></i><?= esc_html($notice_message); ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (!$is_affiliate_enabled): ?>
+                    <div class="card card-custom p-5 text-center my-5">
+                        <div class="text-warning mb-3">
+                            <i class="fa-solid fa-triangle-exclamation fa-4x"></i>
+                        </div>
+                        <h3 class="fw-bold">ปิดใช้งานระบบพันธมิตรชั่วคราว</h3>
+                        <p class="text-muted mb-0">ขณะนี้ระบบตัวแทนจำหน่ายกำลังปิดปรับปรุงชั่วคราว
+                            กรุณากลับมาใหม่อีกครั้งในภายหลัง</p>
+                    </div>
+
+                <?php elseif (!$ref_code): ?>
                     <div class="tab-content">
-                        <div class="tab-pane fade <?= $affiliate_tab === 'register' ? 'show active' : ''; ?>" id="register" role="tabpanel">
+                        <div class="tab-pane fade <?= $affiliate_tab === 'register' ? 'show active' : ''; ?>" id="register"
+                            role="tabpanel">
                             <div class="card card-custom p-4 p-md-5">
                                 <div class="text-center mb-4">
                                     <div class="text-primary mb-3">
@@ -586,7 +622,8 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                     </div>
                                     <h3 class="fw-bold mb-2">สมัครเป็นตัวแทนแนะนำสินค้า</h3>
                                     <p class="text-muted col-lg-8 mx-auto mb-0">
-                                        ร่วมเป็นส่วนหนึ่งกับเรา รับลิงก์พิเศษสำหรับนำไปแชร์ และรับค่าคอมมิชชั่นทันทีเมื่อมีการสั่งซื้อผ่านลิงก์ของคุณ!
+                                        ร่วมเป็นส่วนหนึ่งกับเรา รับลิงก์พิเศษสำหรับนำไปแชร์
+                                        และรับค่าคอมมิชชั่นทันทีเมื่อมีการสั่งซื้อผ่านลิงก์ของคุณ!
                                     </p>
                                 </div>
                                 <form method="post" enctype="multipart/form-data" class="col-lg-8 mx-auto">
@@ -594,100 +631,124 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                     <!-- ส่วนอัปโหลดหลักฐาน -->
                                     <div class="mb-4 text-start">
                                         <label for="aff_identity_doc" class="form-label fw-bold">
-                                            <i class="fa-solid fa-file text-primary me-1"></i> ข้อมูลเกี่ยวกับผู้สมัคร</span>
+                                            <i class="fa-solid fa-file text-primary me-1"></i>
+                                            ข้อมูลเกี่ยวกับผู้สมัคร</span>
                                         </label>
-            
+
                                         <div class="form-group mb-4">
                                             <label for="full_name">ชื่อ-นามสกุล:</label>
                                             <input type="text" name="full_name" id="full_name" class="form-control">
                                         </div>
-            
+
                                         <div class="form-group mb-4">
                                             <label for="phone_number">เบอร์โทรศัพท์:</label>
                                             <input type="text" name="phone_number" id="phone_number" class="form-control">
                                         </div>
-            
+
                                         <div class="form-group mb-4">
                                             <label for="social_media">ช่องทางที่ใช้เผยแพร่:</label>
-                                            <p class="text-muted small">วางลิงค์โปรไฟล์ Social Media ของท่าน ที่จะใช้เป็นช่องทางในการเผยแพร่สินค้า</p>
+                                            <p class="text-muted small">วางลิงค์โปรไฟล์ Social Media ของท่าน
+                                                ที่จะใช้เป็นช่องทางในการเผยแพร่สินค้า</p>
                                             <div class="d-flex gap-2 mb-2">
-                                                <select name="social_media_01_type" id="social_media_01_type" class="form-select" style="width: 250px;">
+                                                <select name="social_media_01_type" id="social_media_01_type"
+                                                    class="form-select" style="width: 250px;">
                                                     <option value="facebook/ig" selected>Facebook / Instagram</option>
                                                     <option value="tiktok">TikTok</option>
                                                     <option value="youtube">YouTube</option>
                                                     <option value="other">อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_01" id="social_media_01" class="form-control" oninput="checkIfInputALink(this, 'social_media_01_error')">
+                                                <input type="text" name="social_media_01" id="social_media_01"
+                                                    class="form-control"
+                                                    oninput="checkIfInputALink(this, 'social_media_01_error')">
                                             </div>
                                             <small class="text-danger mb-2" id="social_media_01_error"></small>
                                             <div class="d-flex gap-2 mb-2">
-                                                <select name="social_media_02_type" id="social_media_02_type" class="form-select" style="width: 250px;">
-                                                <option value="facebook/ig">Facebook / Instagram</option>
+                                                <select name="social_media_02_type" id="social_media_02_type"
+                                                    class="form-select" style="width: 250px;">
+                                                    <option value="facebook/ig">Facebook / Instagram</option>
                                                     <option value="tiktok" selected>TikTok</option>
                                                     <option value="youtube">YouTube</option>
                                                     <option value="other">อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_02" id="social_media_02" class="form-control" oninput="checkIfInputALink(this, 'social_media_02_error')">
+                                                <input type="text" name="social_media_02" id="social_media_02"
+                                                    class="form-control"
+                                                    oninput="checkIfInputALink(this, 'social_media_02_error')">
                                             </div>
                                             <small class="text-danger mb-2" id="social_media_02_error"></small>
                                             <div class="d-flex gap-2 mb-2">
-                                                <select name="social_media_03_type" id="social_media_03_type" class="form-select" style="width: 250px;">
-                                                <option value="facebook/ig">Facebook / Instagram</option>
+                                                <select name="social_media_03_type" id="social_media_03_type"
+                                                    class="form-select" style="width: 250px;">
+                                                    <option value="facebook/ig">Facebook / Instagram</option>
                                                     <option value="tiktok">TikTok</option>
                                                     <option value="youtube" selected>YouTube</option>
                                                     <option value="other">อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_03" id="social_media_03" class="form-control" oninput="checkIfInputALink(this, 'social_media_03_error')">
+                                                <input type="text" name="social_media_03" id="social_media_03"
+                                                    class="form-control"
+                                                    oninput="checkIfInputALink(this, 'social_media_03_error')">
                                             </div>
                                             <small class="text-danger mb-2" id="social_media_03_error"></small>
                                             <div class="d-flex gap-2 mb-2">
-                                                <select name="social_media_04_type" id="social_media_04_type" class="form-select" style="width: 250px;">
+                                                <select name="social_media_04_type" id="social_media_04_type"
+                                                    class="form-select" style="width: 250px;">
                                                     <option value="facebook/ig">Facebook / Instagram</option>
                                                     <option value="tiktok">TikTok</option>
                                                     <option value="youtube">YouTube</option>
                                                     <option value="other" selected>อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_04" id="social_media_04" class="form-control" oninput="checkIfInputALink(this, 'social_media_04_error')">
+                                                <input type="text" name="social_media_04" id="social_media_04"
+                                                    class="form-control"
+                                                    oninput="checkIfInputALink(this, 'social_media_04_error')">
                                             </div>
                                             <small class="text-danger mb-2" id="social_media_04_error"></small>
-                                            </div>
                                         </div>
-            
-                                        <label for="aff_identity_doc" class="form-label fw-bold">
-                                            <i class="fa-solid fa-file-arrow-up text-primary me-1"></i> อัปโหลดเอกสารยืนยันตัวตน (สำเนาบัตรประชาชน และ รูปถ่ายคู่บัตรประชาชน) <span class="text-danger">*</span>
-                                        </label>
-                                        <br>
-                                        <label for="aff_identity_doc_card">บัตรประชาชน:</label>
-                                        <input type="file" name="aff_identity_doc[]" class="form-control mb-2" accept="image/*" required>
-                                        <label for="aff_identity_doc_selfie">รูปถ่ายคู่บัตรประชาชน:</label>
-                                        <input type="file" name="aff_identity_doc[]" class="form-control" accept="image/*" required>
-                                        <div class="form-text small text-muted">
-                                            รองรับไฟล์รูปภาพ (JPG, PNG) หรือ PDF ขนาดไม่เกิน 5MB
-                                        </div>
+                                    </div>
+
+                                    <label for="aff_identity_doc" class="form-label fw-bold">
+                                        <i class="fa-solid fa-file-arrow-up text-primary me-1"></i> อัปโหลดเอกสารยืนยันตัวตน
+                                        (สำเนาบัตรประชาชน และ รูปถ่ายคู่บัตรประชาชน) <span class="text-danger">*</span>
+                                    </label>
+                                    <br>
+                                    <label for="aff_identity_doc_card">บัตรประชาชน:</label>
+                                    <input type="file" name="aff_identity_doc[]" class="form-control mb-2" accept="image/*"
+                                        required>
+                                    <label for="aff_identity_doc_selfie">รูปถ่ายคู่บัตรประชาชน:</label>
+                                    <input type="file" name="aff_identity_doc[]" class="form-control" accept="image/*"
+                                        required>
+                                    <div class="form-text small text-muted">
+                                        รองรับไฟล์รูปภาพ (JPG, PNG) หรือ PDF ขนาดไม่เกิน 5MB
                                     </div>
                                     <div class="form-group mb-4">
                                         <div class="input-group">
-                                            <input type="checkbox" name="agree_terms_read" id="agree_terms_read" class="me-2" required> 
+                                            <input type="checkbox" name="agree_terms_read" id="agree_terms_read"
+                                                class="me-2" required>
                                             <label for="agree_terms_read" class="fw-bold">ข้าพเจ้าได้อ่านและยอมรับ</label>
                                         </div>
-                                        <p class="text-muted">เงื่อนไขการเข้าร่วม World Chemical Affiliate Program และนโยบายการผลิตคอนเทนต์ และตกลงปฏิบัติตามเงื่อนไขดังกล่าว</p>
+                                        <p class="text-muted">เงื่อนไขการเข้าร่วม World Chemical Affiliate Program
+                                            และนโยบายการผลิตคอนเทนต์ และตกลงปฏิบัติตามเงื่อนไขดังกล่าว</p>
                                     </div>
                                     <div class="form-group mb-4">
                                         <div class="input-group">
-                                            <input type="checkbox" name="agree_terms_ack" id="agree_terms_ack" class="me-2" required> 
+                                            <input type="checkbox" name="agree_terms_ack" id="agree_terms_ack" class="me-2"
+                                                required>
                                             <label for="agree_terms_ack" class="fw-bold">ข้าพเจ้ารับทราบ</label>
                                         </div>
-                                        <p class="text-muted">ข้าพเจ้าจะตรวจสอบข้อมูลสินค้า กฎหมาย และข้อกำหนดของแพลตฟอร์มก่อนเผยแพร่ Content ทุกครั้ง และเข้าใจว่าการฝ่าฝืนเงื่อนไขอาจส่งผลต่อสถานะ Affiliate และ Commission ตามเงื่อนไขของบริษัท</p>
+                                        <p class="text-muted">ข้าพเจ้าจะตรวจสอบข้อมูลสินค้า กฎหมาย
+                                            และข้อกำหนดของแพลตฟอร์มก่อนเผยแพร่ Content ทุกครั้ง
+                                            และเข้าใจว่าการฝ่าฝืนเงื่อนไขอาจส่งผลต่อสถานะ Affiliate และ Commission
+                                            ตามเงื่อนไขของบริษัท</p>
                                     </div>
                                     <div class="text-center">
-                                        <button type="submit" name="register_affiliate" class="btn btn-primary btn-lg px-5 shadow-sm w-100 w-sm-auto">
+                                        <button type="submit" name="register_affiliate"
+                                            class="btn btn-primary btn-lg px-5 shadow-sm w-100 w-sm-auto">
                                             <i class="fa-solid fa-user-plus me-2"></i> สมัครเป็นพันธมิตรตอนนี้
                                         </button>
                                     </div>
                                 </form>
                             </div>
                         </div>
-                        <div class="tab-pane fade <?= $affiliate_tab === 'policy' ? 'show active' : ''; ?>" id="policy" role="tabpanel">
+                        <div class="tab-pane fade <?= $affiliate_tab === 'policy' ? 'show active' : ''; ?>" id="policy"
+                            role="tabpanel">
                             <?php
                             if (file_exists(__DIR__ . '/inc/policy.php')) {
                                 include __DIR__ . '/inc/policy.php';
@@ -695,20 +756,23 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                             ?>
                         </div>
                     </div>
-                </div>
-            
-            <?php elseif (!$verified) : ?>
+            </div>
+
+        <?php elseif (!$verified): ?>
             <div class="tab-content">
-                <div class="tab-pane fade <?= $affiliate_tab === 'register' ? 'show active' : ''; ?>" id="register" role="tabpanel">
+                <div class="tab-pane fade <?= $affiliate_tab === 'register' ? 'show active' : ''; ?>" id="register"
+                    role="tabpanel">
                     <div class="card card-custom p-5 text-center">
                         <div class="text-success mb-3">
                             <i class="fa-solid fa-square-check fa-4x"></i>
                         </div>
                         <h3 class="fw-bold">คุณได้สมัครและส่งเอกสารแล้ว !</h3>
-                        <p class="text-muted mb-0">ทางเราได้รับเอกสารแล้ว และจะดำเนินการตรวจสอบและยืนยันตัวตนของท่านโดยเร็วที่สุด</p>
+                        <p class="text-muted mb-0">ทางเราได้รับเอกสารแล้ว
+                            และจะดำเนินการตรวจสอบและยืนยันตัวตนของท่านโดยเร็วที่สุด</p>
                     </div>
                 </div>
-                <div class="tab-pane fade <?= $affiliate_tab === 'policy' ? 'show active' : ''; ?>" id="policy" role="tabpanel">
+                <div class="tab-pane fade <?= $affiliate_tab === 'policy' ? 'show active' : ''; ?>" id="policy"
+                    role="tabpanel">
                     <?php
                     if (file_exists(__DIR__ . '/inc/policy.php')) {
                         include __DIR__ . '/inc/policy.php';
@@ -717,18 +781,21 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                 </div>
             </div>
 
-            <?php elseif ($suspended) : ?>
+        <?php elseif ($suspended): ?>
             <div class="tab-content">
-                <div class="tab-pane fade <?= $affiliate_tab === 'suspended' ? 'show active' : ''; ?>" id="suspended" role="tabpanel">
+                <div class="tab-pane fade <?= $affiliate_tab === 'suspended' ? 'show active' : ''; ?>" id="suspended"
+                    role="tabpanel">
                     <div class="card card-custom p-5 text-center">
                         <div class="text-danger mb-3">
                             <i class="fa-solid fa-triangle-exclamation fa-4x"></i>
                         </div>
                         <h3 class="fw-bold">บัญชี Affiliate ของคุณถูกระงับ !</h3>
-                        <p class="text-muted mb-0">ทางเราได้ตรวจสอบและพบว่าบัญชี Affiliate ของคุณทำผิดกฎระเบียบและเงื่อนไขการใช้งานของเรา คุณสามารถโต้แย้งได้โดยติดต่อทีมสนับสนุนของเรา</p>
+                        <p class="text-muted mb-0">ทางเราได้ตรวจสอบและพบว่าบัญชี Affiliate
+                            ของคุณทำผิดกฎระเบียบและเงื่อนไขการใช้งานของเรา คุณสามารถโต้แย้งได้โดยติดต่อทีมสนับสนุนของเรา</p>
                     </div>
                 </div>
-                <div class="tab-pane fade <?= $affiliate_tab === 'policy' ? 'show active' : ''; ?>" id="policy" role="tabpanel">
+                <div class="tab-pane fade <?= $affiliate_tab === 'policy' ? 'show active' : ''; ?>" id="policy"
+                    role="tabpanel">
                     <?php
                     if (file_exists(__DIR__ . '/inc/policy.php')) {
                         include __DIR__ . '/inc/policy.php';
@@ -737,101 +804,109 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                 </div>
             </div>
 
-            <?php else : ?>
-                <?php if (isset($_GET['order_id']) && !empty($_GET['order_id'])) : ?>
-                    <?php
-                    if (file_exists(__DIR__ . '/inc/view_order.php')) {
-                        include __DIR__ . '/inc/view_order.php';
-                    }
-                    ?>
-                <?php elseif (isset($_GET['request_payments']) && !empty($_GET['request_payments'])) : ?>
-                    <?php
-                    if (file_exists(__DIR__ . '/inc/request_payments.php')) {
-                        include __DIR__ . '/inc/request_payments.php';
-                    }
-                    ?>
-                <?php elseif (isset($_GET['policy']) && !empty($_GET['policy'])) : ?>
-                    <?php
-                    if (file_exists(__DIR__ . '/inc/policy.php')) {
-                        include __DIR__ . '/inc/policy.php';
-                    }
-                    ?>
-                <?php else : ?>
-                    <div class="tab-content">
-                        <div class="tab-pane fade <?= $affiliate_tab === 'dashboard' ? 'show active' : ''; ?>" id="dashboard" role="tabpanel">
-                            <?php
-                            if (file_exists(__DIR__ . '/inc/dashboard.php')) {
-                                include __DIR__ . '/inc/dashboard.php';
-                            }
-                            ?>
-                        </div>
-                        <div class="tab-pane fade <?= $affiliate_tab === 'commission' ? 'show active' : ''; ?>" id="commission" role="tabpanel">
-                            <?php
-                            if (file_exists(__DIR__ . '/inc/commission.php')) {
-                                include __DIR__ . '/inc/commission.php';
-                            }
-                            ?>
-                        </div>
-                        <div class="tab-pane fade <?= $affiliate_tab === 'settings' ? 'show active' : ''; ?>" id="settings" role="tabpanel">
-                            <?php
-                            if (file_exists(__DIR__ . '/inc/settings.php')) {
-                                include __DIR__ . '/inc/settings.php';
-                            }
-                            ?>
-                        </div>
-                        <div class="tab-pane fade <?= $affiliate_tab === 'policy' ? 'show active' : ''; ?>" id="policy" role="tabpanel">
-                            <?php
-                            if (file_exists(__DIR__ . '/inc/policy.php')) {
-                                include __DIR__ . '/inc/policy.php';
-                            }
-                            ?>
-                        </div>
-                        <div class="tab-pane fade <?= $affiliate_tab === 'help' ? 'show active' : ''; ?>" id="help" role="tabpanel">
-                            <?php
-                            if (file_exists(__DIR__ . '/inc/help.php')) {
-                                include __DIR__ . '/inc/help.php';
-                            }
-                            ?>
-                        </div>
-                        <div class="tab-pane fade <?= $affiliate_tab === 'orders' ? 'show active' : ''; ?>" id="orders" role="tabpanel">
-                            <?php
-                            if (file_exists(__DIR__ . '/inc/orders.php')) {
-                                include __DIR__ . '/inc/orders.php';
-                            }
-                            ?>
-                        </div>
+        <?php else: ?>
+            <?php if (isset($_GET['order_id']) && !empty($_GET['order_id'])): ?>
+                <?php
+                if (file_exists(__DIR__ . '/inc/view_order.php')) {
+                    include __DIR__ . '/inc/view_order.php';
+                }
+                ?>
+            <?php elseif (isset($_GET['request_payments']) && !empty($_GET['request_payments'])): ?>
+                <?php
+                if (file_exists(__DIR__ . '/inc/request_payments.php')) {
+                    include __DIR__ . '/inc/request_payments.php';
+                }
+                ?>
+            <?php elseif (isset($_GET['policy']) && !empty($_GET['policy'])): ?>
+                <?php
+                if (file_exists(__DIR__ . '/inc/policy.php')) {
+                    include __DIR__ . '/inc/policy.php';
+                }
+                ?>
+            <?php else: ?>
+                <div class="tab-content">
+                    <div class="tab-pane fade <?= $affiliate_tab === 'dashboard' ? 'show active' : ''; ?>" id="dashboard"
+                        role="tabpanel">
+                        <?php
+                        if (file_exists(__DIR__ . '/inc/dashboard.php')) {
+                            include __DIR__ . '/inc/dashboard.php';
+                        }
+                        ?>
                     </div>
-                <?php endif; ?>
-
+                    <div class="tab-pane fade <?= $affiliate_tab === 'commission' ? 'show active' : ''; ?>" id="commission"
+                        role="tabpanel">
+                        <?php
+                        if (file_exists(__DIR__ . '/inc/commission.php')) {
+                            include __DIR__ . '/inc/commission.php';
+                        }
+                        ?>
+                    </div>
+                    <div class="tab-pane fade <?= $affiliate_tab === 'settings' ? 'show active' : ''; ?>" id="settings"
+                        role="tabpanel">
+                        <?php
+                        if (file_exists(__DIR__ . '/inc/settings.php')) {
+                            include __DIR__ . '/inc/settings.php';
+                        }
+                        ?>
+                    </div>
+                    <div class="tab-pane fade <?= $affiliate_tab === 'policy' ? 'show active' : ''; ?>" id="policy"
+                        role="tabpanel">
+                        <?php
+                        if (file_exists(__DIR__ . '/inc/policy.php')) {
+                            include __DIR__ . '/inc/policy.php';
+                        }
+                        ?>
+                    </div>
+                    <div class="tab-pane fade <?= $affiliate_tab === 'help' ? 'show active' : ''; ?>" id="help" role="tabpanel">
+                        <?php
+                        if (file_exists(__DIR__ . '/inc/help.php')) {
+                            include __DIR__ . '/inc/help.php';
+                        }
+                        ?>
+                    </div>
+                    <div class="tab-pane fade <?= $affiliate_tab === 'orders' ? 'show active' : ''; ?>" id="orders"
+                        role="tabpanel">
+                        <?php
+                        if (file_exists(__DIR__ . '/inc/orders.php')) {
+                            include __DIR__ . '/inc/orders.php';
+                        }
+                        ?>
+                    </div>
+                </div>
             <?php endif; ?>
+
+        <?php endif; ?>
 
         </main>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.26.25/sweetalert2.min.js" integrity="sha512-dmAN1QwqVuU3dD62u4+wOeqNPKpS9Me5pqOf4NROrcryBWUn1Z65+u3U+GFuwqIm9dw6Y2VPI0g/UVaB4gI54g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script>
-    function copyLink() {
-        var copyText = document.getElementById("affLink");
-        copyText.select();
-        copyText.setSelectionRange(0, 99999);
-        navigator.clipboard.writeText(copyText.value);
-        Swal.fire({
-            icon: 'success',
-            title: 'สำเร็จ',
-            text: 'คัดลอกลิงก์แนะนำเรียบร้อยแล้ว!'
-        });
-    }
-
-    function checkIfInputALink(input, errorElementId) {
-        const value = input.value;
-        if (value && !value.startsWith('http://') && !value.startsWith('https://')) {
-            document.getElementById(errorElementId).textContent = 'กรุณาใส่ลิงก์ที่ถูกต้อง (ต้องขึ้นต้นด้วย http:// หรือ https://)';
-            input.focus();
-        } else {
-            document.getElementById(errorElementId).textContent = '';
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.26.25/sweetalert2.min.js"
+        integrity="sha512-dmAN1QwqVuU3dD62u4+wOeqNPKpS9Me5pqOf4NROrcryBWUn1Z65+u3U+GFuwqIm9dw6Y2VPI0g/UVaB4gI54g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        function copyLink() {
+            var copyText = document.getElementById("affLink");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value);
+            Swal.fire({
+                icon: 'success',
+                title: 'สำเร็จ',
+                text: 'คัดลอกลิงก์แนะนำเรียบร้อยแล้ว!'
+            });
         }
-    }
-</script>
+
+        function checkIfInputALink(input, errorElementId) {
+            const value = input.value;
+            if (value && !value.startsWith('http://') && !value.startsWith('https://')) {
+                document.getElementById(errorElementId).textContent = 'กรุณาใส่ลิงก์ที่ถูกต้อง (ต้องขึ้นต้นด้วย http:// หรือ https://)';
+                input.focus();
+            } else {
+                document.getElementById(errorElementId).textContent = '';
+            }
+        }
+    </script>
 </body>
+
 </html>
