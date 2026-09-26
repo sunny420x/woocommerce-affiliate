@@ -16,9 +16,8 @@ $dataChartjson = wp_json_encode($dataChart);
 ?>
 
 <div class="row g-3 mb-4">
-
     <div class="col-lg-4">
-        <div class="card card-custom p-3 h-100">
+        <div class="p-3 h-100">
             <h6 class="fw-bold mb-3">
                 <i class="fa-solid fa-chart-pie text-warning me-2"></i>
                 สัดส่วนสถานะชำระเงิน
@@ -29,9 +28,8 @@ $dataChartjson = wp_json_encode($dataChart);
             </div>
         </div>
     </div>
-
     <div class="col-lg-8">
-        <div class="card card-custom p-3 h-100">
+        <div class="p-3 h-100">
             <h6 class="fw-bold mb-3">
                 <i class="fa-solid fa-chart-line text-success me-2"></i>
                 แนวโน้มยอดขาย (บาท)
@@ -42,7 +40,6 @@ $dataChartjson = wp_json_encode($dataChart);
             </div>
         </div>
     </div>
-
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
