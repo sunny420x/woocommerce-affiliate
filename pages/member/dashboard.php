@@ -617,7 +617,8 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                                     <option value="youtube">YouTube</option>
                                                     <option value="other">อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_01" id="social_media_01" class="form-control" oninput="checkIfInputALink(this)">
+                                                <input type="text" name="social_media_01" id="social_media_01" class="form-control" oninput="checkIfInputALink(this, 'social_media_01_error')">
+                                                <small class="text-danger" id="social_media_01_error"></small>
                                             </div>
                                             <div class="d-flex gap-2 mb-2">
                                                 <select name="social_media_02_type" id="social_media_02_type" class="form-select" style="width: 250px;">
@@ -626,7 +627,8 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                                     <option value="youtube">YouTube</option>
                                                     <option value="other">อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_02" id="social_media_02" class="form-control" oninput="checkIfInputALink(this)">
+                                                <input type="text" name="social_media_02" id="social_media_02" class="form-control" oninput="checkIfInputALink(this, 'social_media_02_error')">
+                                                <small class="text-danger" id="social_media_02_error"></small>
                                             </div>
                                             <div class="d-flex gap-2 mb-2">
                                                 <select name="social_media_03_type" id="social_media_03_type" class="form-select" style="width: 250px;">
@@ -635,7 +637,8 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                                     <option value="youtube" selected>YouTube</option>
                                                     <option value="other">อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_03" id="social_media_03" class="form-control" oninput="checkIfInputALink(this)">
+                                                <input type="text" name="social_media_03" id="social_media_03" class="form-control" oninput="checkIfInputALink(this, 'social_media_03_error')">
+                                                <small class="text-danger" id="social_media_03_error"></small>
                                             </div>
                                             <div class="d-flex gap-2 mb-2">
                                                 <select name="social_media_04_type" id="social_media_04_type" class="form-select" style="width: 250px;">
@@ -644,7 +647,8 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                                     <option value="youtube">YouTube</option>
                                                     <option value="other" selected>อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_04" id="social_media_04" class="form-control" oninput="checkIfInputALink(this)">
+                                                <input type="text" name="social_media_04" id="social_media_04" class="form-control" oninput="checkIfInputALink(this, 'social_media_04_error')">
+                                                <small class="text-danger" id="social_media_04_error"></small>
                                             </div>
                                         </div>
             
@@ -818,15 +822,13 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
         });
     }
 
-    function checkIfInputALink(input) {
+    function checkIfInputALink(input, errorElementId) {
         const value = input.value;
         if (value && !value.startsWith('http://') && !value.startsWith('https://')) {
-            Swal.fire({
-                icon: 'error',
-                title: 'ข้อผิดพลาด',
-                text: 'กรุณาใส่ลิงก์ที่ถูกต้อง (ต้องขึ้นต้นด้วย http:// หรือ https://)'
-            });
+            document.getElementById(errorElementId).textContent = 'กรุณาใส่ลิงก์ที่ถูกต้อง (ต้องขึ้นต้นด้วย http:// หรือ https://)';
             input.focus();
+        } else {
+            document.getElementById(errorElementId).textContent = '';
         }
     }
 </script>
