@@ -637,13 +637,13 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
 
                                         <div class="form-group mb-4">
                                             <label for="full_name">ชื่อ-นามสกุล:</label>
-                                            <input type="text" name="full_name" id="full_name" class="form-control" onchange="validateName(this, 'full_name_error')">
+                                            <input type="text" name="full_name" id="full_name" class="form-control" onchange="validateName(this, 'full_name_error'); initRegisterBtn()">
                                             <small id="full_name_error" class="text-danger small mt-1"></small>
                                         </div>
 
                                         <div class="form-group mb-4">
                                             <label for="phone_number">เบอร์โทรศัพท์:</label>
-                                            <input type="text" name="phone_number" id="phone_number" class="form-control" onchange="validatePhoneNumber(this, 'phone_number_error')">
+                                            <input type="text" name="phone_number" id="phone_number" class="form-control" onchange="validatePhoneNumber(this, 'phone_number_error'); initRegisterBtn()">
                                             <small id="phone_number_error" class="text-danger small mt-1"></small>
                                         </div>
 
@@ -744,7 +744,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                     </div>
                                     <div class="text-center">
                                         <button type="submit" name="register_affiliate"
-                                            class="btn btn-primary px-5 shadow-sm w-100 w-sm-auto">
+                                            class="btn btn-primary px-5 shadow-sm w-100 w-sm-auto" disabled>
                                             <i class="fa-solid fa-user-plus me-2"></i> สมัครเป็นพันธมิตรตอนนี้
                                         </button>
                                     </div>
@@ -935,6 +935,17 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
             } else {
                 document.getElementById(errorElementId).textContent = '';
                 return true;
+            }
+        }
+
+        function initRegisterBtn()  {
+            let result = validateName(document.getElementById('full_name'), 'full_name_error') &&
+            validatePhoneNumber(document.getElementById('phone_number'), 'phone_number_error');
+
+            if(result == true) {
+                document.getElementsByName('register_affiliate')[0].disabled = false;
+            } else {
+                document.getElementsByName('register_affiliate')[0].disabled = true;
             }
         }
     </script>
