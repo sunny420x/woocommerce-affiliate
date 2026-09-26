@@ -121,6 +121,7 @@ if(isset($_GET['action'])) {
                             <td><?=$profile->phone_number?></td>
                         </tr>
                         <tr>
+                            <th><strong>การจัดการบัญชี:</strong></th>
                             <td>
                             <?php 
                             if($profile->verified == 1) {?>
