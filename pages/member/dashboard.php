@@ -617,7 +617,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                                     <option value="youtube">YouTube</option>
                                                     <option value="other">อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_01" id="social_media_01" class="form-control" onblur="checkIfInputALink(this)">
+                                                <input type="text" name="social_media_01" id="social_media_01" class="form-control" oninput="checkIfInputALink(this)">
                                             </div>
                                             <div class="d-flex gap-2 mb-2">
                                                 <select name="social_media_02_type" id="social_media_02_type" class="form-select" style="width: 250px;">
@@ -626,7 +626,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                                     <option value="youtube">YouTube</option>
                                                     <option value="other">อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_02" id="social_media_02" class="form-control" onblur="checkIfInputALink(this)">
+                                                <input type="text" name="social_media_02" id="social_media_02" class="form-control" oninput="checkIfInputALink(this)">
                                             </div>
                                             <div class="d-flex gap-2 mb-2">
                                                 <select name="social_media_03_type" id="social_media_03_type" class="form-select" style="width: 250px;">
@@ -635,7 +635,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                                     <option value="youtube" selected>YouTube</option>
                                                     <option value="other">อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_03" id="social_media_03" class="form-control" onblur="checkIfInputALink(this)">
+                                                <input type="text" name="social_media_03" id="social_media_03" class="form-control" oninput="checkIfInputALink(this)">
                                             </div>
                                             <div class="d-flex gap-2 mb-2">
                                                 <select name="social_media_04_type" id="social_media_04_type" class="form-select" style="width: 250px;">
@@ -644,7 +644,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                                     <option value="youtube">YouTube</option>
                                                     <option value="other" selected>อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_04" id="social_media_04" class="form-control" onblur="checkIfInputALink(this)">
+                                                <input type="text" name="social_media_04" id="social_media_04" class="form-control" oninput="checkIfInputALink(this)">
                                             </div>
                                         </div>
             
