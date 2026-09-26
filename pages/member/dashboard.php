@@ -619,7 +619,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                                 </select>
                                                 <input type="text" name="social_media_01" id="social_media_01" class="form-control" oninput="checkIfInputALink(this, 'social_media_01_error')">
                                             </div>
-                                            <small class="text-danger" id="social_media_01_error"></small>
+                                            <small class="text-danger mb-2" id="social_media_01_error"></small>
                                             <div class="d-flex gap-2 mb-2">
                                                 <select name="social_media_02_type" id="social_media_02_type" class="form-select" style="width: 250px;">
                                                 <option value="facebook/ig">Facebook / Instagram</option>
@@ -629,7 +629,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                                 </select>
                                                 <input type="text" name="social_media_02" id="social_media_02" class="form-control" oninput="checkIfInputALink(this, 'social_media_02_error')">
                                             </div>
-                                            <small class="text-danger" id="social_media_02_error"></small>
+                                            <small class="text-danger mb-2" id="social_media_02_error"></small>
                                             <div class="d-flex gap-2 mb-2">
                                                 <select name="social_media_03_type" id="social_media_03_type" class="form-select" style="width: 250px;">
                                                 <option value="facebook/ig">Facebook / Instagram</option>
@@ -639,7 +639,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                                 </select>
                                                 <input type="text" name="social_media_03" id="social_media_03" class="form-control" oninput="checkIfInputALink(this, 'social_media_03_error')">
                                             </div>
-                                            <small class="text-danger" id="social_media_03_error"></small>
+                                            <small class="text-danger mb-2" id="social_media_03_error"></small>
                                             <div class="d-flex gap-2 mb-2">
                                                 <select name="social_media_04_type" id="social_media_04_type" class="form-select" style="width: 250px;">
                                                     <option value="facebook/ig">Facebook / Instagram</option>
@@ -649,7 +649,8 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                                 </select>
                                                 <input type="text" name="social_media_04" id="social_media_04" class="form-control" oninput="checkIfInputALink(this, 'social_media_04_error')">
                                             </div>
-                                            <small class="text-danger" id="social_media_04_error"></small>
+                                            <small class="text-danger mb-2" id="social_media_04_error"></small>
+                                            </div>
                                         </div>
             
                                         <label for="aff_identity_doc" class="form-label fw-bold">
