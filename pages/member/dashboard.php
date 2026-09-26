@@ -612,39 +612,39 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                             <p class="text-muted small">วางลิงค์โปรไฟล์ Social Media ของท่าน ที่จะใช้เป็นช่องทางในการเผยแพร่สินค้า</p>
                                             <div class="d-flex gap-2 mb-2">
                                                 <select name="social_media_01_type" id="social_media_01_type" class="form-select" style="width: 250px;">
-                                                    <option value="facebook/ig">Facebook / Instagram</option>
+                                                    <option value="facebook/ig" selected>Facebook / Instagram</option>
                                                     <option value="tiktok">TikTok</option>
                                                     <option value="youtube">YouTube</option>
                                                     <option value="other">อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_01" id="social_media_01" class="form-control" onchange="checkIfInputALink(this)">
+                                                <input type="text" name="social_media_01" id="social_media_01" class="form-control" onblur="checkIfInputALink(this)">
                                             </div>
                                             <div class="d-flex gap-2 mb-2">
                                                 <select name="social_media_02_type" id="social_media_02_type" class="form-select" style="width: 250px;">
                                                 <option value="facebook/ig">Facebook / Instagram</option>
-                                                    <option value="tiktok">TikTok</option>
+                                                    <option value="tiktok" selected>TikTok</option>
                                                     <option value="youtube">YouTube</option>
                                                     <option value="other">อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_02" id="social_media_02" class="form-control" onchange="checkIfInputALink(this)">
+                                                <input type="text" name="social_media_02" id="social_media_02" class="form-control" onblur="checkIfInputALink(this)">
                                             </div>
                                             <div class="d-flex gap-2 mb-2">
                                                 <select name="social_media_03_type" id="social_media_03_type" class="form-select" style="width: 250px;">
                                                 <option value="facebook/ig">Facebook / Instagram</option>
                                                     <option value="tiktok">TikTok</option>
-                                                    <option value="youtube">YouTube</option>
+                                                    <option value="youtube" selected>YouTube</option>
                                                     <option value="other">อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_03" id="social_media_03" class="form-control" onchange="checkIfInputALink(this)">
+                                                <input type="text" name="social_media_03" id="social_media_03" class="form-control" onblur="checkIfInputALink(this)">
                                             </div>
                                             <div class="d-flex gap-2 mb-2">
                                                 <select name="social_media_04_type" id="social_media_04_type" class="form-select" style="width: 250px;">
                                                     <option value="facebook/ig">Facebook / Instagram</option>
                                                     <option value="tiktok">TikTok</option>
                                                     <option value="youtube">YouTube</option>
-                                                    <option value="other">อื่น ๆ </option>
+                                                    <option value="other" selected>อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_04" id="social_media_04" class="form-control" onchange="checkIfInputALink(this)">
+                                                <input type="text" name="social_media_04" id="social_media_04" class="form-control" onblur="checkIfInputALink(this)">
                                             </div>
                                         </div>
             
@@ -652,10 +652,8 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                             <i class="fa-solid fa-file-arrow-up text-primary me-1"></i> อัปโหลดเอกสารยืนยันตัวตน (สำเนาบัตรประชาชน และ รูปถ่ายคู่บัตรประชาชน) <span class="text-danger">*</span>
                                         </label>
                                         <br>
-                                        <!-- รูปที่ 1: บัตรประชาชน -->
                                         <label for="aff_identity_doc_card">บัตรประชาชน:</label>
                                         <input type="file" name="aff_identity_doc[]" class="form-control mb-2" accept="image/*" required>
-                                        <!-- รูปที่ 2: รูปถ่ายคู่กับบัตร -->
                                         <label for="aff_identity_doc_selfie">รูปถ่ายคู่บัตรประชาชน:</label>
                                         <input type="file" name="aff_identity_doc[]" class="form-control" accept="image/*" required>
                                         <div class="form-text small text-muted">
