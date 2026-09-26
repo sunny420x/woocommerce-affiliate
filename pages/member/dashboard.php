@@ -719,6 +719,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                             รองรับไฟล์รูปภาพ (JPG, PNG) หรือ PDF ขนาดไม่เกิน 5MB
                                         </div>
                                     </div>
+                                    <br>
                                     <div class="form-group mb-4">
                                         <div class="input-group">
                                             <input type="checkbox" name="agree_terms_read" id="agree_terms_read"
@@ -741,7 +742,7 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                     </div>
                                     <div class="text-center">
                                         <button type="submit" name="register_affiliate"
-                                            class="btn btn-primary btn-lg px-5 shadow-sm w-100 w-sm-auto">
+                                            class="btn btn-primary px-5 shadow-sm w-100 w-sm-auto">
                                             <i class="fa-solid fa-user-plus me-2"></i> สมัครเป็นพันธมิตรตอนนี้
                                         </button>
                                     </div>
