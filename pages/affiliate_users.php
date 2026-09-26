@@ -98,7 +98,7 @@ if(isset($_GET['action'])) {
             );
             $doc_url = get_user_meta($user_id, 'affiliate_identity_doc', true);
             ?>
-            <h1>ข้อมูลพันธมิตรผู้ใช้งาน Affiliate: <?=$profile->display_name?></h1>
+            <h1>ข้อมูลพันธมิตรผู้ใช้งาน Affiliate: <?=$profile->display_name?> <?php if($profile->verified == 1) {?><span class="badge success">ยืนยันตัวตนแล้ว</span><?php } else {?><span class="badge danger">ยังไม่ได้ยืนยันตัวตน</span><?php } ?></h1>
             <div style="padding: 25px 25px 25px 25px;">
                 <table class="widefat fixed striped">
                     <tbody>
@@ -121,7 +121,6 @@ if(isset($_GET['action'])) {
                             <td><?=$profile->phone_number?></td>
                         </tr>
                         <tr>
-                            <th><strong>สถานะ:</strong> <?php if($profile->verified == 1) {?><span class="badge success">ยืนยันตัวตนแล้ว</span><?php } else {?><span class="badge danger">ยังไม่ได้ยืนยันตัวตน</span><?php } ?></th>
                             <td>
                             <?php 
                             if($profile->verified == 1) {?>
@@ -193,12 +192,14 @@ if(isset($_GET['action'])) {
         <th>#</th>
         <th>Username</th>
         <th>สถานะ</th>
+        <th>อีเมล</th>
+        <th>เบอร์โทรศัพท์</th>
         <th>refCode</th>
         <th>จัดการ</th>
     </thead>
     <tbody>
         <?php
-        $users = $wpdb->get_results("SELECT u.refCode, u.display_name, u.ID, a.verified 
+        $users = $wpdb->get_results("SELECT u.refCode, u.display_name, u.user_email, u.ID, a.verified, a.phone_number
         FROM {$wpdb->prefix}users as u 
         LEFT JOIN {$wpdb->prefix}users_affiliate_info as a ON a.user_id = u.ID 
         WHERE u.refCode IS NOT NULL ORDER BY u.ID DESC");
@@ -209,6 +210,8 @@ if(isset($_GET['action'])) {
             <td><?=$user->ID?></td>
             <td><?=$user->display_name?></td>
             <td><?php if($user->verified == 1) {?><span class="badge success">ยืนยันตัวตนแล้ว</span><?php } else {?><span class="badge danger">ยังไม่ได้ยืนยันตัวตน</span><?php } ?></td>
+            <td><?=$user->user_email?></td>
+            <td><?=$user->phone_number?></td>
             <td><?=$user->refCode?></td>
             <td>
                 <button class="button button-outline-primary" onclick="window.location.href='/wp-admin/admin.php?page=affiliate&option=affiliate_users&action=profile&user_id=<?=$user->ID?>'">ดูโปรไฟล์</button>
