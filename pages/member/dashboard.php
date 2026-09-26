@@ -703,20 +703,21 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                             <small class="text-danger mb-2" id="social_media_04_error"></small>
                                         </div>
                                     </div>
-
-                                    <label for="aff_identity_doc" class="form-label fw-bold">
-                                        <i class="fa-solid fa-file-arrow-up text-primary me-1"></i> อัปโหลดเอกสารยืนยันตัวตน
-                                        (สำเนาบัตรประชาชน และ รูปถ่ายคู่บัตรประชาชน) <span class="text-danger">*</span>
-                                    </label>
-                                    <br>
-                                    <label for="aff_identity_doc_card">บัตรประชาชน:</label>
-                                    <input type="file" name="aff_identity_doc[]" class="form-control mb-2" accept="image/*"
-                                        required>
-                                    <label for="aff_identity_doc_selfie">รูปถ่ายคู่บัตรประชาชน:</label>
-                                    <input type="file" name="aff_identity_doc[]" class="form-control" accept="image/*"
-                                        required>
-                                    <div class="form-text small text-muted">
-                                        รองรับไฟล์รูปภาพ (JPG, PNG) หรือ PDF ขนาดไม่เกิน 5MB
+                                    <div class="form-group mb-4">
+                                        <label for="aff_identity_doc" class="form-label fw-bold">
+                                            <i class="fa-solid fa-file-arrow-up text-primary me-1"></i> อัปโหลดเอกสารยืนยันตัวตน
+                                            (สำเนาบัตรประชาชน และ รูปถ่ายคู่บัตรประชาชน) <span class="text-danger">*</span>
+                                        </label>
+                                        <br>
+                                        <label for="aff_identity_doc_card">บัตรประชาชน:</label>
+                                        <input type="file" name="aff_identity_doc[]" class="form-control mb-2" accept="image/*"
+                                            required>
+                                        <label for="aff_identity_doc_selfie">รูปถ่ายคู่บัตรประชาชน:</label>
+                                        <input type="file" name="aff_identity_doc[]" class="form-control" accept="image/*"
+                                            required>
+                                        <div class="form-text small text-muted">
+                                            รองรับไฟล์รูปภาพ (JPG, PNG) หรือ PDF ขนาดไม่เกิน 5MB
+                                        </div>
                                     </div>
                                     <div class="form-group mb-4">
                                         <div class="input-group">
