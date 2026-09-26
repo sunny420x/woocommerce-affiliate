@@ -610,41 +610,41 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                                         <div class="form-group mb-4">
                                             <label for="social_media">ช่องทางที่ใช้เผยแพร่:</label>
                                             <p class="text-muted small">วางลิงค์โปรไฟล์ Social Media ของท่าน ที่จะใช้เป็นช่องทางในการเผยแพร่สินค้า</p>
-                                            <div class="d-flex gap-2">
+                                            <div class="d-flex gap-2 mb-2">
                                                 <select name="social_media_01_type" id="social_media_01_type" class="form-select" style="width: 250px;">
                                                     <option value="facebook/ig">Facebook / Instagram</option>
                                                     <option value="tiktok">TikTok</option>
                                                     <option value="youtube">YouTube</option>
                                                     <option value="other">อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_01" id="social_media_01" class="form-control">
+                                                <input type="text" name="social_media_01" id="social_media_01" class="form-control" onclick="checkIfInputALink(this)">
                                             </div>
-                                            <div class="d-flex gap-2">
+                                            <div class="d-flex gap-2 mb-2">
                                                 <select name="social_media_02_type" id="social_media_02_type" class="form-select" style="width: 250px;">
                                                 <option value="facebook/ig">Facebook / Instagram</option>
                                                     <option value="tiktok">TikTok</option>
                                                     <option value="youtube">YouTube</option>
                                                     <option value="other">อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_02" id="social_media_02" class="form-control">
+                                                <input type="text" name="social_media_02" id="social_media_02" class="form-control" onclick="checkIfInputALink(this)">
                                             </div>
-                                            <div class="d-flex gap-2">
+                                            <div class="d-flex gap-2 mb-2">
                                                 <select name="social_media_03_type" id="social_media_03_type" class="form-select" style="width: 250px;">
                                                 <option value="facebook/ig">Facebook / Instagram</option>
                                                     <option value="tiktok">TikTok</option>
                                                     <option value="youtube">YouTube</option>
                                                     <option value="other">อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_03" id="social_media_03" class="form-control">
+                                                <input type="text" name="social_media_03" id="social_media_03" class="form-control" onclick="checkIfInputALink(this)">
                                             </div>
-                                            <div class="d-flex gap-2">
+                                            <div class="d-flex gap-2 mb-2">
                                                 <select name="social_media_04_type" id="social_media_04_type" class="form-select" style="width: 250px;">
                                                     <option value="facebook/ig">Facebook / Instagram</option>
                                                     <option value="tiktok">TikTok</option>
                                                     <option value="youtube">YouTube</option>
                                                     <option value="other">อื่น ๆ </option>
                                                 </select>
-                                                <input type="text" name="social_media_04" id="social_media_04" class="form-control">
+                                                <input type="text" name="social_media_04" id="social_media_04" class="form-control" onclick="checkIfInputALink(this)">
                                             </div>
                                         </div>
             
@@ -806,14 +806,31 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.26.25/sweetalert2.min.js" integrity="sha512-dmAN1QwqVuU3dD62u4+wOeqNPKpS9Me5pqOf4NROrcryBWUn1Z65+u3U+GFuwqIm9dw6Y2VPI0g/UVaB4gI54g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
-function copyLink() {
-    var copyText = document.getElementById("affLink");
-    copyText.select();
-    copyText.setSelectionRange(0, 99999);
-    navigator.clipboard.writeText(copyText.value);
-    alert("คัดลอกลิงก์แนะนำเรียบร้อยแล้ว!");
-}
+    function copyLink() {
+        var copyText = document.getElementById("affLink");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(copyText.value);
+        Swal.fire({
+            icon: 'success',
+            title: 'สำเร็จ',
+            text: 'คัดลอกลิงก์แนะนำเรียบร้อยแล้ว!'
+        });
+    }
+
+    function checkIfInputALink(input) {
+        const value = input.value;
+        if (value && !value.startsWith('http://') && !value.startsWith('https://')) {
+            Swal.fire({
+                icon: 'error',
+                title: 'ข้อผิดพลาด',
+                text: 'กรุณาใส่ลิงก์ที่ถูกต้อง (ต้องขึ้นต้นด้วย http:// หรือ https://)'
+            });
+            input.focus();
+        }
+    }
 </script>
 </body>
 </html>
