@@ -17,6 +17,7 @@ if (!defined('ABSPATH'))
 require_once( plugin_dir_path( __FILE__ ) . 'modules/line.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'modules/mail.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'modules/reports.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'modules/videos.php' );
 
 function afiliate_enqueue_assets()
 {
@@ -112,6 +113,7 @@ function my_plugin_install() {
     dbDelta( $create_info_table_query );
     dbDelta( $create_transaction_table_query );
     dbDelta( $create_request_payments_table_query );
+    affiliate_create_video_link_table();
 
     // เช็คว่ามีคอลัมน์ refCode หรือยัง เพื่อป้องกัน Error ตอนรันซ้ำ
     $row = $wpdb->get_results("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
@@ -422,6 +424,7 @@ function get_all_users_table() {
                 <h1>WooCommerce Affiliate System</h1>
                 <a href="admin.php?page=affiliate&option=affiliate_users" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_users") { echo "class='active'"; } ?>>🤝 พันธมิตรในระบบ</a>
                 <a href="admin.php?page=affiliate&option=affiliate_withdrawals" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_withdrawals") { echo "class='active'"; } ?>>💸 คำขอถอนเงิน</a>
+                <a href="admin.php?page=affiliate&option=affiliate_videos" <?php if(isset($_GET['option']) && $_GET['option'] == "affiliate_videos") { echo "class='active'"; } ?>>🎬 งานที่ส่ง (วิดีโอ)</a>
                 <h1>รายงาน</h1>
                 <a href="admin.php?page=affiliate&option=reports" <?php if(isset($_GET['option']) && $_GET['option'] == "reports") { echo "class='active'"; } ?>>📋 ออกรายงานสรุป</a>
                 <a href="admin.php?page=affiliate&option=statistic" <?php if(isset($_GET['option']) && $_GET['option'] == "statistic") { echo "class='active'"; } ?>>📊 สถิติการใช้งาน</a>
@@ -450,6 +453,8 @@ function get_all_users_table() {
                     require_once __DIR__ . '/pages/affiliate_tiers_commission_settings.php';
                 } elseif(isset($_GET['option']) && $_GET['option'] == "affiliate_users") {
                     require_once __DIR__ . '/pages/affiliate_users.php';
+                } elseif(isset($_GET['option']) && $_GET['option'] == "affiliate_videos") {
+                    require_once __DIR__ . '/pages/affiliate_videos.php';
                 } elseif(isset($_GET['option']) && $_GET['option'] == "affiliate_withdrawals") {
                     require_once __DIR__ . '/pages/affiliate_withdrawals.php';
                 } else {

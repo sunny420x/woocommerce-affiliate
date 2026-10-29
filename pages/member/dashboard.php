@@ -299,7 +299,7 @@ if (!$ref_code || !$verified) {
     $allowed_tabs = array('suspended', 'policy');
     $default_tab = 'suspended';
 } else {
-    $allowed_tabs = array('dashboard', 'orders', 'commission', 'settings', 'policy', 'help');
+    $allowed_tabs = array('dashboard', 'orders', 'commission', 'videos', 'settings', 'policy', 'help');
     $default_tab = 'dashboard';
 }
 
@@ -842,6 +842,14 @@ $is_affiliate_enabled = (esc_attr(get_option('affiliate_enable', 'yes')) === 'ye
                         <?php
                         if (file_exists(__DIR__ . '/inc/commission.php')) {
                             include __DIR__ . '/inc/commission.php';
+                        }
+                        ?>
+                    </div>
+                    <div class="tab-pane fade <?= $affiliate_tab === 'videos' ? 'show active' : ''; ?>" id="videos"
+                        role="tabpanel">
+                        <?php
+                        if (file_exists(__DIR__ . '/inc/videos.php')) {
+                            include __DIR__ . '/inc/videos.php';
                         }
                         ?>
                     </div>

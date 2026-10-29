@@ -51,6 +51,10 @@ if (!defined('ABSPATH')) {
                     <i class="fa-solid fa-table me-2"></i>อัตราคอมมิชชั่น
                 </a>
 
+                <a class="nav-link <?= $affiliate_tab === 'videos' ? 'active' : ''; ?>" href="/affiliate/videos">
+                    <i class="fa-solid fa-video me-2"></i>ส่งงาน
+                </a>
+
                 <a class="nav-link <?= $affiliate_tab === 'settings' ? 'active' : ''; ?>" href="/affiliate/settings">
                     <i class="fa-solid fa-building-columns me-2"></i>ตั้งค่าบัญชี
                 </a>
