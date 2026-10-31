@@ -3,68 +3,48 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// ทุกแท็บถูก include อยู่ใน scope เดียวกัน จึงคำนวณในฟังก์ชันเพื่อไม่ให้ทับตัวแปรของแท็บอื่น
-if (!function_exists('affiliate_get_paid_performance')) {
-    function affiliate_get_paid_performance($user_id)
-    {
-        // เฉพาะรายการที่จ่ายค่าตอบแทนแล้ว (paid = 1)
-        $paid_transactions = getTransaction($user_id, "", null, 1);
-
-        $category_stats = [];
-        $monthly_sales = [];
-
-        foreach ($paid_transactions as $item) {
-            $product = wc_get_product($item->product_id);
-            $order = wc_get_order($item->order_id);
-            if (!$product || !$order) {
-                continue;
-            }
-
-            $quantity = 0;
-            foreach ($order->get_items() as $order_item) {
-                if ($order_item->get_product_id() == $item->product_id || $order_item->get_variation_id() == $item->product_id) {
-                    $quantity += $order_item->get_quantity();
-                }
-            }
-            $sold = (float) $product->get_price() * $quantity;
-
-            // variation ใช้หมวดหมู่ของสินค้าแม่
-            $parent_id = $product->get_parent_id() ?: $product->get_id();
-            $terms = wp_get_post_terms($parent_id, 'product_cat');
-            if (is_wp_error($terms) || empty($terms)) {
-                $terms = [(object) ['term_id' => 0, 'name' => 'ไม่มีหมวดหมู่']];
-            }
-            foreach ($terms as $term) {
-                if (!isset($category_stats[$term->term_id])) {
-                    $category_stats[$term->term_id] = ['name' => $term->name, 'quantity' => 0, 'sales' => 0];
-                }
-                $category_stats[$term->term_id]['quantity'] += $quantity;
-                $category_stats[$term->term_id]['sales'] += $sold;
-            }
-
-            $month = substr((string) $item->created_at, 0, 7);
-            $monthly_sales[$month] = ($monthly_sales[$month] ?? 0) + $sold;
-        }
-
-        uasort($category_stats, function ($a, $b) {
-            return $b["quantity"] - $a["quantity"];
-        });
-        $category_stats = array_slice(array_values($category_stats), 0, 5);
-        ksort($monthly_sales);
-
-        return [$category_stats, $monthly_sales];
-    }
-}
+// เฉพาะรายการที่จ่ายค่าตอบแทนแล้ว (paid = 1)
+$paid_transactions = getTransaction($user_id, "", null, 1);
 
 $category_stats = [];
 $monthly_sales = [];
-if ($affiliate_tab === 'dashboard') {
-    try {
-        [$category_stats, $monthly_sales] = affiliate_get_paid_performance($user_id);
-    } catch (Throwable $e) {
-        error_log('affiliate performance: ' . $e->getMessage());
+
+foreach ($paid_transactions as $item) {
+    $product = wc_get_product($item->product_id);
+    $order = wc_get_order($item->order_id);
+    if (!$product || !$order) {
+        continue;
     }
+
+    $quantity = 0;
+    foreach ($order->get_items() as $order_item) {
+        if ($order_item->get_product_id() == $item->product_id || $order_item->get_variation_id() == $item->product_id) {
+            $quantity += $order_item->get_quantity();
+        }
+    }
+    $sold = (float) $product->get_price() * $quantity;
+
+    // variation ใช้หมวดหมู่ของสินค้าแม่
+    $parent_id = $product->get_parent_id() ?: $product->get_id();
+    $terms = wp_get_post_terms($parent_id, 'product_cat');
+    if (is_wp_error($terms) || empty($terms)) {
+        $terms = [(object) ['term_id' => 0, 'name' => 'ไม่มีหมวดหมู่']];
+    }
+    foreach ($terms as $term) {
+        if (!isset($category_stats[$term->term_id])) {
+            $category_stats[$term->term_id] = ['name' => $term->name, 'quantity' => 0, 'sales' => 0];
+        }
+        $category_stats[$term->term_id]['quantity'] += $quantity;
+        $category_stats[$term->term_id]['sales'] += $sold;
+    }
+
+    $month = substr((string) $item->created_at, 0, 7);
+    $monthly_sales[$month] = ($monthly_sales[$month] ?? 0) + $sold;
 }
+
+uasort($category_stats, fn($a, $b) => $b['quantity'] <=> $a['quantity']);
+$category_stats = array_slice(array_values($category_stats), 0, 5);
+ksort($monthly_sales);
 
 $category_json = wp_json_encode($category_stats);
 $monthly_json = wp_json_encode($monthly_sales);
