@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
 </div>
 <div class="p-4">
     <div class="row g-3 mb-4">
-        <div class="col-12 col-sm-6 col-xl-4">
+        <div class="col-12 col-sm-6 col-xl-3">
             <div class="card card-custom p-3">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
@@ -22,7 +22,7 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
     
-        <div class="col-12 col-sm-6 col-xl-4">
+        <div class="col-12 col-sm-6 col-xl-3">
             <div class="card card-custom p-3">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
@@ -36,7 +36,7 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
     
-        <div class="col-12 col-sm-6 col-xl-4">
+        <div class="col-12 col-sm-6 col-xl-3">
             <div class="card card-custom p-3">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
@@ -49,6 +49,20 @@ if (!defined('ABSPATH')) {
                 </div>
             </div>
         </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card card-custom p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted small fw-medium">ยอดที่ถอนแล้ว</span>
+                        <h4 class="fw-bold my-1 text-warning">฿ <?= number_format($total_paid_sum, 2); ?></h4>
+                    </div>
+                    <div class="icon-shape bg-warning-subtle text-warning">
+                        <i class="fa-solid fa-money-bill-transfer"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- Charts Row -->
     <?php
@@ -57,6 +71,13 @@ if (!defined('ABSPATH')) {
     }
     ?>
     
+    <!-- Performance (paid sales only) -->
+    <?php
+    if (file_exists(__DIR__ . '/performance.php')) {
+        include __DIR__ . '/performance.php';
+    }
+    ?>
+
     <!-- Affiliate Link Box -->
     <?php $esc_ref = esc_html($ref_code); ?>
     <div class="card card-custom p-4 mb-4">
