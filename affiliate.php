@@ -23,7 +23,7 @@ function afiliate_enqueue_assets()
 {
     //Load JS
     wp_enqueue_script(
-        'sds',
+        'affiliate-client-js',
         plugins_url('/js/affiliate-client.js', __FILE__),
         array(),
         time(),
@@ -192,10 +192,18 @@ class Affiliate {
         $results = $this->wpdb->get_results($query);
 
         $transactions = [];
+        if (!is_array($results)) {
+            return $transactions;
+        }
         foreach ($results as $item) {
             $product = wc_get_product($item->product_id);
             $order = wc_get_order($item->order_id);
             $quantity = 0;
+
+            // สินค้าอาจถูกลบไปแล้ว (wc_get_product คืน false) ป้องกัน Fatal error
+            if (!$product) {
+                continue;
+            }
 
             if ($order) {
                 foreach ($order->get_items() as $item_id => $order_item) {
@@ -302,7 +310,7 @@ function get_all_users_table() {
     $revenue_data = [];
 
     foreach ($affiliate_chart as $row) {
-        $date_label = date('d M', strtotime($row->created_at));
+        $date_label = date('d M', strtotime($row->created_at ?? 'now'));
         
         $labels[] = $date_label;
         $revenue_data[] = (float)$row->total_sold_sum;
